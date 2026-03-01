@@ -1,0 +1,11 @@
+# 079 - SANPAR - Santana Parnaíba
+
+L.: 79
+CIDADE: Santana Parnaíba
+UF: SP 
+CEP: 06.502-150
+COD OBRA: 20691
+CNPJ: 56.642.960/0080-03
+INSCR. ESTAD: 623.020.731.112
+FONE: (011) 4154-1684
+ENDEREÇO: Rua: 13 de Maio, 13 - Centro

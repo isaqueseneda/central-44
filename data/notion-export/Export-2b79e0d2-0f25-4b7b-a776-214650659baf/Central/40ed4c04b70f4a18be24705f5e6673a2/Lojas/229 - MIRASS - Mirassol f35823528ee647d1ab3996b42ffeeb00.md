@@ -1,0 +1,11 @@
+# 229 - MIRASS - Mirassol
+
+L.: 229
+CIDADE: Mirassol
+UF: SP 
+CEP: 15.130-065
+COD OBRA: 463970
+CNPJ: 56.642.960/0231-50
+INSCR. ESTAD: 451.067.579.114
+FONE: (017) 3242-8779
+ENDEREÇO: Praça Dr. Anísio José Moreira, 20-69 – Centro

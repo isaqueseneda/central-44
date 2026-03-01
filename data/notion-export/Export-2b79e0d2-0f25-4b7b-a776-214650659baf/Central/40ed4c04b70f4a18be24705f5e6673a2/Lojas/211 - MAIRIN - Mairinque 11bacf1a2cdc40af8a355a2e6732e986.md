@@ -1,0 +1,11 @@
+# 211 - MAIRIN - Mairinque
+
+L.: 211
+CIDADE: Mairinque
+UF: SP 
+CEP: 18.120-000
+COD OBRA: 252670
+CNPJ: 56.642.960/0213-79
+INSCR. ESTAD: 432.036.245.117
+FONE: (011) 4708-7697
+ENDEREÇO: Rua Julio Prestes de Albuquerque, 51 – Centro

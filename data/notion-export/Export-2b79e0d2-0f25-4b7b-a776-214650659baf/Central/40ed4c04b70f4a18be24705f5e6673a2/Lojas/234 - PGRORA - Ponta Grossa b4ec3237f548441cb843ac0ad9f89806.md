@@ -1,0 +1,11 @@
+# 234 - PGRORA - Ponta Grossa
+
+L.: 234
+CIDADE: Ponta Grossa
+UF: PR
+CEP: 84.062-112
+COD OBRA: 406778
+CNPJ: 56.642.960/0236-65
+INSCR. ESTAD: 90.710.140-18
+FONE: (042) 3236-3668
+ENDEREÇO: Rua Nicolau Kluppel Neto, 517 – Chapada

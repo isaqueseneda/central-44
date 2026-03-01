@@ -1,0 +1,11 @@
+# 024 - SJCAMP - São José dos Campos
+
+L.: 24
+CIDADE: São José dos Campos
+UF: SP 
+CEP: 12.210-090
+COD OBRA: 88532
+CNPJ: 56.642.960/0028-20
+INSCR. ESTAD: 645.107.830.114
+FONE: (012) 3922-5822
+ENDEREÇO: Praça Afonso Pena, 131 - Centro

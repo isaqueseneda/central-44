@@ -1,0 +1,11 @@
+# 098 - QUEIMA - Queimados
+
+L.: 98
+CIDADE: Queimados
+UF: RJ
+CEP: 26.325-282
+COD OBRA: 124945
+CNPJ: 56.642.960/0102-53
+INSCR. ESTAD: 86.393.573
+FONE: (021) 2665-2278
+ENDEREÇO: Rua: Ver. Marinho H. Oliveira, 100 - Centro

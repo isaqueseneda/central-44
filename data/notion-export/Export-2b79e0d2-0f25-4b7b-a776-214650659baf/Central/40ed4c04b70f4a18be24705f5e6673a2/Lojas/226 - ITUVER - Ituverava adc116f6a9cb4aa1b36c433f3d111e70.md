@@ -1,0 +1,11 @@
+# 226 - ITUVER - Ituverava
+
+L.: 226
+CIDADE: Ituverava
+UF: SP 
+CEP: 14.500-000
+COD OBRA: 404350
+CNPJ: 56.642.960/0227-74
+INSCR. ESTAD: 389.046.499.112
+FONE: (016) 3729-6866
+ENDEREÇO: Av. Dr. José Anibal Soares de Oliveira, 561 – Centro

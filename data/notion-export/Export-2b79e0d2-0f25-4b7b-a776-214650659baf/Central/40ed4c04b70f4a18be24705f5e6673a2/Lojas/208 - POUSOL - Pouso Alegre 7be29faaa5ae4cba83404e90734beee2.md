@@ -1,0 +1,11 @@
+# 208 - POUSOL - Pouso Alegre
+
+L.: 208
+CIDADE: Pouso Alegre
+UF: MG
+CEP: 37.550-000
+COD OBRA: 221931
+CNPJ: 56.642.960/0210-26
+INSCR. ESTAD: 525.649.701.2047
+FONE: (035) 3422-3117
+ENDEREÇO: Rua Prefeito Olavo Gomes de Oliveira, 1991 – Jd. Olimpico

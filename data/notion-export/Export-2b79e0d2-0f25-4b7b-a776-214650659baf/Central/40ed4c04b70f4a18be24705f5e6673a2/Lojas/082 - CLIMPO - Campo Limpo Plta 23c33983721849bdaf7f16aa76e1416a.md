@@ -1,0 +1,11 @@
+# 082 - CLIMPO - Campo Limpo Plta.
+
+L.: 82
+CIDADE: Campo Limpo Plta.
+UF: SP 
+CEP: 13.231-190
+COD OBRA: 87294
+CNPJ: 56.642.960/0085-18
+INSCR. ESTAD: 245.023.650.112
+FONE: (011) 4039-5491
+ENDEREÇO: Av.: Adherbal da C. Moreira, 644 – Jd. América

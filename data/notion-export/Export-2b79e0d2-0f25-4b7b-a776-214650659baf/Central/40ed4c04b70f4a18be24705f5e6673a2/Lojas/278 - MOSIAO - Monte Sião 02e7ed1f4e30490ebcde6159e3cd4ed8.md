@@ -1,0 +1,10 @@
+# 278 - MOSIAO - Monte Sião
+
+L.: 278
+CIDADE: Monte Sião
+UF: MG
+CEP: 37.580-000
+CNPJ: 56.642.960/0279-03
+INSCR. ESTAD: 525.649.701.2381
+FONE: (035) 3465-2464
+ENDEREÇO: Rua Juscelino Kubitschek de Oliveira, 429 – Centro

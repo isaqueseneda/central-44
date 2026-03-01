@@ -1,0 +1,11 @@
+# 092 - SSPARA - S. Sebast. Paraíso
+
+L.: 92
+CIDADE: S. Sebast. Paraíso
+UF: MG
+CEP: 37.950-000
+COD OBRA: 130007
+CNPJ: 56.642.960/0096-70
+INSCR. ESTAD: 647.649.701.0820
+FONE: (035) 3531-5909
+ENDEREÇO: Praça Com. José Honório, 47 - Centro

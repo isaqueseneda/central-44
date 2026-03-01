@@ -1,0 +1,11 @@
+# 142 - ARAUCA - Araucária
+
+L.: 142
+CIDADE: Araucária
+UF: PR
+CEP: 83.702-470
+COD OBRA: 272934
+CNPJ: 56.642.960/0143-21
+INSCR. ESTAD: 90.321.560-77
+FONE: (041) 552-3584
+ENDEREÇO: Rua Pres. Carlos Cavalcanti, 165 - Centro

@@ -1,0 +1,9 @@
+# 298 - RANCHA - Rancharia
+
+L.: 298
+CIDADE: Rancharia
+UF: SP 
+CEP: 19.600-000
+CNPJ: 56.642.960/0305-21
+INSCR. ESTAD: 570.098.050.110
+ENDEREÇO: Avenida Pedro de Toledo,325 - Centro

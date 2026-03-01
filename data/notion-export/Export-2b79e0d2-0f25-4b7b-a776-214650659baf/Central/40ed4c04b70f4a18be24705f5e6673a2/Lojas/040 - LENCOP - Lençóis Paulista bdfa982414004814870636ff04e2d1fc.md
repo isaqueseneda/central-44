@@ -1,0 +1,11 @@
+# 040 - LENCOP - Lençóis Paulista
+
+L.: 40
+CIDADE: Lençóis Paulista
+UF: SP 
+CEP: 18.680-100
+COD OBRA: 20680
+CNPJ: 56.642.960/0043-69
+INSCR. ESTAD: 416.026.666.117
+FONE: (014) 3263-1452
+ENDEREÇO: Rua: Dr. Antônio Tedesco, 280 - Centro

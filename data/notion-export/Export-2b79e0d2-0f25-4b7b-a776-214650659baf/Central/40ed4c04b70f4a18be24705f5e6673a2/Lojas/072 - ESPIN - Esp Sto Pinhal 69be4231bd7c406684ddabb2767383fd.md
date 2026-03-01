@@ -1,0 +1,11 @@
+# 072 - ESPIN - Esp. Sto. Pinhal
+
+L.: 72
+CIDADE: Esp. Sto. Pinhal
+UF: SP 
+CEP: 13.990-000
+COD OBRA: 103472
+CNPJ: 56.642.960/0074-65
+INSCR. ESTAD: 530.029.907.110
+FONE: (019) 3651-1664
+ENDEREÇO: Praça da Independência, 408 - Centro

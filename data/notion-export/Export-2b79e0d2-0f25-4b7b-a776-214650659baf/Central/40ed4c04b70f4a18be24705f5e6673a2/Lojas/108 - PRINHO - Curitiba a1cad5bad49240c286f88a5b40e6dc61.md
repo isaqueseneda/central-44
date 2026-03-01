@@ -1,0 +1,11 @@
+# 108 - PRINHO - Curitiba
+
+L.: 108
+CIDADE: Curitiba
+UF: PR
+CEP: 81.150-050
+COD OBRA: 274405
+CNPJ: 56.642.960/0109-20
+INSCR. ESTAD: 90.240.028.18
+FONE: (041) 3248-8405
+ENDEREÇO: Av.: Winston Churchill,2415 - Pinheirinho

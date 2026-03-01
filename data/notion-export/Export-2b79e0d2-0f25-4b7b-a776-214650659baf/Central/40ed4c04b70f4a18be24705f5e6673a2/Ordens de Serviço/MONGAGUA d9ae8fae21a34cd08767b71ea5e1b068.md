@@ -1,0 +1,18 @@
+# MONGAGUA
+
+OSu: OS-81
+Pedido : 7 de março de 2024 07:23
+Status: Não iniciada
+🚩: ⭐
+Lojas: 154 - MONGAG - Mongaguá (../Lojas/154%20-%20MONGAG%20-%20Mongagu%C3%A1%200f4c8e01357442ad861c5f653c081ede.md)
+KM: 600
+Endereço: Av. Dr. Getúlio Vargas, 255 - Centro
+Telefone: (013) 3507-4882
+Func. Count: 0
+Garantia: No
+Serviços: INSTALAR SENSOR NA BOCA DE LOBO (../Servi%C3%A7os/INSTALAR%20SENSOR%20NA%20BOCA%20DE%20LOBO%20cd31ded8b90c4612a16b068820107eca.md), MANUTENÇÃO NO ALARME DE INTRUSÃO (../Servi%C3%A7os/MANUTEN%C3%87%C3%83O%20NO%20ALARME%20DE%20INTRUS%C3%83O%20562c335105314341b2c51042658876c2.md)
+$ HH: R$ 0,00
+$ MDO: R$ 0,00
+Pedágio: 132.4
+$ Transp: R$ 1.032,40
+$ Total: R$ 1.032,40

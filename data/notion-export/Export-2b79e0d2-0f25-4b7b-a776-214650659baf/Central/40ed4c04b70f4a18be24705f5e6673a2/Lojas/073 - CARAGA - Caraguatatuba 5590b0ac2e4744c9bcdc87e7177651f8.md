@@ -1,0 +1,11 @@
+# 073 - CARAGA - Caraguatatuba
+
+L.: 73
+CIDADE: Caraguatatuba
+UF: SP 
+CEP: 11.660-020
+COD OBRA: 87299
+CNPJ: 56.642.960/0077-08
+INSCR. ESTAD: 254.049.756.115
+FONE: (012) 3882-6007
+ENDEREÇO: Rua: Altino Arantes, 630 - Centro

@@ -1,0 +1,11 @@
+# 029 - CAÇAP - Caçapava
+
+L.: 29
+CIDADE: Caçapava
+UF: SP 
+CEP: 12.281-010
+COD OBRA: 20685
+CNPJ: 56.642.960/0032-06
+INSCR. ESTAD: 234.021.340.118
+FONE: (012) 3653-1826
+ENDEREÇO: Av.: Cel. M. Inocêncio, 457 - Centro

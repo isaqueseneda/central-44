@@ -1,0 +1,17 @@
+# ARARAQUARA BR
+
+OSu: OS-52
+Pedido : 7 de março de 2024 06:50
+Status: Não iniciada
+🚩: ⭐
+Lojas: 297 - 2ª Araraq - Araraquara (../Lojas/297%20-%202%C2%AA%20Araraq%20-%20Araraquara%20c59f3f35eae449ac97874bdaa128ee2d.md)
+KM: 220
+Endereço: Avenida Pedro Jacob Celli, 528 Jd. Floridiana
+Func. Count: 0
+Garantia: No
+Serviços: MANUTENÇÃO NO ALARME DE INTRUSÃO (../Servi%C3%A7os/MANUTEN%C3%87%C3%83O%20NO%20ALARME%20DE%20INTRUS%C3%83O%20562c335105314341b2c51042658876c2.md), INSTALAR SENSOR NA BOCA DE LOBO (../Servi%C3%A7os/INSTALAR%20SENSOR%20NA%20BOCA%20DE%20LOBO%20cd31ded8b90c4612a16b068820107eca.md)
+$ HH: R$ 0,00
+$ MDO: R$ 0,00
+Pedágio: 32.8
+$ Transp: R$ 362,80
+$ Total: R$ 362,80

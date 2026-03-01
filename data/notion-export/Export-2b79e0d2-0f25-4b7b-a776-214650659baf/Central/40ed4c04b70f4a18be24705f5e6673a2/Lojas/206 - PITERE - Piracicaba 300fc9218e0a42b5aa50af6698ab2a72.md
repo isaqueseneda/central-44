@@ -1,0 +1,11 @@
+# 206 - PITERE - Piracicaba
+
+L.: 206
+CIDADE: Piracicaba
+UF: SP 
+CEP: 13.411-083
+COD OBRA: 251109
+CNPJ: 56.642.960/0207-20
+INSCR. ESTAD: 535.312.129.111
+FONE: (019) 3425-1954
+ENDEREÇO: Rua Virgilio da Silva Fagundes, 300 – Santa Terezinha

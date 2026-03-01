@@ -1,0 +1,321 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// Core Entities
+// ============================================
+
+model Store {
+  id                String   @id @default(cuid())
+  code              String   @unique
+  sigla             String
+  city              String
+  state             String
+  address           String
+  cep               String?
+  cnpj              String?
+  stateRegistration String?
+  constructionCode  String?
+  phone             String?
+  kmRoundTrip       Float?
+  tollRoundTrip     Float?
+  storeNumber       Int?
+  latitude          Float?
+  longitude         Float?
+
+  serviceOrders  ServiceOrderStore[]
+  travelExpenses TravelExpense[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@index([state])
+  @@index([city])
+}
+
+model Employee {
+  id        String    @id @default(cuid())
+  shortName String
+  fullName  String?
+  rg        String?
+  phone     String?
+  startDate DateTime?
+  isActive  Boolean   @default(true)
+
+  assignments           ServiceOrderEmployee[]
+  travelExpenses        TravelExpense[]        @relation("TravelExpense")
+  persistentTeamDriver  Team[]                 @relation("PersistentTeamDriver")
+  persistentTeamMember  TeamMember[]           @relation("PersistentTeamMember")
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+}
+
+model Vehicle {
+  id           String  @id @default(cuid())
+  name         String
+  licensePlate String  @unique
+  isActive     Boolean @default(true)
+
+  serviceOrders         ServiceOrder[]
+  persistentTeamVehicle Team[]         @relation("PersistentTeamVehicle")
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+}
+
+model ServiceType {
+  id   String   @id @default(cuid())
+  name String   @unique
+  tags String[]
+
+  serviceOrders ServiceOrderServiceType[]
+  createdAt     DateTime                  @default(now())
+}
+
+model Material {
+  id            String   @id @default(cuid())
+  name          String
+  purchasePrice Float?
+  salePrice     Float?
+  tags          String[]
+
+  serviceOrders ServiceOrderMaterial[]
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+}
+
+// ============================================
+// Service Orders (Central Table)
+// ============================================
+
+model ServiceOrder {
+  id          String             @id @default(cuid())
+  orderNumber Int                @unique @default(autoincrement())
+  name        String
+  status      ServiceOrderStatus @default(NOT_STARTED)
+  priority    Int                @default(0)
+  type        ServiceOrderType   @default(GENERAL)
+  date        DateTime?
+  warranty    Boolean            @default(false)
+  isObra      Boolean            @default(false)
+
+  // Report fields
+  numeroChamado       String?  // Nº CHAMADO A.T.
+  solicitadoPor       String?  // SOLICITADO POR
+  enderecoAtendimento String?  // ENDEREÇO ATENDIMENTO
+  servicoSolicitado   String?  // SERVIÇO SOLICITADO
+
+  // KM & Transport
+  kmIdaVolta         Float?   // IDA E VOLTA total km
+  kmRodada           Float?   // KM COBRADA (discounted)
+  precoKm            Float?   // PREÇO POR KM (default 1.60)
+  kmDiscount         Float?
+  tollDiscount       Float?
+  parking            Float?   // ESTACIONAMENTO
+  mealAllowance      Float?   // REFEIÇÃO
+  overnightAllowance Float?   // PERNOITE
+  materialCost       Float?
+
+  transportCost Float?
+  laborCost     Float?
+  manHours      Float?
+  totalCost     Float?
+
+  materialsUsedNotes  String?
+  servicesPerformed   String?  // SERVIÇOS EXECUTADOS
+  managerComment      String?
+  managerSignatureUrl String?
+
+  vehicleId String?
+  vehicle   Vehicle? @relation(fields: [vehicleId], references: [id])
+
+  stores               ServiceOrderStore[]
+  employees            ServiceOrderEmployee[]
+  serviceTypes         ServiceOrderServiceType[]
+  materials            ServiceOrderMaterial[]
+  teams                ServiceOrderTeam[]
+  travelExpenses       TravelExpense[]
+  scheduledAssignments TeamScheduleAssignment[] @relation("ScheduledServiceOrders")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([date])
+  @@index([type])
+}
+
+enum ServiceOrderStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  RETURN_VISIT
+  MEASUREMENT
+  PAID
+  REWORK
+}
+
+enum ServiceOrderType {
+  GENERAL
+  ALARM
+  LED
+}
+
+// ============================================
+// Junction Tables
+// ============================================
+
+model ServiceOrderStore {
+  serviceOrderId String
+  storeId        String
+  serviceOrder   ServiceOrder @relation(fields: [serviceOrderId], references: [id], onDelete: Cascade)
+  store          Store        @relation(fields: [storeId], references: [id])
+
+  @@id([serviceOrderId, storeId])
+}
+
+model ServiceOrderEmployee {
+  serviceOrderId String
+  employeeId     String
+  hoursNormal    Float?   // Nº HORAS NORMAIS
+  hoursExtra     Float?   // Nº HORAS EXTRAS
+  pricePerHour   Float?   // PREÇO DA HORA R$ (default 48.00)
+  workDate       DateTime? // DIA (date worked)
+  serviceOrder   ServiceOrder @relation(fields: [serviceOrderId], references: [id], onDelete: Cascade)
+  employee       Employee     @relation(fields: [employeeId], references: [id])
+
+  @@id([serviceOrderId, employeeId])
+}
+
+model ServiceOrderServiceType {
+  serviceOrderId String
+  serviceTypeId  String
+  serviceOrder   ServiceOrder @relation(fields: [serviceOrderId], references: [id], onDelete: Cascade)
+  serviceType    ServiceType  @relation(fields: [serviceTypeId], references: [id])
+
+  @@id([serviceOrderId, serviceTypeId])
+}
+
+model ServiceOrderMaterial {
+  serviceOrderId String
+  materialId     String
+  quantity       Float?
+  unitPrice      Float?
+  serviceOrder   ServiceOrder @relation(fields: [serviceOrderId], references: [id], onDelete: Cascade)
+  material       Material     @relation(fields: [materialId], references: [id])
+
+  @@id([serviceOrderId, materialId])
+}
+
+// ============================================
+// Travel Expenses (CONTROLE SEMANAL DESP VIAGEM)
+// ============================================
+
+model TravelExpense {
+  id         String   @id @default(cuid())
+  date       DateTime
+  employeeId String
+  employee   Employee @relation("TravelExpense", fields: [employeeId], references: [id])
+  city       String?
+  storeId    String?
+  store      Store?   @relation(fields: [storeId], references: [id])
+
+  // Expense categories (all default 0)
+  cafe               Float @default(0) // Café da manhã
+  almoco             Float @default(0) // Almoço
+  jantar             Float @default(0) // Jantar
+  hotel              Float @default(0) // Hotel / Pernoite
+  combustivel        Float @default(0) // Combustível
+  pedagio            Float @default(0) // Pedágio
+  estacionamento     Float @default(0) // Estacionamento
+  reembolso          Float @default(0) // Reembolso geral
+  uberTaxi           Float @default(0) // Uber / Táxi
+
+  notes          String?
+  serviceOrderId String?
+  serviceOrder   ServiceOrder? @relation(fields: [serviceOrderId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([employeeId, date])
+  @@index([date])
+  @@index([employeeId, date])
+}
+
+// ============================================
+// Persistent Teams (Equipes)
+// ============================================
+
+model Team {
+  id        String   @id @default(cuid())
+  name      String
+  driverId  String?
+  driver    Employee? @relation("PersistentTeamDriver", fields: [driverId], references: [id])
+  vehicleId String?
+  vehicle   Vehicle?  @relation("PersistentTeamVehicle", fields: [vehicleId], references: [id])
+  isActive  Boolean   @default(true)
+
+  members             TeamMember[]
+  serviceOrders       ServiceOrderTeam[]
+  scheduleAssignments TeamScheduleAssignment[] @relation("TeamScheduleAssignments")
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
+}
+
+model TeamMember {
+  teamId     String
+  employeeId String
+  rank       Int      @default(0)
+  isLeader   Boolean  @default(false)
+  team       Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  employee   Employee @relation("PersistentTeamMember", fields: [employeeId], references: [id])
+
+  @@id([teamId, employeeId])
+}
+
+model ServiceOrderTeam {
+  serviceOrderId String
+  teamId         String
+  serviceOrder   ServiceOrder @relation(fields: [serviceOrderId], references: [id], onDelete: Cascade)
+  team           Team         @relation(fields: [teamId], references: [id])
+
+  @@id([serviceOrderId, teamId])
+}
+
+// ============================================
+// Team Schedule Assignment (replaces WeeklySchedule)
+// ============================================
+
+model TeamScheduleAssignment {
+  id             String        @id @default(cuid())
+  teamId         String
+  team           Team          @relation("TeamScheduleAssignments", fields: [teamId], references: [id], onDelete: Cascade)
+  date           DateTime      // Start date
+  endDate        DateTime?     // Optional end date for multi-day assignments
+  serviceOrderId String?
+  serviceOrder   ServiceOrder? @relation("ScheduledServiceOrders", fields: [serviceOrderId], references: [id], onDelete: SetNull)
+  notes          String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([teamId, date])
+  @@index([date])
+  @@index([serviceOrderId])
+}
+
+// ============================================
+// Global Settings (singleton, key-value)
+// ============================================
+
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  label     String?  // Human-readable label
+  type      String   @default("string") // string, number, boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

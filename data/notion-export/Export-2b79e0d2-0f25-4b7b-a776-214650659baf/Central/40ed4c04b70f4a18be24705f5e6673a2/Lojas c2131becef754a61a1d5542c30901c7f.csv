@@ -1,0 +1,309 @@
+﻿L.,CIDADE,SIGLA,ENDEREÇO,UF,FONE,CEP,COD OBRA,CNPJ,INSCR. ESTAD,Ordens de Serviço,KM IDA E VOLTA,PEDÁGIO IDA E VOLTA
+0,Salto,000 - SALTO - Salto,"Rua: 9 de Julho, 400 - Centro","SP ",(011) 4029-4624,13.320-000,1513,56.642.960/0002-90,600.003.895.113,"SALTO CT (https://www.notion.so/0964a39e3f2c4cb9b1bd94208ef8d31e?pvs=21), Modelo Geral (https://www.notion.so/2d068adf5b8e80deba95f335fe849c8c?pvs=21)",210,"R$ 45,00"
+1,Indaiatuba,001 - INDAIA - Indaiatuba,"Rua: Candelária, 677 - Centro","SP ",(019) 3834-4411,13.330-180,88530,56.642.960/0003-71,353.002.126.119,,,
+2,Itu,002 - ITU - Itu,"Rua: Floriano Peixoto, 640 - Centro","SP ",(011) 4023-1342,13.300-005,20690,56.642.960/0004-52,387.011.146.110,ITU CT (https://www.notion.so/ebf7ee97db074d9ba0be7828f2fdb765?pvs=21),220,"R$ 45,00"
+3,São Roque,003 - SROQUE - São Roque,"Av.: Tiradentes, 399 - Centro","SP ",(011) 4712-2459,18.130-470,20695,56.642.960/0005-33,653.011.011.110,SÃO ROQUE (https://www.notion.so/28d9eebc527e45ec9411d46f3ef25f16?pvs=21),320,"R$ 60,20"
+4,Itapetininga,004 - ITAPET - Itapetininga,"Rua: Campos Salles, 700 - Centro","SP ",(015) 3272-4362,18.200-005,120333,56.642.960/0007-03,371.025.300.118,,,
+5,Sorocaba,005 - SOROC - Sorocaba,"Rua Padre Luiz ,345 - Centro","SP ",(015) 3231-7362,18.035-011,88535,56.642.960/0008-86,669.094.835.110,,,
+6,Americana,006 - AMERIC - Americana,"Rua: 12 de Novembro, 295 - Centro","SP ",(019) 3461-3122,13.465-490,94011,56.642.960/0009-67,165.055.770.112,,,
+7,Rio Claro,007 - RIOCLA - Rio Claro,"Av.: 5, 408 - Centro","SP ",(019) 3524-2399,13.500-380,88540,56.642.960/0010-09,587.048.672.119,,,
+8,Piracicaba,008 - PIRACI - Piracicaba,"Rua: Governador Pedro de Toledo, 500","SP ",(019) 3422-6840,13.400-060,93993,56.642.960/0016-96,535.094.655.114,,,
+9,Salto,009 - MATRIZ - Salto,"Rod.:  Eng.° Ermênio de O. Penteado, s/ n.°, km 46 - Joana Leite","SP ",(011) 4028-9400,13.329-903,,56.642.960/0001-00,600.003.886.112,,,
+10,Sta. Bárb. D'Oeste,010 - STABAR - Sta. Bárb. D'Oeste,"Rua: General Osório, 518 - Centro","SP ",(019) 3455-1777,13.450-026,94777,56.642.960/0012-62,606.023.860.110,,,
+11,Limeira,011 - LIMEIR - Limeira,"Rua: Alferes Franco, 338 - Centro","SP ",(019) 3441-0126,13.480-050,103267,56.642.960/0013-43,417.053.124.116,LIMEIRA CT (https://www.notion.so/ea55401502734d6e865f04abf7b92231?pvs=21),60,"R$ 16,40"
+12,Osasco,012 - OSASCO - Osasco,"Rua: Antônio Agú, 749 - Centro","SP ",(011) 3682-1640,06.013-000,88541,56.642.960/0014-24,492.129.133.110,,,
+13,Araras,,"Rua: Cesário Coimbra, 15 – Centro","SP ",(019) 3541-4837,13.600-030,109768,56.642.960/0015-05,182.026.659.111,ARARAS (https://www.notion.so/b9486ef3705f4b14859dc3ee952de0ec?pvs=21),84,"R$ 8,80"
+14,Leme,014 - LEME - Leme,"Praça Manoel Leme, 244 - Centro","SP ",(019) 3571-3813,13.610-139,103278,56.642.960/0017-77,415.018.492.111,,,
+15,Mogi das Cruzes,015 - MGCRUZ - Mogi das Cruzes,"Rua: Dr. Ricardo Vilela, 181 - Centro","SP ",(011) 4726-1430,08.710-150,118569,56.642.960/0018-58,454.069.322.115,,,
+16,Capivari,016 - CAPIV - Capivari,"Rua: XV de Novembro, 760 - Centro","SP ",(019) 3491-2897,13.360-000,88043,56.642.960/0019-39,253.010.730.116,,,
+17,Avaré,017 - AVARE - Avaré,"Largo São João, 169 – Centro","SP ",(014) 3732-1575,18.700-210,109762,56.642.960/0020-72,194.022.991.111,,,
+18,Araraquara,018 - ARARAQ - Araraquara,"Rua: 9 de Julho, 443 - Centro","SP ",(016)  3322-1333,14.801-295,94001,56.642.960/0021-53,181.052.949.110,,,
+19,São Caetano Sul,019 - SCAET - São Caetano Sul,"Rua: Manoel Coelho, 382 - Centro","SP ",(011) 4221-7750,09.510-100,89300,56.642.960/0022-34,636.088.367.110,,,
+20,Suzano,020 - SUZANO - Suzano,"Praça João Pessoa, 181 - Centro","SP ",(011) 4748-2482,08.674-040,20679,56.642.960/0024-04,672.039.292.110,,,
+21,São Paulo,021 - SAMARO - São Paulo,"Alameda Santo Amaro, 370 Sto. Amaro","SP ",(011) 5541-8168,04.745-001,118542,56.642.960/0023-15,111.385.930.116,,,
+22,Pirassununga,022 - PIRASU - Pirassununga,"Rua: José Bonifácio, 425 - Centro","SP ",(019) 3561-2910,13.630-010,88524,56.642.960/0025-87,536.019.930.116,,,
+23,Jacareí,023 - JACAR - Jacareí,"Rua: Alfredo Schurig, 34 - Centro","SP ",(012) 3951-0212,12.327-005,94007,56.642.960/0026-68,392.045.338.118,,,
+24,São José dos Campos,024 - SJCAMP - São José dos Campos,"Praça Afonso Pena, 131 - Centro","SP ",(012) 3922-5822,12.210-090,88532,56.642.960/0028-20,645.107.830.114,,,
+25,Taubaté,025 - TAUBAT - Taubaté,"Rua: Marquês do Herval, 601 - Centro","SP ",(012) 3632-0308,12.080-250,87754,56.642.960/0027-49,688.073.087.110,,,
+26,S. Bernardo Campo,026 - SBCAMP - S. Bernardo Campo,"Rua: Marechal Deodoro, 713 - Centro","SP ",(011) 4122-2710,09.710-011,121545,56.642.960/0029-00,635.174.000.117,,,
+27,Santos,027 - SANTOS - Santos,"Rua: João Pessoa, 185 - Centro","SP ",(013) 3224-9100,11.013-001,135705,56.642.960/0030-44,633.245.940.119,,,
+28,Guarulhos,028 - GUARUL - Guarulhos,"Rua: Capitão Gabriel, 148 - Centro","SP ",C,07.011-010,123562,56.642.960/0031-25,336.241.029.117,GUARULHOS (https://www.notion.so/113803739c464286a83a7f0c70fa242a?pvs=21),380,"R$ 87,40"
+29,Caçapava,029 - CAÇAP - Caçapava,"Av.: Cel. M. Inocêncio, 457 - Centro","SP ",(012) 3653-1826,12.281-010,20685,56.642.960/0032-06,234.021.340.118,,,
+30,Guaratinguetá,030 - GUARAT - Guaratinguetá,"Rua: Marechal Deodoro, 166 - Centro","SP ",(012) 3132-1274,12.500-210,88030,56.642.960/0034-78,332.043.890.110,,,
+31,Pindamonhangaba,031 - PINDA - Pindamonhangaba,"Av.: Dr. Jorge Tibiriçá, 199 - Centro","SP ",(012) 3642-4100,12.400-460,87753,56.642.960/0033-97,528.031.829.119,,,
+32,São José Rio Pardo,032 - SJRPAR - São José Rio Pardo,"Rua: Marechal Deodoro, 319 - Centro","SP ",(019) 3608-3765,13.720-000,123572,56.642.960/0035-59,646.022.829.116,,,
+33,Pouso Alegre,033 - POUSOA - Pouso Alegre,"Praça Dr. Garcia Coutinho, 43 - Centro",MG,(035) 3422-1122,37.550-000,130527,56.642.960/0036-30,525.649.701.0060,,,
+34,Bragança Plta.,034 - BRAGAN - Bragança Plta.,"Av.: José Gomes da Rocha Leal, 2100 – Centro","SP ",(011) 4034-0263,12.900-301,88056,56.642.960/0037-10,225.067.555.116,,,
+35,Itajubá,035 - ITAJUB - Itajubá,"Rua: Dr. Pereira Cabral, 268 - Centro",MG,(035) 3622-0546,37.500-000,88547,56.642.960/0038-00,324.649.701.0171,ITAJUBA (https://www.notion.so/36665505b6bc4b1f8376b586727246d7?pvs=21),561,"R$ 114,00"
+36,Botucatu,036 - BOTUC - Botucatu,"Av.: Floriano Peixoto, 585 - Centro","SP ",(014) 3882-3589,18.600-240,87760,56.642.960/0039-82,224.044.997.110,,,
+37,Varginha,037 - VARGIN - Varginha,"Rua: Wenceslau Braz, 129 - Centro",MG,(035) 3222-9222,37.002-080,88039,56.642.960/0040-16,707.649.701.0220,VARGINHA (https://www.notion.so/db1858c2e9b54d4f98d7c83f5af9fdc2?pvs=21),650,"R$ 101,40"
+38,Votorantim,038 - VOTOR - Votorantim,"Av.: 31 de Março, 588 - Centro","SP ",(015) 3243-1258,18.110-005,20696,56.642.960/0041-05,717.025.220.116,,,
+39,São Carlos,039 - SCARLO - São Carlos,"Av.: São Carlos, 1047 - Centro","SP ",(016) 3372-7213,13.560-010,87759,56.642.960/0042-88,637.091.830.110,,,
+40,Lençóis Paulista,040 - LENCOP - Lençóis Paulista,"Rua: Dr. Antônio Tedesco, 280 - Centro","SP ",(014) 3263-1452,18.680-100,20680,56.642.960/0043-69,416.026.666.117,,,
+41,Franca,041 - FRANCA - Franca,"Rua: Major Claudiano, 2140 - Centro","SP ",(016) 3724-2206,14.400-690,123567,56.642.960/0044-40,310.165.548.113,FRANCA (https://www.notion.so/9c0a68832f8c49af9800e9c8b9c55814?pvs=21),500,"R$ 123,50"
+42,Mogi Guaçu,042 - MGGUAC - Mogi Guaçu,"Rua: Sgto. Aviador Osvaldo Fernandes, 147 – Centro","SP ",(019) 3861-0432,13.840-027,89221,56.642.960/0046-01,455.057.968.117,MOGI GUAÇU CT (https://www.notion.so/227a2bb9a5ee41ab938c82fb49a3d594?pvs=21),172,"R$ 39,00"
+43,Atibaia,043 - ATIBAI - Atibaia,"Rua: Adolfo André, 185 - Centro","SP ",(011) 4411-0371,12.940-280,120652,56.642.960/0045-20,190.058.236.118,ATIBAIA CT (https://www.notion.so/25380b8e05f04cf88786500b21c92bee?pvs=21),300,"R$ 85,60"
+44,Mogi Mirim,044 - MGMIRI - Mogi Mirim,"Rua: Conde de Parnaíba, 400 - Centro","SP ",(019) 3806-2986,13.800-140,89304,56.642.960/0047-92,456.044.976.117,,,
+45,Itapeva,045 - ITAPVA - Itapeva,"Av.: Dona Paulina de Morais, 225 – Vila Ophélia","SP ",(015) 3522-2747,18.400-818,104268,56.642.960/0048-73,372.045.350.114,,,
+46,Bebedouro,046 - BEBED - Bebedouro,"Rua: Cel. João Manoel, 523 - Centro","SP ",(017) 3342-3644,14.700-020,166509,56.642.960/0049-54,210.039.611.112,,,
+47,Barretos,047 - BARRET - Barretos,"Rua: 20, 762 – Primavera","SP ",(017) 3322-1033,14.780-660,89225,56.642.960/0050-98,204.072.675.113,BARRETOS (https://www.notion.so/a06186e306324788a29e496415de1e57?pvs=21),500,"R$ 131,60"
+48,Jaboticabal,048 - JABOT - Jaboticabal,"Rua: Rui Barbosa, 700 - Centro","SP ",(016) 3202-0438,14.870-300,133654,56.642.960/0051-79,391.035.835.118,JABOTICABAL (https://www.notion.so/694966c2202b4162843e4f8f374104c3?pvs=21),350,"R$ 72,60"
+49,Cotia,049 - COTIA - Cotia,"Av.: N. Senhora de Fátima, 100 – Vila Monte Serrat","SP ",(011) 4616-9638,06.717-210,133610,56.642.960/0052-50,278.051.360.112,COTIA CT (https://www.notion.so/025b15fcf0a146f98388885c18c43b08?pvs=21),400,"R$ 93,40"
+50,Capão Bonito,050 - CAPBON - Capão Bonito,"Rua: Floriano Peixoto, 905 - Centro","SP ",(015) 3542-2301,18.300-250,108905,56.642.960/0053-30,251.025.768.110,,,
+51,Lorena,051 - LORENA - Lorena,"Rua: Barão de Bocaina, 95 - Centro","SP ",(012) 3153-2911,12.600-230,87748,56.642.960/0054-11,420.048.768.114,,,
+52,Catanduva,052 - CATAND - Catanduva,"Rua: Pernambuco, 266 - Centro","SP ",(017) 3522-0755,15.800-080,87774,56.642.960/0055-00,260.064.470.114,CATANDUVA (https://www.notion.so/c66f67df67934ff4b8951e32aa1ca450?pvs=21),470,"R$ 96,70"
+53,Sta. Cruz Rio Pardo,053 - SCRPAR - Sta. Cruz Rio Pardo,"Rua: Conselheiro Dantas, 610 - Centro","SP ",(014) 3372-4400,18.900-000,118541,56.642.960/0056-83,612.027.660.110,,,
+54,Registro,054 - REGISTR - Registro,"Av.: Pref. Jonas B. Leite, 685 - Centro","SP ",(013) 3821-1149,11.900-000,87757,56.642.960/0058-45,574.026.842.110,REGISTRO (https://www.notion.so/60f4a08b04d0494d92fee20f6da2766e?pvs=21),,
+55,Ferraz Vasconcelos,055 - FEVASC - Ferraz Vasconcelos,"Av.: Brasil, 1300 - Centro","SP ",(011) 4674-0779,08.500-020,122365,56.642.960/0057-64,305.034.253.110,,,
+56,Poá,056 - POA - Poá,"Av.: 9 de Julho, 380 - Centro","SP ",(011) 4638-1823,08.550-100,88525,56.642.960/0059-26	,546.035.707.118,POÁ (https://www.notion.so/ebc039160847435699417dffb661b92b?pvs=21),460,"R$ 92,60"
+57,Itapevi,057 - ITAPVI - Itapevi,"Av.: Rubens Caramez, 411 - Centro","SP ",(011) 4141-4620,06.653-005,88602,56.642.960/0060-60,373.030.161.111,,,
+58,São Manuel,058 - SMANOE - São Manuel,"Av.: Irmãs Cintra, 400 - Centro","SP ",(014) 3841-2849,18.650-000,20684,56.642.960/0062-21,649.022.476.113,,,
+59,Itapecerica Serra,059 - ITAPSE - Itapecerica Serra,"Rua: Major Telles, 122 - Centro","SP ",(011) 4666-6755,06.850-001,20681,56.642.960/0061-40,370.046.191.113,,,
+60,Jaguariúna,060 - JAGUAR - Jaguariúna,"Rua: Cândido Bueno, 800 - Centro","SP ",(019) 3867-3054,13.910-033,89305,56.642.960/0063-02,395.020.860.110,,,
+61,Várzea Paulista,061 - VARZEP - Várzea Paulista,"Rua: Antônio Luiz Sutti, 255 – Jd. Maria de Fátima","SP ",(011) 4595-8396,13.220-445,88055,56.642.960/0064-93,712.030.990.116,,,
+62,Itapira,062 - ITAPRA - Itapira,"Rua: Comendador João Cintra, 370 - Centro","SP ",(019) 3863-2139,13.970-160,87807,56.642.960/0065-74,374.039.074.118,,,
+63,Itaquaquecetuba,063 - ITAQUA - Itaquaquecetuba,"Av.: Emancipação, 75 - Centro","SP ",(011) 4640-3403,08.570-002,133647,56.642.960/0066-55,379.053.526.111,,,
+64,Sumaré,064 - SUMARE - Sumaré,"Av.: 7 de Setembro, 131 - Centro","SP ",(019) 3873-5926,13.170-036,89464,56.642.960/0067-36,671.082.663.115,SUMARÉ CT (https://www.notion.so/72122442d5b74b018c59e28920678722?pvs=21),180,"R$ 38,20"
+65,Valinhos,065 - VALIN - Valinhos,"Rua: 15 de Novembro, 44 - Centro","SP ",(019) 3871-2827,13.270-130,89302,56.642.960/0068-17,708.046.682.110,,,
+66,Cosmópolis,066 - COSMOP - Cosmópolis,"Rua: 7 de Setembro, 150 - Centro","SP ",(019) 3872-1479,13.150-013,88603,56.642.960/0070-31,276.024.677.118,COSMÓPOLIS (https://www.notion.so/d1c399015f964b8e908f1132724fdc33?pvs=21),120,"R$ 16,40"
+67,Itararé,067 - ITARAR - Itararé,"Rua: São Pedro, 1150 - Centro","SP ",(015) 3532-4705,18.460-000,133650,56.642.960/0069-06,380.033.906.110,,,
+68,Três Corações,068 - TCORAÇ - Três Corações,"Av.: Pres. Getúlio Vargas, 380 - Centro",MG,(035) 3235-1000,37.410-000,88543,56.642.960/0072-01,693.649.701.0367,,,
+69,Cruzeiro,069 - CRUZEI - Cruzeiro,"Av.: Major Novaes, 350 - Centro","SP ",(012) 3144-0021,12.701-330,122366,56.642.960/0071-12,282.052.508.119,CRUZEIRO (https://www.notion.so/c7706777eae944cfad25cfb66b14e855?pvs=21),720,"R$ 148,40"
+70,Embu das Artes,070 - EMBU - Embu das Artes,"Rua: Belo Horizonte, 134 - Centro","SP ",(011) 4781-1374,06.803-440,133638,56.642.960/0073-84,298.053.207.111,,,
+71,Alfenas,071 - ALFEN - Alfenas,"Rua: Francisco Mariano, 127 - Centro",MG,(035) 3292-2634,37.130-000,124534,56.642.960/0075-46,016.649.701.0449,ALFENAS (https://www.notion.so/854317ba11574650813830f41648d64f?pvs=21),560,"R$ 81,20"
+72,Esp. Sto. Pinhal,072 - ESPIN - Esp. Sto. Pinhal,"Praça da Independência, 408 - Centro","SP ",(019) 3651-1664,13.990-000,103472,56.642.960/0074-65,530.029.907.110,,,
+73,Caraguatatuba,073 - CARAGA - Caraguatatuba,"Rua: Altino Arantes, 630 - Centro","SP ",(012) 3882-6007,11.660-020,87299,56.642.960/0077-08,254.049.756.115,,,
+74,Itatiba,074 - ITATIB - Itatiba,"Rua: Campos Salles, 255 - Centro","SP ",(011) 4524-4043,13.250-360,129816,56.642.960/0076-27,382.054.877.119,,,
+75,Franco da Rocha,075 - FROCHA - Franco da Rocha,"Av.: dos Expedicionários, 164 - Centro","SP ",(011) 4449-4032,07.803-010,88054,56.642.960/0078-99,312.025.975.119,,,
+76,São José dos Campos,076 - SJCSAT - São José dos Campos,"Av.: Andrômeda, 1265 - Jd. Satélite","SP ",(012) 3931-0446,12.230-000,87744,56.642.960/0079-70,645.264.410.116,,,
+77,Itanhaém,077 - ITANHA - Itanhaém,"Av.: Condessa de Vimieiros, 84 - Centro","SP ",(013) 3422-6401,11.740-000,20662,56.642.960/0081-94,369.036.832.110,ITANHAEM (https://www.notion.so/ceb9a0e53078414982421b82d217d3e2?pvs=21),605,"R$ 132,40"
+78,Hortolândia,078 - HORTO - Hortolândia,"Rua: Luiz Camilo de Camargo, 475 - Centro","SP ",(019) 3897-5756,13.184-260,20687,56.642.960/0083-56,748.024.402.113,,,
+79,Santana Parnaíba,079 - SANPAR - Santana Parnaíba,"Rua: 13 de Maio, 13 - Centro","SP ",(011) 4154-1684,06.502-150,20691,56.642.960/0080-03,623.020.731.112,,,
+80,Paulínia,080 - PAULÍN - Paulínia,"Av.: José Paulino, 975 – Jd. dos Calegaris ","SP ",(019) 3874-4584,13.140-080,120985,56.642.960/0082-75,513.037.914.112,PAULINIA (https://www.notion.so/8a569b4cfb35442fa1838a098069fb32?pvs=21),130,"R$ 38,30"
+81,Francisco Morato,081 - FMORAT - Francisco Morato,"Rua: Demerson Gomes Romano, 42 - Centro","SP ",(011) 4488-3651,07.902-000,126237,56.642.960/0084-37,311.026.203.119,,,
+82,Campo Limpo Plta.,082 - CLIMPO - Campo Limpo Plta.,"Av.: Adherbal da C. Moreira, 644 – Jd. América","SP ",(011) 4039-5491,13.231-190,87294,56.642.960/0085-18,245.023.650.112,,,
+83,Lavras,083 - LAVRAS - Lavras,"Rua: Dr. Francisco Sales, 520 - Centro",MG,(035) 3821-5504,37.200-000,124536,56.642.960/0086-07,382.649.701.0570,,,
+84,Nova Odessa,084 - NOVAOD - Nova Odessa,"Av.: João Pessoa, 139 - Centro","SP ",(019) 3466-6114,13.380-017,123598,56.642.960/0087-80,482.027.106.115,,,
+85,Ribeirão Preto,085 - RIBPRE - Ribeirão Preto,"Rua: São Sebastião, 175 - Centro","SP ",(016) 3610-9700,14.015-040,135661,56.642.960/0088-60,582.480.229.115,RIBEIRÃO PRETO CT (https://www.notion.so/cb553dc6bd9d4c7d97a569175d28ace3?pvs=21),330,"R$ 80,62"
+86,Ibiúna,086 - IBIÚNA - Ibiúna,"Rua: Capitão Cardoso de Mello, 135 - Centro","SP ",(015) 3241-2787,18.150-000,88050,56.642.960/0089-41,345.024.694.114,,,
+87,S. Lourenço,087 - SLOURE - S. Lourenço,"Rua: Dr. Olavo Gomes Pinto, 50 - Centro",MG,(035) 3331-2774,37.470-000,88549,56.642.960/0090-85,637.649.701.0686,,,
+88,Barra do Piraí,088 - BPIRAÍ - Barra do Piraí,"Trav.: Carmine Martuscello, 30 - Centro",RJ,(024) 2443-2627,27.123-040,133602,56.642.960/0091-66,76.020.604,,,
+89,Tatuí,089 - TATUÍ - Tatuí,"Rua: 11 de agosto, 300 - Centro","SP ",(015) 3251-9207,18.270-001,20686,56.642.960/0092-47,687.067.561.116,,,
+90,Uberaba,090 - UBERAB - Uberaba,"Rua: Artur Machado, 80 - Centro",MG,(034) 3321-7655,38.010-020,94015,56.642.960/0093-28,701.649.701.0778,,,
+91,Resende,091 - RESEND - Resende,"Rua: Nilo Peçanha, 60 - Centro",RJ,(024) 3354-4214,27.542-210,103483,56.642.960/0094-09,86.316.838,RESENDE CT (https://www.notion.so/03342d64660a474cad38c141af3221fa?pvs=21),830,"R$ 170,60"
+92,S. Sebast. Paraíso,092 - SSPARA - S. Sebast. Paraíso,"Praça Com. José Honório, 47 - Centro",MG,(035) 3531-5909,37.950-000,130007,56.642.960/0096-70,647.649.701.0820,,,
+93,S. José Pinhais,093 - SJPIN - S. José Pinhais,"Rua: XV de Novembro, 1932 - Centro",PR,(041) 3383-0462,83.005-000,245910,56.642.960/0097-51,90.213.113-21,,,
+94,São J.  Boa Vista,094 - SJBVIS - São J.  Boa Vista,"Rua: Ademar de Barros, 133 - Centro","SP ",(019) 3631-8080,13.870-080,125937,56.642.960/0095-90,639.228.044.113,,,
+95,Cubatão,095 - CUBATA - Cubatão,"Av.: 9 de Abril, 2050 - Centro","SP ",(013) 3372-5180,11.510-001,20694,56.642.960/0098-32,283.101.265.113,,,
+96,Ubatuba,096 - UBATUB - Ubatuba,"Rua: Hans Staden, 497 - Centro","SP ",(012) 3833-1505,11.680-000,87297,56.642.960/0099-13,701.103.351.113,,,
+97,Campo Largo,097 - CLARGO - Campo Largo,"Rua: XV de Novembro, 2177 - Centro",PR,(041) 3292-3763,83.601-030,279055,56.642.960/0101-72,90.218.363-94,,,
+98,Queimados,098 - QUEIMA - Queimados,"Rua: Ver. Marinho H. Oliveira, 100 - Centro",RJ,(021) 2665-2278,26.325-282,124945,56.642.960/0102-53,86.393.573,,,
+99,Nova Iguaçu,099 - NIGUAÇ - Nova Iguaçu,"Trav.: Rosinda Martins, 16 - Centro",RJ,(021) 2668-3340,26.210-030,135656,56.642.960/0011-81,77.100.709,,,
+100,São José Rio Preto,100 - SJRPRE - São José Rio Preto,"Rua: General Glicério, 2718 - Centro","SP ",(017) 3235-9000,15.015-400,135707,56.642.960/0100-91,647.376.146.111,SÃO JOSE RIO PRETO CT (https://www.notion.so/15453ff80379426faef0ca108b951284?pvs=21),550,"R$ 131,00"
+101,Nilópolis,101 - NILOP - Nilópolis,"Estr.: Mirandela, 280 - Centro",RJ,(021) 2792-1649,26.520-335,135657,56.642.960/0006-14,76.192.545,,,
+102,Ponta Grossa,102 - PGROSS - Ponta Grossa,"Pça. Barão do Rio Branco, 41 - Centro",PR,(042) 3225-6079,84.010-710,326641,56.642.960/0103-34,90.228.037.59,,,
+103,Itaguaí,103 - ITAGUA - Itaguaí,"Rua: Dr. Curvelo CavalcantI, 500 - Centro",RJ,(021)  2688-9000,23.815-290,103270,56.642.960/0105-04,76.208.751,,,
+104,Colombo,104 - COLOMB - Colombo,"Estr.: Da Ribeira, 137 - Centro",PR,(041) 3663-5737,83.408-000,274262,56.642.960/0104-15,90.229.683.24,,,
+105,São Sebastião,105 - SSEBAS - São Sebastião,"Av.: Guarda Mor Lobo Viana, 305 - Centro","SP ",(012) 3892-2611,11.608-530,87298,56.642.960/0106-87,654.093.606.116,SÃO SEBASTIÃO (https://www.notion.so/e9700f0640b34fdf8a7a51f95b45e92a?pvs=21),686,"R$ 152,80"
+106,Três Rios,106 - TRESRI - Três Rios,"Rua: Duque de Caxias, 625 - Centro",RJ,(024) 2252-0375,25.802-120,110908,56.642.960/0107-68,75.474.245,,,
+107,Barra Mansa,107 - BMANSA - Barra Mansa,"Av.: Joaquim Leite, 221 - Centro",RJ,(024) 3322-8833,27.330-041,110909,56.642.960/0108-49,77.188.479,BARRA MANSA (https://www.notion.so/2099521f31eb4fb981b4c89c374a2c76?pvs=21),900,"R$ 170,60"
+108,Curitiba,108 - PRINHO - Curitiba,"Av.: Winston Churchill,2415 - Pinheirinho",PR,(041) 3248-8405,81.150-050,274405,56.642.960/0109-20,90.240.028.18,,,
+109,Valença,109 - VALENÇ - Valença,"Av.: Dr. Nilo Peçanha,118 - Centro",RJ,(024) 2453-6220,27.600-000,133698,56.642.960/0110-63,86.481.022,,,
+110,São Gonçalo,110 - SGONÇA - São Gonçalo,"Rua: Dr. Feliciano Sodré,61 - Centro",RJ,(021) 3706-2030,24.440-440,133056,56.642.960/0111-44,77.224.254,,,
+111,Santa Isabel,111 - SISABEL - Santa Isabel,"Av.: República, 383 - Centro","SP ",(011) 4656-7215,07.500-000,88597,56.642.960/0113-06,616.077.981.112,,,
+112,Arujá,112 - ARUJÁ - Arujá,"Av.: João Manoel, 220 - Centro","SP ",(011) 4655-2780,07.400-610,88538,56.642.960/0112-25,188.079.452.115,,,
+113,Rio Bonito,113 - RIOBON - Rio Bonito,"Rua: XV de Novembro, 27 - Centro",RJ,(021) 2734-5356,28.800-000,135669,56.642.960/0114-97,77.277.706,,,
+114,Curitiba,114 - VHAUER - Curitiba,"Av.: Mal. Floriano Peixoto, 6126 - Vila Hauer",PR,(041) 3376-5040,81.610-000,210343,56.642.960/0115-78,90.251.818.56,,,
+115,Bauru,115 - BAURU - Bauru,"Rua: Primeiro de Agosto, 556 - Centro","SP ",(014) 3212-3399,17.010-011,133603,56.642.960/0116-59,209.325.846.117,,,
+116,Belford Roxo,116 - BELROX - Belford Roxo,"Av.: Benjamin Pinto Dias, 1465 - Centro",RJ,(021) 3775-8139,26.130-000,113511,56.642.960/0117-30,77.357.688,,,
+117,Andradas,117 - ANDRAS - Andradas,"Rua: Cel. Oliveira, 181 - Centro",MG,(035) 3731-2733,37.795-000,103476,56.642.960/0122-05,026.649.701.0919,,,
+118,Mairiporã,118 - MAIRIP - Mairiporã,"Rua: Coronel Fagundes, 130 - Centro","SP ",(011) 4419-5688,07.600-000,88048,56.642.960/0119-00,433.092.060.114,,,
+119,Itaboraí,119 - ITABOR - Itaboraí,"Av.: 22 de Maio, 5381 - Centro",RJ,(021) 2635-3320,24.800-000,103479,56.642.960/0120-35,77.374.795,,,
+121,Teresópolis,121 - TERESO - Teresópolis,"Av.: Delfim Moreira, 175 – Várzea",RJ,(021) 2643-4717,25.953-233,133695,56.642.960/0121-16,77.396.144,,,
+122,Jaú,122 - JAU - Jaú,"Rua: Edgard Ferraz, 527 - Centro","SP ",(014) 3626-2550,17.201-440,133656,56.642.960/0123-88,401.162.718.111,JÁU  (https://www.notion.so/d59797f835154df78503546cfe51c1a6?pvs=21),256,"R$ 58,00"
+123,Guarujá,123 - VICARV - Guarujá,"Av.: Thiago Ferreira, 500 - Vicente de Carvalho","SP ",(013) 3342-6430,11.450-000,87301,56.642.960/0124-69,335.194.755.112,GUARUJA VIC. C (https://www.notion.so/41038d0a40c24c6ca514cb3374316b68?pvs=21),510,"R$ 139,20"
+124,Monte Mor,124 - MTEMOR - Monte Mor,"Av.: Jânio Quadros, 45 - Centro","SP ",(019) 3889-2292,13.190-000,20688,56.642.960/0125-40,465.067.804.119,,,
+125,São Vicente,125 - SVICEN - São Vicente,"Rua: Frei Gaspar, 655 - Centro","SP ",(013) 3466-7872,11.310-061,135709,56.642.960/0126-20,657.222.249.110,SÃO VICENTE CT (https://www.notion.so/8eaf1f8c876a46b68f76ac58d874b600?pvs=21),500,"R$ 122,70"
+126,Angra dos Reis,126 - ANGRAR - Angra dos Reis,"Av.: Raul Pompéia, 100 - Centro",RJ,(024) 3365-7007,23.900-000,133577,56.642.960/0129-73,77.598.510,ANGRA REIS CT (https://www.notion.so/f83e6ace236b4360b9d28a429b8d21c9?pvs=21),1030,"R$ 170,60"
+127,Mococa,127 - MOCOCA - Mococa,"Rua: XV de Novembro, 383 - Centro","SP ",(019) 3656-1222,13.730-020,109760,56.642.960/0128-92,453.129.020.111,,,
+128,Vinhedo,128 - VINHED - Vinhedo,"Rua: Santos Dumont, 240 - Centro","SP ",(019) 3826-3939,13.280-073,20693,56.642.960/0130-07,714.091.923.113,,,
+129,Poços de Caldas,129 - PCALDA - Poços de Caldas,"Rua: Assis Figueiredo, 977 - Centro",MG,(035) 3713-8031,37.701-000,130008,56.642.960/0131-98,518.649.701.1042,POÇOS DE CALDAS (https://www.notion.so/20cc9fc3742541538f1b8bddcd498da1?pvs=21),370,"R$ 81,20"
+130,Peruíbe,130 - PERUIB - Peruíbe,"Av.: Domingos da Costa Grimaldi, 41 - Centro","SP ",(013) 3453 - 5294,11.750-000,20692,56.642.960/0132-79,524.093.519.118,PERUIBE (https://www.notion.so/c4fe3e52571b4c49bf19c6894840fb62?pvs=21),700,"R$ 132,40"
+131,Piedade,131 - PIEDAD - Piedade,"Rua: Araújo Leite, 115 - Centro","SP ",(015) 3344-2980,18.170-000,127112,56.642.960/0133-50,526.081.990.111,,,
+132,Mesquita,132 - MESQUI - Mesquita,"Rua Mister Wartkins, 60 - Centro",RJ,(021) 2607-0943,26.553-090,126678,56.642.960/0134-30,77.686.690,,,
+133,Seropédica,133 - SEROP - Seropédica,"Av.: Ministro Fernando Costa, 619 - Fazenda Caxias",RJ,(021) 2682-1589,23.890-000,135711,56.642.960/0136-00,77.715.444,,,
+134,Caieiras,134 - CAIEIR - Caieiras,"Av. 14 de Dezembro, 21 – Região Central","SP ",(011) 4442-1515,07.700-170,89223,56.642.960/0135-11,239.077.780.118,,,
+135,Passos,135 - PASSOS - Passos,"Av.dos Expedicionários, 97 - Centro",MG,(035) 3526-1192,37.900-130,130004,56.642.960/0137-83,479.649.701.1192,,,
+136,Artur Nogueira,136 - ANOGUE - Artur Nogueira,"Rua 7 de Setembro, 1500 - Centro","SP ",(019) 3827-1667,13.160-000,133582,56.642.960/0140-89,187.082.566.113,,,
+137,São Paulo,137 - SPTREM - São Paulo,"R. Coronel Valfredo de Campos, 10 - Vila Mazzei","SP ",(011) 2204-7904,02.315-060,135730,56.642.960/0139-45,116.838.765.116,,,
+138,Porto Feliz,138 - PFELIZ - Porto Feliz,"Rua Altino Arantes, 130 - Centro","SP ",(015) 3261-4486,18.540-000,87810,56.642.960/0141-60,554.091.807.115,PORTO FELIZ (https://www.notion.so/58585c96b40a4d41a258da1d732d6319?pvs=21),200,"R$ 36,00"
+139,Paranaguá,139 - PARGUA - Paranaguá,"Travessa Correia de Freitas, 89 - Centro",PR,(041) 3424-8697,83.203-260,206207,56.642.960/0142-40,90.318.661-51,,,
+140,Praia Grande,140 - PRAGRA - Praia Grande,"Av. Presidente Costa e Silva, 395 - Boqueirão","SP ",(013) 3473-9800,11.701-000,20664,56.642.960/0138-64,558.187.872.114,,,
+141,São Paulo,141 - SPPERU - São Paulo,"Av. Dr. Sylvio de Campos, 380 - Vila Perus","SP ",(011) 3919-3569,05.204-000,88051,56.642.960/0144-02,116.915.022.113,,,
+142,Araucária,142 - ARAUCA - Araucária,"Rua Pres. Carlos Cavalcanti, 165 - Centro",PR,(041) 552-3584,83.702-470,272934,56.642.960/0143-21,90.321.560-77,,,
+143,Cabreúva,143 - CABJAC - Cabreúva,"Av. São Paulo, 626 - Jacaré","SP ",(011) 4529-6133,13.318-000,133611,56.642.960/0145-93,233.076.300.119,,,
+144,São Paulo,144 - SPSAP - São Paulo,"Av. Sapopemba, 8327 - Jd. Adutora","SP ",(011) 6702-8884,03.988-010,89310,56.642.960/0146-74,116.931.589.112,,,
+145,Guaxupé,145 - GUAXUP - Guaxupé,"Av. Conde Ribeiro do Valle, 400 - Centro",MG,(035) 3551-5955,37.800-000,130003,56.642.960/0147-55,287.649.701.1293,,,
+146,Cajamar,146 - CAJAMA - Cajamar,"Av. Vereador Joaquim Pereira Barbosa, 210 – Jordanésia","SP ",(011) 4447-2784,07.776-450,94017,56.642.960/0148-36,241.082.156.118,,,
+147,Taboão da Serra,147 - TABOAO - Taboão da Serra,"Rod. Regis Bittencourt, 51 - Centro","SP ",(011) 4771-2312,06.768-000,87739,56.642.960/0149-17,675.149.832.119,TABOÃO SERRA (https://www.notion.so/da5fb6fa9d8e48f4ab46b831204c986a?pvs=21),380,"R$ 93,40"
+148,São Paulo,148 - SPVCAR - São Paulo,"Av. Conselheiro Carrão, 2100 - Vila Carrão","SP ",(011) 6191-8828,03.403-002,88026,56.642.960/0150-50,117.047.761.116,VILA CARRÃO (https://www.notion.so/7d1de3542c2b4338a4e8f1b4ff360263?pvs=21),390,"R$ 87,70"
+149,Marília,149 - MARILA - Marília,"Rua São Luiz, 943 - Centro","SP ",(014) 3422-2592,17.500-002,128570,56.642.960/0127-01,438.225.077.114,MARILIA CT (https://www.notion.so/549574b261984000b730fd13185dae63?pvs=21),570,"R$ 127,00"
+150,São Paulo,150 - SPTUVI - São Paulo,"Av. Tucuruvi, 330 - Tucuruvi","SP ",(011) 6261-5961,02.304-000,118709,56.642.960/0153-01,117.121.711.119,TUCURUVI (https://www.notion.so/16e12400f546450299266cc00ab37a4b?pvs=21),380,"R$ 87,40"
+151,Porto Ferreira,151 - PFERRE - Porto Ferreira,"Praça Cornélio Procópio, 21 - Centro","SP ",(019) 3589-2100,13.660-000,89296,56.642.960/0154-84,555.115.737.118,,,
+152,São Paulo,152 - SPCTIR - São Paulo,"Av. Souza Ramos, 245 - Guaianazes","SP ",(011) 6285-2644,08.490-490,88528,56.642.960/0152-12,117.119.512.115,TIRADENTES (https://www.notion.so/fe898f57e63b418482ed9a73ae3fa2c4?pvs=21),520,"R$ 87,40"
+153,Ribeirão Pires,153 - RPIRES - Ribeirão Pires,"Rua João Domingues de Oliveira, 301 - Centro","SP ",(011) 4825-9258,09.400-250,88600,56.642.960/0155-65,581.136.515.110,,,
+154,Mongaguá,154 - MONGAG - Mongaguá,"Av. Dr. Getúlio Vargas, 255 - Centro","SP ",(013) 3507-4882,11.730-000,88604,56.642.960/0151-31,459.085.993.118,MONGAGUA (https://www.notion.so/d9ae8fae21a34cd08767b71ea5e1b068?pvs=21),600,"R$ 132,40"
+155,Cerquilho,155 - CERQUI - Cerquilho,"Rua da Paineira, 15 - Centro","SP ",(015) 3284-2902,18.520-000,89306,56.642.960/0156-46,265.092.764.115,"CERQUILHO (https://www.notion.so/80cacf450c9041dcaf91b28cdaa9f622?pvs=21), CERQUILHO (https://www.notion.so/ea349b2eb81649d9b6638a5b33e1569b?pvs=21)",210,"R$ 41,40"
+156,Itupeva,156 - ITUPVA - Itupeva,"Rua Jundiaí, 70 - Centro","SP ",(011) 4496-5213,13.295-000,118357,56.642.960/0157-27,388.076.650.115,ITUPEVA (https://www.notion.so/eceffdf1915342cca8fced47559d2555?pvs=21),260,"R$ 62,60"
+157,Matão,157 - MATAO - Matão,"Rua João Pessoa, 1085 - Centro","SP ",(016) 3394-3741,15.990-020,103286,56.642.960/0158-08,441.108.894.110,MATÃO  (https://www.notion.so/92994de0917b4f37921bab07b24480f1?pvs=21),270,"R$ 72,60"
+158,Monte Alto,158 - MONTAL - Monte Alto,"Rua Nhonhô do Livramento, 1954 - Centro","SP ",(016) 3242-8438,15.910-000,109764,56.642.960/0160-22,461.101.291.116,,,
+159,Jardinópolis,159 - JARDIN - Jardinópolis,"Praça N. Srª Aparecida, 80 - Centro","SP ",(016) 3663-6800,14.680-000,94013,56.642.960/0159-99,399.082.070.114,JARDINOPOLIS (https://www.notion.so/24e826fa0b054d5cbbf3cad26ef70e8d?pvs=21),370,"R$ 80,62"
+160,Cachoeira Paulista,160 - CACHOP - Cachoeira Paulista,"Rua Bernardino de Campos, 330 - Centro","SP ",(012) 3101-1290,12.630-000,88539,56.642.960/0161-03,235.080.786.116,CACHOEIRA PAULISTA (https://www.notion.so/7fa367091e6643a3bcab35acfb5e4d8b?pvs=21),690,"R$ 148,40"
+161,Casa Branca,161 - CASABR - Casa Branca,"Rua Cel. José Júlio, 700 - Centro","SP ",(019) 3671-6068,13.700-000,20697,56.642.960/0162-94,257.096.755.116,,,
+162,Pedreira,162 - PEDREI - Pedreira,"Rua XV de Novembro, 756 - Centro","SP ",(019) 3893-1440,13.920-000,87293,56.642.960/0164-56,519.101.855.111,,,
+163,Pederneiras,163 - PEDERN - Pederneiras,"Rua Nove de Julho, 125 - Centro","SP ",(014) 3284-5324,17.280-000,89298,56.642.960/0163-75,515.084.185.110,PEDERNEIRAS (https://www.notion.so/46e2fb975e2748c1af3c926e27236e2d?pvs=21),302,"R$ 83,60"
+164,Ouro Fino,164 - OUROFI - Ouro Fino,"Rua Major Sebastião Pires, 197 - Centro",MG,(035) 3441-5613,37.570-000,88037,56.642.960/0165-37,525.649.701.1393,,,
+165,Mogi das Cruzes,165 - MGCBRA - Mogi das Cruzes,"Av. Francisco Ferreira Lopes, 2615 - Vila Jundiaí","SP ",(011) 4735-4616,08.745-000,20689,56.642.960/0167-07,454.333.181.112,MOGI C. B. CUBAS (https://www.notion.so/ba31912912ce4dc2801b28efb1fdfe6f?pvs=21),462,"R$ 97,80"
+166,Vargem Gde. do Sul,166 - VARGSU - Vargem Gde. do Sul,"Pça. Capitão João Pinto Fontão,11 - Centro","SP ",(019) 3641-3607,13.880-000,87799,56.642.960/0166-18,711.116.289.119,,,
+167,Sta. Rita do Sapucaí,167 - SRITSA - Sta. Rita do Sapucaí,"Rua Silvestre Ferraz, 161 - Centro",MG,(035) 3471-5166,37.540-000,135717,56.642.960/0169-60,525.649.701.1474,SANTA RITA DO SAPUCAI (https://www.notion.so/2be09ccc51764755962963bb9ac9b55e?pvs=21),480,"R$ 114,00"
+168,Boituva,168 - BOITUV - Boituva,"Rua Cel. Eugênio Motta,  457 - Centro","SP ",(015) 3268-2866,18.550-000,133607,56.642.960/0168-80,219.096.627.115,BOITUVA (https://www.notion.so/4bfab5da65d74489a914a9b4da49db71?pvs=21),250,"R$ 41,40"
+169,Praia Grande,169 - CIDOCI - Praia Grande,"Av. Presidente Kennedy, 7358 - Cidade Ocian","SP ",(013) 3472-3517,11.705-000,20670,56.642.960/0170-02,558.221.690.111,PRAIA GDE OCIAN (https://www.notion.so/0ee78fd550c04341b898ef257a9dbf20?pvs=21),500,"R$ 122,70"
+170,Indaiatuba,170 - INDSOL - Indaiatuba,"Av. Francisco de Paula Leite, 1.144 - Santa Cruz","SP ",(019) 3875-8796,13.345-360,88534,56.642.960/0172-66,353.253.884.116,,,
+171,Salto de Pirapora,171 - SALPIR - Salto de Pirapora,"Pça. Elpídio Marcello, 300 - Centro","SP ",(015) 3292-4064,18.160-000,135722,56.642.960/0173-47,602.074.284.118,SALTO PIRAPORA (https://www.notion.so/57a406f4058849c89b3698e5586e16cf?pvs=21),332,"R$ 53,60"
+172,Laranjal Paulista,172 - LARANP - Laranjal Paulista,"Rua Dr. Oscar Vieira Sampaio, 123 - Centro","SP ",(015) 3283-2809,18.500-000,129815,56.642.960/0171-85,412.085.862.114,,,
+173,Aparecida,173 - APARNO - Aparecida,"Rua Barão do Rio Branco, 543 - Centro","SP ",(012) 3108-1506,12.570-000,88533,56.642.960/0174-28,174.153.682.117,,,
+174,São Joaquim da Barra,174 - SJBARR - São Joaquim da Barra,"Rua São Paulo, 1.270 - Centro","SP ",(016) 3811-2100,14.600-000,123627,56.642.960/0176-90,642.101.868.111,,,
+175,Novo Horizonte,175 - NHORIZ - Novo Horizonte,"Rua Trajano Machado, 653 - Centro","SP ",(017) 3542-3599,14.960-000,122743,56.642.960/0175-09,483.107.274.118,NOVO HORIZONTE (https://www.notion.so/3a5f095cfd2f4f07bb5a2587f42b985e?pvs=21),468,"R$ 89,60"
+176,Agudos,176 - AGUDOS - Agudos,"Rua 13 de Maio, 543 - Centro","SP ",(014) 3262-3560,17.120-009,89224,56.642.960/0178-51,156.083.659.117,,,
+177,Guariba,177 - GUARIB - Guariba,"Rua Sampaio Vidal, 445 - Centro","SP ",(016) 3251-2221,14.840-000,128561,56.642.960/0177-70,334.078.120.111,,,
+178,Bariri,178 - BARIRI - Bariri,"Av. XV de Novembro, 944 - Centro","SP ",(014) 3662-1757,17.250-000,120199,56.642.960/0179-32,201.097.506.119,,,
+179,Cambuí,179 - CAMBUÍ - Cambuí,"Av. Do Carmo, 541 - Centro",MG,(035) 3431-3260,37.600-000,133623,56.642.960/0182-38,525.649.701.1547,CAMBUI (https://www.notion.so/1da3f011ac63440bb18aba11dbf80765?pvs=21),470,"R$ 97,20"
+180,Itu,180 - ITUJOA - Itu,"Rua Joaquim Bernardes Borges,824 - Centro","SP ",(011) 4024-1764,13.300-025,264385,56.642.960/0181-57,387.203.295.117,ITU 180 (https://www.notion.so/dbd29344228343fab1d34b339bff00d5?pvs=21),240,"R$ 45,00"
+181,Vargem Gde Paulista,181 - VARGPA - Vargem Gde Paulista,"Av. Presidente Tancredo Neves,556 - Centro","SP ",(011) 4159-4917,06.730-000,166330,56.642.960/0180-76,720.074.238.118,,,
+182,Tremembé,182 - TREMBE - Tremembé,"R: 7 de Setembro, 521 centro","SP ",(012) 3674-1383,12.120-000,93988,56.642.960/0184-08,695.078.364.113,,,
+183,Itu,183 - ITUNOV - Itu,"R: Joaquim Delfino Da Silva, 11 – Jd. Europa","SP ",(011) 4019-2980,13.308-450,722665,56.642.960/0185-80,387.208.933.112,ITU 183 (https://www.notion.so/22dc2156c09746d9b96435a6cff498d4?pvs=21),260,"R$ 45,00"
+184,Socorro,184 - SOCORO - Socorro,"Rua 13 de Maio, 11 – Centro","SP ",(019) 3895-3188,13.960-000,135723,56.642.960/0187-42,668.120.025.115,SOCORRO (https://www.notion.so/8cb3d95595d942e28778df8f86afb9b5?pvs=21),280,"R$ 58,80"
+185,Descalvado,185 - DESCAL - Descalvado,"Av. Arthur Whitaker, 645 – Centro","SP ",(019) 3583-8845,13.690-000,113505,56.642.960/0186-61,285.099.541.112,DESCALVADO (https://www.notion.so/6dfb9a730081444c9b4ce3895af82329?pvs=21),200,"R$ 32,80"
+186,Cajati,186 - CAJATI - Cajati,"Rua Fernando Costa, 415 – Centro","SP ",(013) 3851-4660,11.950-000,133631,56.642.960/0189-04,740.008.773.113,CAJATI (https://www.notion.so/e6a8650d559947d8882b5d8f343c885c?pvs=21),770,"R$ 125,40"
+187,Batatais,187 - BATAT - Batatais,"Rua Santos Dumont, 64 – Centro","SP ",(016) 3662-5658,14.300-093,133605,56.642.960/0183-19,208.121.787.112,,,
+188,Embu Guaçu,188 - EMBUG - Embu Guaçu,"Rua Boa Vista, 180 – Centro","SP ",(011) 4661-4193,06.900-000,133642,56.642.960/0188-23,299.000.490.111,,,
+189,Arcos,189 - ARCOS - Arcos,"Rua Jarbas Ferreira Pires, 423 – Centro",MG,(037) 3351-4830,35.588-000,133581,56.642.960/0190-48,525.649.701.1628,,,
+190,Machado,190 - MACHAD - Machado,"Av. Barão do Rio Branco, 140 – Centro",MG,(035) 3295-8408,37.750-000,135653,56.642.960/0191-29,525.649.701.1709,,,
+191,São Pedro,191 - SPEDRO - São Pedro,"Rua Veríssimo Prado, 141 – Santa Cruz","SP ",(019) 3481-3696,13.520-000,165974,56.642.960/0192-00,651.024.240.119,,,
+192,Sorocaba,192 - SORIVU - Sorocaba,"Av. Itavuvu, 409 – Vila Olímpia","SP ",(015) 3233-6902,18.075-042,661119,56.642.960/0193-90,669.415.047.110,,,
+193,Igaraçu do Tietê,193 - IGTIET - Igaraçu do Tietê,"Rua Pereira Rezende, 757 – Centro","SP ",(014) 3644-4612,17.350-000,167303,56.642.960/0194-71,348.012.711.110,,,
+194,Taquarituba,194 - TAQTUB - Taquarituba,"Rua Dr. Ataliba Leonel, 708 – Centro","SP ",(014) 3762-3669,18.740-000,210996,56.642.960/0196-33,685.018.011.118,TAQUARITUBA (https://www.notion.so/6e47e56e6dfe42bcbb7298b3b311993f?pvs=21),504,"R$ 63,20"
+195,Sta Cruz Palmeiras,195 - SCPALM - Sta Cruz Palmeiras,"Rua XV de Novembro, 448 – Centro","SP "," (018) 3362-1936",13.650-000,129170,56.642.960/0195-52,611.017.563.110,,,
+196,Lagoa da Prata,196 - LAGPRA - Lagoa da Prata,"Av. Benedito Valadares, 897 – Centro",MG,(037) 3261-1670,35.590-000,260027,56.642.960/0197-14,525.649.701.1881,LAGOA PRATA (https://www.notion.so/333fa203deeb406699b74a4e37aff0f1?pvs=21),920,"R$ 73,00"
+197,Extrema,197 - EXTREM - Extrema,"Rua Governador Valadares, 177 – Centro",MG,(035) 3435-3433,37.640-000,200333,56.642.960/0198-03,525.649.701.1962,,,
+198,Sorocaba,198 - SOREDE - Sorocaba,"Avenida Independência, 4970 – Éden","SP ",(015) 3225-3394,18.103-000,196809,56.642.960/0200-54,669.695.226.112,SOROCABA EDEM (https://www.notion.so/34beda24c53b429f8a0de1b379d97e5a?pvs=21),310,"R$ 53,60"
+199,Pinhais,199 - PINHAI - Pinhais,"Avenida Iraí, 493 – Weissópolis",PR,(041) 3668-5168,83.321-000,231552,56.642.960/0199-86,90.597.686-94,,,
+200,Salto,200 - SALMAR - Salto,"Av. José Maria Marques de Oliveira, 759 – Vila Norma","SP ",(011) 4021-5261,13.327-300,87302,56.642.960/0201-35,600.070.608.114,SALTO BR (https://www.notion.so/d41c8538457c4ae295e797f9d1f2e74c?pvs=21),230,"R$ 45,00"
+201,Hortolândia,201 - HORTAM - Hortolândia,"R: Pedro Vilas Boas, 870 – Jd. Amanda II","SP ",(019) 3819-2758,13.188-172,192048,56.642.960/0202-16,748.067.937.110,HORTOLANDIA JD AMANADA (https://www.notion.so/b316a76f58b04b81ab743cf16592ef8a?pvs=21),170,"R$ 38,20"
+202,Ibaté,202 - IBATE - Ibaté,"Av. São João, 1118 – Centro","SP ",(016) 3343-5146,14.815-000,274260,56.642.960/0204-88,341.017.300.118,IBATÉ (https://www.notion.so/db05ec9904e145eeb68e1a1f57aa48cb?pvs=21),160,"R$ 32,80"
+203,Louveira,203 - LOUVEI - Louveira,"Av. Ricieri Chiquetto, 84 – Santo Antonio ","SP ",C,13.290-000,214290,56.642.960/0203-05,421.020.069.113,,,
+204,Ourinhos,204 - OURIN - Ourinhos,"Av. 9 de Julho, 76 – Centro","SP ",(014) 3322-1911,19.900-070,257111,56.642.960/0206-40,495.100.093.118,,,
+205,Rio das Pedras,205 - RIOPED - Rio das Pedras,"Rua Prudente de Moraes, 17 – Centro","SP ",(019) 3493-5097,13.390-000,282123,56.642.960/0205-69,588.019.203.112,,,
+206,Piracicaba,206 - PITERE - Piracicaba,"Rua Virgilio da Silva Fagundes, 300 – Santa Terezinha","SP ",(019) 3425-1954,13.411-083,251109,56.642.960/0207-20,535.312.129.111,,,
+207,Rio Claro,207 - CLACER - Rio Claro,"Rua 6, 199 – Jd. Chervesson","SP ",(019) 3524-4721,13.505-430,263096,56.642.960/0209-92,587.175.266.118,,,
+208,Pouso Alegre,208 - POUSOL - Pouso Alegre,"Rua Prefeito Olavo Gomes de Oliveira, 1991 – Jd. Olimpico",MG,(035) 3422-3117,37.550-000,221931,56.642.960/0210-26,525.649.701.2047,,,
+209,Pontal,209 - PONTAL - Pontal,"Rua Ananias Costa Freitas, 414 – Centro","SP ",(016) 3953-7078,14.180-000,213466,56.642.960/0208-01,550.023.904.115,,,
+210,Boa Esperança,210 - BOAESP - Boa Esperança,"Rua 02 de Novembro, 95 – Centro",MG,(035) 3851-3223,37.170-000,259791,56.642.960/0211-07,525.649.701.2128,,,
+211,Mairinque,211 - MAIRIN - Mairinque,"Rua Julio Prestes de Albuquerque, 51 – Centro","SP ",(011) 4708-7697,18.120-000,252670,56.642.960/0213-79,432.036.245.117,,,
+212,Itápolis,212 - ITAPOL - Itápolis,"Rua Barão do Rio Branco, 677 – Centro","SP ",(016) 3262-7330,14.900-000,284633,56.642.960/0214-50,375.046.135.116,,,
+213,Iperó,213 - IPERO - Iperó,"Av.: Dr. José Marques Penteado, 218 – Centro","SP ",(015) 3266-2407,18.560-000,342969,56.642.960/0215-30,358.015.012.116,,,
+214,Itatiaia,214 - ITATIA - Itatiaia,"Rua Prefeito Assumpção, 307 – Centro",RJ,(024) 3352-6356,27.580-000,238527,56.642.960/0216-11	,86.544.920,,,
+215,Cotia,215 - COTCAU - Cotia,"Av. Inocêncio Pires de Oliveira, 176 – Centro (C. do Alto)","SP ",(011) 4611-4104,06.725-105,166502,56.642.960/0217-00,278.204.548.112,,,
+216,Santa Gertrudes,216 - SGERT - Santa Gertrudes,"Avenida 01, 400 – Centro","SP ",(019) 3545-2872,13.510-000,359052,56.642.960/0218-83,615.016.000.114,,,
+217,Guaira,217 - GUAIRA - Guaira,"Avenida 11, 392 – Centro","SP ",(017) 3331-7033,14.790-000,392554,56.642.960/0219-64,322.042.056.111,,,
+218,Serrana,218 - SERANA - Serrana,"Rua Nossa Senhora das Dores, 402 – Centro","SP ",(016) 3489-3256,14.150-000,328131,56.642.960/0220-06,663.034.798.115,SERRANA (https://www.notion.so/afe9756a45fe402fbe6e4e108e5f3f16?pvs=21),340,"R$ 80,60"
+219,Suzano,219 - SUZBEN - Suzano,"Avenida Francisco Marengo, 2041 - Jd. Dona Benta","SP ",(011) 4752-4404,08.694-520,280778,56.642.960/0221-89,672.271.804.114,,,
+220,B. Jesus dos Perdões,220 - BJPERD - B. Jesus dos Perdões,"Avenida Santos Dumont, 615 – Centro","SP ",(011) 4012-4611,12.955-000,335702,56.642.960/0222-60,220.018.867.119,,,
+221,Brotas,221 - BROTAS - Brotas,"Av. Rodolpho Guimarães, 244 – Centro","SP ",(014) 3653-8684,17.380-000,278106,56.642.960/0223-40,228.023.790.110,,,
+222,Caraguatatuba,222 - CARAIN - Caraguatatuba,"Av. Rio Branco, 1615 – Indaia","SP ",(012) 3887-1518,11.665-600,331757,56.642.960/0224-21,254.153.614.111,,,
+223,Mogi Guaçu,223 - MGGALM - Mogi Guaçu,"Av. dos Trabalhadores, 3.550 – Jardim Almira","SP ",(019) 3861-1871,13.847-040,329492,56.642.960/0225-02,455.140.155.114,,,
+224,Sorocaba,224 - SORLIM - Sorocaba,"Av. Prof. Izoraida Marques Peres, 183 – Parque Campolim","SP ",(015) 3233-7650,18.048-110,307771,56.642.960/0226-93,669.872.076.117,,,
+225,Resende,225 - RESEAL - Resende,"Rua José Zolvino Coutinho, 157 – Nova Resende",RJ,(024) 3355-0502,27.521-760,378558,56.642.960/0228-55,86.896.176,,,
+226,Ituverava,226 - ITUVER - Ituverava,"Av. Dr. José Anibal Soares de Oliveira, 561 – Centro","SP ",(016) 3729-6866,14.500-000,404350,56.642.960/0227-74,389.046.499.112,,,
+227,Dois Córregos,227 - DOISCO - Dois Córregos,"Praça Arthur de Carvalho, 189 – Centro","SP ",(014) 3652-1757,17.300-000,402953,56.642.960/0229-36,289.029.431.118,,,
+228,São Vicente,228 - SVICON - São Vicente,"Av. Deputado Ulisses Guimarães, 1524 – Jd. Rio Branco","SP ",(013) 3566-0978,11.347-000,333520,56.642.960/0230-70,657.308.621.115,,,
+229,Mirassol,229 - MIRASS - Mirassol,"Praça Dr. Anísio José Moreira, 20-69 – Centro","SP ",(017) 3242-8779,15.130-065,463970,56.642.960/0231-50,451.067.579.114,,,
+230,Angra dos Reis,230 - ANGMAM - Angra dos Reis,"Rua Pres. Getulio Vargas, 1374 – Parque Mambucaba ",RJ,(024) 3362-4623,"23.954-095 ",363309,56.642.960/0232-31,87.023.494,ANGRA REIS BR (https://www.notion.so/6a48030bfc65494494f39653da44a302?pvs=21),1050,"R$ 170,60"
+231,Ibitinga,231 - IBITIN - Ibitinga,"Rua Treze de Maio, 789 – Centro","SP ",(016) 3341-3754,14.940-000,448807,56.642.960/0234-01,344.095.301.114,,,
+232,Engenheiro Coelho,232 - ENGECO - Engenheiro Coelho,"Rua Amadeu Jorge Teresani, 98 – Jd. Amalia","SP ",(019) 3857-2031,13.165-000,359049,56.642.960/0233-12,745.014.638.115,ENGENHEIRO COELHO (https://www.notion.so/77af979d804f451b87cc769a7afb8bb6?pvs=21),110,"R$ 39,00"
+233,São Carlos,233 - SCAPRA - São Carlos,"Av. Sallum, 787 – Vila Prado","SP ",(016) 3501-1104,13.574-040,342546,56.642.960/0235-84,637.370.980.111,,,
+234,Ponta Grossa,234 - PGRORA - Ponta Grossa,"Rua Nicolau Kluppel Neto, 517 – Chapada",PR,(042) 3236-3668,84.062-112,406778,56.642.960/0236-65,90.710.140-18,,,
+235,José Bonifácio,235 - JBONIF - José Bonifácio,"Praça Marechal Deodoro Fonseca, 187 – Centro","SP ",(017) 3245-5203,15.200-000,465200,56.642.960/0237-46,405.047.170.112,JOSÉ BONIFACIO (https://www.notion.so/055238e7e9824e05a605469646ab2e28?pvs=21),570,"R$ 149,80"
+236,Araçoiaba da Serra,236 - ARACSE - Araçoiaba da Serra,"Rua Professor Toledo, 22 – Centro","SP ",(015) 3281-5227,18.190-000,407913,56.642.960/0239-08,178.027.343.118,,,
+237,Penápolis,237 - PENAP - Penápolis,"Av. Luiz Osório, 747 – Centro","SP ",(018) 3652-5456,16.300-013,471223,56.642.960/0238-27,521.084.537.111,,,
+238,Bertioga,238 - BERTIO - Bertioga,"Av. Anchieta, 2138 – Centro","SP ",(013) 3317-1677,11.250-360,436692,56.642.960/0240-41,738.046.592.115,BERTIOGA (https://www.notion.so/e77a9eaf739444d58a00c5b77647c60f?pvs=21),570,"R$ 97,80"
+239,Promissão,239 - PROMIS - Promissão,"Rua Olivio Pereira Ramos, 125 – Centro","SP ",(014) 3541-2656,16.370-000,471447,56.642.960/0241-22,564.043.771.118,PROMISSÃO (https://www.notion.so/51b942df7cc0404c923a3bece8b39c70?pvs=21),620,"R$ 131,20"
+240,Conchal,240 - CONCHA - Conchal,"Rua Antonio Bueno de Moraes, 384 – Vila Aparecida","SP ",(019) 3866-2509,13.835-000,436108,56.642.960/0242-03,270.028.927.112,,,
+241,Américo Brasiliense,241 - ABRASI - Américo Brasiliense,"Av. Joaquim Afonso da Costa, 89 – Bela Vista","SP ",(016) 3396-8916,14.820-000,430517,56.642.960/0243-94,166.033.200.115,,,
+242,Jundiaí,242 - JUNDCE - Jundiaí,"Rua Barão de Jundiaí, 923 – Centro","SP ",(011) 4521-4198,13.201-012,402027,56.642.960/0245-56,407.577.557.111,,,
+243,Aguai,243 - AGUAI - Aguai,"Rua Major Braga, 560 – Centro","SP ",(019) 3652-1663,13.860-000,472129,56.642.960/0244-75,152.039.878.119,,,
+244,Mogi das Cruzes,244 - MGCCES - Mogi das Cruzes,"Av. Ricieri José Marcatto, 1105 – Vila Suissa","SP ",(011) 4761-6766,08.810-020,423787,56.642.960/0246-37,454.512.731.118,,,
+245,Jundiaí,245 - JUNDVA - Jundiaí,"Rua Vigário João José Rodrigues, 43 – Centro","SP ",(011) 4526-3248,13.201-001,461804,56.642.960/0212-98,407.329.386.110,JUNDIAI 245 (https://www.notion.so/b925fedbd69047bda1c5479a8c765690?pvs=21),250,"R$ 62,60"
+246,Lins,246 - LINS - Lins,"Rua Sete de Setembro, 161 – Centro","SP ",(014) 3523-9874,16.400-025,487347,56.642.960/0247-18,419.101.376.114,,,
+247,Sumaré,247 - SUMMAT - Sumaré,"Av. Emílio Bosco, 1101 – Jd. Morumbi (Nova Veneza)","SP ",(019) 3864-9262,13.180-000,450131,56.642.960/0249-80,671.332.614.114,SUMARÉ BR (https://www.notion.so/1216d36936784b34885f4508342e0fe1?pvs=21),190,"R$ 38,20"
+248,Americana,248 - AMEZAN - Americana,"Av. Cecília Meirelles, 170 – Jd. Nossa Sra. Aparecida","SP ",(019) 3469-4072,13.474-470,522427,56.642.960/0248-07,165.414.501.110,,,
+249,Angatuba,249 - ANGATU - Angatuba,"Rua Tenente José Marcos de Albuquerque, 190 – Centro","SP ",(015) 3355-0227,18.240-000,546233,56.642.960/0251-02,171.036.230.114,,,
+250,Piraju,250 - PIRAJU - Piraju,"Av. Dr. Domingos Theodoro Gallo, 178 – Centro","SP ",(014) 3351-1054,18.800-000,499956,56.642.960/0250-13,537.049.294.110,,,
+251,Marília,251 - MARINO - Marília,"Av. João Ramalho, 1910 – Núcleo Habitac. Nova Marília","SP ",(014) 3451-8408,17.522-363,513991,56.642.960/0252-85,438.406.434.115,,,
+252,Bandeirantes,252 - BANDEI - Bandeirantes,"Av. Bandeirantes, 1012 – Centro",PR,(043) 3145-4343,86.360-000,731985,56.642.960/0254-47,90.763.685-27,,,
+253,Olímpia,253 - OLIMPI - Olímpia,"Rua Nove de Julho, 1019 – Centro","SP ",(017) 3280-4520,15.400-000,518948,56.642.960/0255-28,487.076.790.112,,,
+254,Ibiporã,254 - IBIPOR - Ibiporã,"Av. Dom Pedro II, 115 – Centro",PR,(043) 3158-0100,86.200-000,731982,56.642.960/0256-09,90.765.882-17,,,
+255,Frutal,255 - FRUTAL - Frutal,"Rua Domiciano Ferreira, 468 – Centro",MG,(034) 3421-4052,38.200-000,513999,56.642.960/0253-66,525.649.701.2209,FRUTAL (https://www.notion.so/6197d509c08e4f22938b070925897c44?pvs=21),660,"R$ 131,60"
+256,Igarapava,256 - IGARAP - Igarapava,"Praça Rui Barbosa, 131 – Centro","SP ",(016) 3172-1107,14.540-000,719764,56.642.960/0257-90,349.040.719.117,IGARAPAVA (https://www.notion.so/010aace9b8074e9e966abfc70d104e8a?pvs=21),590,"R$ 137,40"
+257,S. Antônio da Platina,257 - SAPLAT - S. Antônio da Platina,"Rua Ruy Barbosa, 975 – Centro",PR,(043) 3141-6000,86.430-000,641009,56.642.960/0259-51,90.779.672-89,,,
+258,Araçariguama,258 - ARACAR - Araçariguama,"Av. Nicolau Ferreira de Souza, 40 – Centro","SP ",(011) 4136-4221,18.147-000,518012,56.642.960/0258-70,734.022.927.117,ARAÇARIGUAMA (https://www.notion.so/456a578eb78d49638ff01b98e76ba823?pvs=21),310,"R$ 60,20"
+259,Brodowski,259 - BRODOW - Brodowski,"Praça Martin Moreira, 16 – Centro","SP ",(016) 3664-0834,14.340-000,683467,56.642.960/0260-95,227.034.992.112,,,
+260,Piracicaba,260 - PIRALV - Piracicaba,"Av. Rio das Pedras, 2401 – Piracicamirim","SP ",(019) 3411-5193,13.425-380,578193,56.642.960/0261-76,535.700.704.110,,,
+261,Paraguaçu Paulista,261 - PARAGP - Paraguaçu Paulista,"Rua Sete de Setembro, 707 – Centro","SP "," (018) 3362-1936",19.700-000,695827,56.642.960/0262-57,503.073.607.114,,,
+262,Assis,262 - ASSIS - Assis,"Avenida Rui Barbosa, 525 - Centro","SP ",,18.800-002,787581,56.642.960.0297-87,189.292.318.119,,,
+263,Hortolândia,263 - HORTRO - Hortolândia,"Rua Antônio Fernandes Leite, 185 – Jardim Santa Izabel","SP "," (019) 3845-7748",13.185-230,610608,56.642.960/0266-80,748.277.133.116,,,
+264,Cravinhos,264 - CRAVIN - Cravinhos,"Rua XV de Novembro, 112 – Centro","SP "," (016) 3951-3624",14.140-000,636076,56.642.960/0267-61,279.049.021.114,,,
+265,Londrina,265 - LONDSA - Londrina,"Av. Saul Elkind, 1650 – Jardim Santa Cruz",PR,(043) 3356-1122,86.084-000,513696,56.642.960/0263-38,90.794.879-00,,,
+266,Mandaguari,266 - MANDRI - Mandaguari,"Av. Amazonas, 1126 – Centro",PR,(044) 3133-0003,86.975-000,665072,56.642.960/0265-08,90.796.316-01,,,
+267,Cornélio Procópio,267 - CORNEP - Cornélio Procópio,"Av. XV de Novembro, 633 – Centro",PR,(043) 3132-0100,86.300-000,665075,56.642.960/0268-42,90.799.214-48,,,
+268,Pitangueiras,268 - PITANG - Pitangueiras,"Rua Amazonas, 53 – Centro","SP "," (016) 3952-0937",14.750-000,641007,56.642.960/0272-29,543.042.697.114,,,
+269,Birigui,269 - BIRIGI - Birigui,"Rua Bento da Cruz, 432 – Centro","SP "," (018) 3634-8119",16.200-053,577527,56.642.960/0271-48,214.255.898.117,BIRIGUI (https://www.notion.so/20dce482a06546df8e51988f04e70870?pvs=21),740,"R$ 150,60"
+270,São Miguel Arcanjo,270 - SMIGAR - São Miguel Arcanjo,"Rua Dante Carraro, 666 – Centro","SP "," (015) 3379-9188",18.230-000,,56.642.960/0270-67,650.062.539.110,,,
+271,Jarinu,271 - JARINU - Jarinu,"Av. Ernesto de Moraes, 77 – Centro","SP "," (011) 4016-1003",13.240-000,692585,56.642.960/0269-23,400.033.950.119,,,
+272,Jaguariaíva,272 - JARIVA - Jaguariaíva,"Av. Antonio Cunha, 170 – Centro",PR," (043) 3535-1084",84200-000,641006,56.642.960/0273-00,90.815.681-19,,,
+273,Marialva,273 - MARIAL - Marialva,"Av. Cristovão Colombo, 1323 – Centro",PR,(044) 3232-7423,86.990-000,749448,56.642.960/0274-90,90.824.115-07,,,
+274,Garça,274 - GARCA - Garça,"Rua Sargento Wilson Abel de Oliveira, 200 – Ferraropolis","SP ",(014) 3471-2678,17.400-000,661134,56.642.960/0275-71,315.073.084.111,,,
+275,Holambra,275 - HOLAMB - Holambra,"Rua Rota dos Imigrantes, 249 – Centro","SP ",(019) 3802-1178,13.825-000,746985,56.642.960/0276-52,747.022.674.111,HOLAMBRA (https://www.notion.so/2033df85ea4649fb85189c20ac265a46?pvs=21),140,"R$ 55,80"
+276,São José dos Campos,276 - SJCSAN - São José dos Campos,"Av. Rui Barbosa, 2479 – Santana","SP ",(012) 3922-6234,12.212-000,641798,56.642.960/0277-33,125.049.732.112,,,
+277,Miguel Pereira,277 - MIGPER - Miguel Pereira,"Av. Roberto Silveira, nº 500 - Centro",RJ,(024) 2090-4826,26.900-000,713018,56.642.960/0292-72,12.176.902,MIGUEL PEREIRA (https://www.notion.so/025b969eb6484bad9da756ac20861864?pvs=21),1130,"R$ 170,60"
+278,Monte Sião,278 - MOSIAO - Monte Sião,"Rua Juscelino Kubitschek de Oliveira, 429 – Centro",MG,(035) 3465-2464,37.580-000,,56.642.960/0279-03,525.649.701.2381,,,
+279,Vassouras,279 - VASSOU - Vassouras,"Rua Academica Eliete Nunes Barbosa, 27 – Centro",RJ,,27.700-000,653840,56.642.960/0280-39,11.700.527,VASSOURAS (https://www.notion.so/353be1cb266f4dec83262d71da66878a?pvs=21),1030,"R$ 183,60"
+280,ILHABELA,280 - ILHABE - ILHABELA,"AV. Princesa Isabel, 1449 - Perequê","SP ",(012)3896-5731,11.630-000,777702,56.642.960/0281-10,352.060.327.115,,,
+281,"Tietê ","281 - TIETE - Tietê ","Rua Lara Campos, 382 - Centro","SP ",(015)3282-8889,18.530-000,690852,56.642.960/0282-09,692.070.530.118,TIETÊ (https://www.notion.so/f6f787f390974101b9982e30d852008e?pvs=21),260,"R$ 41,40"
+282,Bady Bassit,282 - BASSIT - Bady Bassit,"Praça Rio Preto, 160 - Centro","SP ",(017)3258-2858,15.115-000,695828,56.642.960/0284-62,195.037.938.118,,,
+283,"Taquaritinga ","283 - TAQTIN - Taquaritinga ","Rua Visconde do Rio Branco, 600 - Centro","SP ",(016)3252-6229,15.900-015,,56.642.960/0283-81,684.135.097.110,,,
+284,Rio Grande da Serra,284 - RGSERR - Rio Grande da Serra,"Avenida Dom Pedro I, 302 - Centro","SP ",(011)4826-8357,09.450-000,773520,56.642.960/0285-43,589.040.571.117,RIO GRANDE SERRA (https://www.notion.so/23f8b49a86d74b478ff360dd0b1e855f?pvs=21),520,"R$ 87,40"
+285,Biritiba - Mirim,285 - BIRMI - Biritiba - Mirim,"Rua Vinte e Cinco de Março, 100 - Jd. Pamela ","SP ",(011)4692-6417,08.940-000,777700,56.642.960/0288-96,215.040.005.115,,,
+286,Indaiatuba,286 - INDARI - Indaiatuba,"Avenida Ário Barnabé, 1441 - Jardim Morada do Sol","SP ",(019)3935-4005,13.348-500,722667,56.642.960/0286-24,353.443.460.110,,,
+287,Mangaratiba,287 - MANGA - Mangaratiba,"Estrada São João Marcos, 150 - Nova Mangaratiba ",RJ,(021)3789-0516,23.860-000,684574,56.642.960/0287-05,11.932.223,MANGARATIBA (https://www.notion.so/cec234335f114c94a5715efa011caaf3?pvs=21),1040,"R$ 170,60"
+288,Campinas,288 - CAMGER - Campinas,"Rua Horacio Leonardi,134 - Barao Geraldo","SP ",(019) 3249-0004,13.084-105,,56.642.960/0290-00,122.548.603.114,Modelo Geral (https://www.notion.so/9f08a604283e4186b3bdeb6611e28480?pvs=21),,
+289,Limeira,289 - LIMJOA - Limeira,"Aenida Piracicaba, 731 - Vila Sao Joao","SP ",(019) 3443-3139,13.480-743,783992,56.642.960/0291-91,417.662.185.117,LIMEIRA BR (https://www.notion.so/cf1a726382514c0cb092f0b7e80ff127?pvs=21),80,"R$ 16,40"
+290,,"290 -  - ",,,,,,,,,,
+291,Campinas,291 - CAMELI - Campinas,"Avenida Ruy Rodriguez, 711- Jd Novo Campos Eliseos","SP ",(019) 3223-2020,13.060-192,766111,56.642.960/0293-53,122.612.348.112,,,
+292,Maripora,292 - MAIRITP - Maripora,"Avenida Pietro Petri, 479 - Terra Preta","SP ",(011) 4486-1820,07.661-435,728247,56.642.960/0294-34,433.159.509.110,,,
+293,Atibaia,293 - ATICAE - Atibaia,"Avenida Professor Flavio Pires de Camargo, 819 - Caetetuba","SP ",(011) 4411-9040,12.951-750,744562,56.642.960/0295-15,190.365.218.119,,,
+294,Taubate,294 - TAUBIN - Taubate,"Avenida Indepedencia, 1130 - Indepedencia","SP ",(012) 3681-9040,12.031-001,754858,56.642.960/0298-68,688.63.223.110,TAUBATÉ BR (https://www.notion.so/76a4b6c29c2e43b1965c2f2e1b84ac1a?pvs=21),550,"R$ 122,40"
+295,Ribeirao Preto,295 - RUBIP - Ribeirao Preto,"Avenida Dom Pedro I, 911 - Ipiranga","SP ",(016) 3966-5551,14.055-620,770666,56.642.960/0296-04,797.792.784.119,,,
+296,Porto Real,296 - Porto Real - Porto Real,"Avenida Dom Pedro II, 1182 - Centro",RJ,,27.570-000,794052,56.642.960/0300-17,12.495.048,,,
+297,Araraquara,297 - 2ª Araraq - Araraquara,"Avenida Pedro Jacob Celli, 528 Jd. Floridiana","SP ",,14.810-216,,56.642.960/0299-49,181.548.712.112,ARARAQUARA BR (https://www.notion.so/03dc79e7dea04bb3b646cfd09ad11ed4?pvs=21),220,"R$ 32,80"
+298,Rancharia,298 - RANCHA - Rancharia,"Avenida Pedro de Toledo,325 - Centro","SP ",,19.600-000,,56.642.960/0305-21,570.098.050.110,,,
+299,Marica,299 - MARICA - Marica,"Av. Zumbi dos Palmares,112 - Barroco (Itaipuaçu)",RJ,,24.936-530,772555,56.642.960/0302-89,12.581.882,,,
+300,São Jose do Rio Preto,300 - SJRPMI - São Jose do Rio Preto,"Av. Mirassolandia,1717 - Solo Sagrado  - Mini Dist.Ind","SP ",,15.043-501,790190,56.642.960/0304-40,124.391.942.119,SÃO JOSE RIO PRETO BR (https://www.notion.so/d55a9cffd6f34008a6339587eae7137d?pvs=21),550,"R$ 131,00"
+301,Americana,301 - ALMEJAR - Americana,"Avenida de Cilo,1579 - Cidade Jardim I","SP ",,13.466-550,,56.642.960/0303-60,165.628.088.114,,,
+302,Paraty,302 - PARATY - Paraty,"Avenida Roberto Silveira,1572 - Portao de Ferro I",RJ,,23.970-000,753617,56.642.960/0301-06,12.495.056,,,
+303,Guararapes,303 - GUAPES - Guararapes,"Av. Marechal Floriano, 748 - Centro","SP ",,16.700-00,786896,56.642.960/0306-02,330.094.177.112,,,
+304,Morro Agudo,304 - MORAGU - Morro Agudo,"Rua Inacio Franco, 1066,  Centro","SP ",,14.640-000,,56.642.960/308-74,467.057.727.114,,,
+305,Osvaldo Cruz,305 - OSVCRU - Osvaldo Cruz,Av. Presideente Roosevelt n º 657 - Centro,"SP ",,17.700-000,786895,56.642.960/0307-93,494.102.516.113,OSVALDO CRUZ (https://www.notion.so/c1a21b14a4aa4d099b02703cdabb75d7?pvs=21),860,"R$ 167,80"
+306,GUAPIMIRIM,306 - GUAPMI - GUAPIMIRIM,"Rua Pulcherio Lopes, 15  Centro",RJ,,25.946-241,,56.642.960/0309-55,14.051.791,,,
+307,,"307 -  - ",,"SP ",,,,,,,,
+308,,"308 -  - ",,"SP ",,,,,,,,

@@ -1,0 +1,11 @@
+# 033 - POUSOA - Pouso Alegre
+
+L.: 33
+CIDADE: Pouso Alegre
+UF: MG
+CEP: 37.550-000
+COD OBRA: 130527
+CNPJ: 56.642.960/0036-30
+INSCR. ESTAD: 525.649.701.0060
+FONE: (035) 3422-1122
+ENDEREÇO: Praça Dr. Garcia Coutinho, 43 - Centro

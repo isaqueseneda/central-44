@@ -1,0 +1,11 @@
+# 059 - ITAPSE - Itapecerica Serra
+
+L.: 59
+CIDADE: Itapecerica Serra
+UF: SP 
+CEP: 06.850-001
+COD OBRA: 20681
+CNPJ: 56.642.960/0061-40
+INSCR. ESTAD: 370.046.191.113
+FONE: (011) 4666-6755
+ENDEREÇO: Rua: Major Telles, 122 - Centro

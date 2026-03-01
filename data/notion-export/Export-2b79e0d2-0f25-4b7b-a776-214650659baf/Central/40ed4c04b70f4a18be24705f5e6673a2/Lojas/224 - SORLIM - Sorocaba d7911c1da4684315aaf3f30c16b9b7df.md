@@ -1,0 +1,11 @@
+# 224 - SORLIM - Sorocaba
+
+L.: 224
+CIDADE: Sorocaba
+UF: SP 
+CEP: 18.048-110
+COD OBRA: 307771
+CNPJ: 56.642.960/0226-93
+INSCR. ESTAD: 669.872.076.117
+FONE: (015) 3233-7650
+ENDEREÇO: Av. Prof. Izoraida Marques Peres, 183 – Parque Campolim

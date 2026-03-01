@@ -1,0 +1,11 @@
+# 136 - ANOGUE - Artur Nogueira
+
+L.: 136
+CIDADE: Artur Nogueira
+UF: SP 
+CEP: 13.160-000
+COD OBRA: 133582
+CNPJ: 56.642.960/0140-89
+INSCR. ESTAD: 187.082.566.113
+FONE: (019) 3827-1667
+ENDEREÇO: Rua 7 de Setembro, 1500 - Centro

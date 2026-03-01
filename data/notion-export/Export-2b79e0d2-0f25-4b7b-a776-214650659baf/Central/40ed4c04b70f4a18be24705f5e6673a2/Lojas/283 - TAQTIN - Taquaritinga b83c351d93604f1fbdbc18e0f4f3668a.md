@@ -1,0 +1,10 @@
+# 283 - TAQTIN - Taquaritinga
+
+L.: 283
+CIDADE: Taquaritinga 
+UF: SP 
+CEP: 15.900-015
+CNPJ: 56.642.960/0283-81
+INSCR. ESTAD: 684.135.097.110
+FONE: (016)3252-6229
+ENDEREÇO: Rua Visconde do Rio Branco, 600 - Centro

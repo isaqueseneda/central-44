@@ -1,0 +1,11 @@
+# 022 - PIRASU - Pirassununga
+
+L.: 22
+CIDADE: Pirassununga
+UF: SP 
+CEP: 13.630-010
+COD OBRA: 88524
+CNPJ: 56.642.960/0025-87
+INSCR. ESTAD: 536.019.930.116
+FONE: (019) 3561-2910
+ENDEREÇO: Rua: José Bonifácio, 425 - Centro

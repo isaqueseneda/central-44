@@ -1,0 +1,28 @@
+# SÃO VICENTE CT
+
+OSu: OS-83
+Pedido : 7 de março de 2024 07:28
+Status: Pago
+🚩: ⭐
+Lojas: 125 - SVICEN - São Vicente (../Lojas/125%20-%20SVICEN%20-%20S%C3%A3o%20Vicente%207a2a77e7447e425581a55e9449fd8067.md)
+KM: 500
+Endereço: Rua: Frei Gaspar, 655 - Centro
+Telefone: (013) 3466-7872
+Veículo: Montana (../Frota/Montana%20efdda803607949cea8a0beea5223c539.md)
+Funcionários: Carlos B (../Funcion%C3%A1rios/Carlos%20B%20a57cb08d89bb4500a7360dd996cf2353.md), Itamar (../Funcion%C3%A1rios/Itamar%207a0a6c8ac32c4b48871b2ae3741539bf.md)
+Func. Count: 2
+RGs: 25.730.954-8,28.089.741-8
+Garantia: No
+Materiais: 1 RL FITA LED (../Materiais/1%20RL%20FITA%20LED%208ae65a299c714108863a30bdb7d67dc0.md), 1 FONTE 12V (../Materiais/1%20FONTE%2012V%20abc8ed7572b346ef8920bde2161c7e0d.md), 4 RJ 11 CRISTAL (../Materiais/4%20RJ%2011%20CRISTAL%20e820fe82b0cc4e7facd83065a9a1604e.md), 4 RJ 45 CRISTAL (../Materiais/4%20RJ%2045%20CRISTAL%20bc7b2bd536184c5ab25f3463f1478c9b.md)
+$ Mat Separados: 65.5,57.5,20.4,20.4
+Serviços: MANUTENÇÃO NO ALARME DE INTRUSÃO (../Servi%C3%A7os/MANUTEN%C3%87%C3%83O%20NO%20ALARME%20DE%20INTRUS%C3%83O%20562c335105314341b2c51042658876c2.md), MANUTENÇÃO NA GONDOLA DO PORTATIL (../Servi%C3%A7os/MANUTEN%C3%87%C3%83O%20NA%20GONDOLA%20DO%20PORTATIL%2064b6a242930e4969b48b7e6e15ce9182.md), MANUTENÇÃO NOS RAMAIS TELEFONICOS (../Servi%C3%A7os/MANUTEN%C3%87%C3%83O%20NOS%20RAMAIS%20TELEFONICOS%203d8465a5c36d403fbe779edcac43096c.md)
+$ HH: R$ 810,00
+Refeição: 46
+$ MDO: R$ 902,00
+$ Mat: R$ 163,80
+Desc. KM: 250
+Desc. P.: R$ 615,00
+Estac.: 10
+Pedágio: 122.7
+$ Transp: -R$ 107,30
+$ Total: R$ 958,50

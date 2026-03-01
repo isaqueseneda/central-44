@@ -1,0 +1,10 @@
+# 270 - SMIGAR - São Miguel Arcanjo
+
+L.: 270
+CIDADE: São Miguel Arcanjo
+UF: SP 
+CEP: 18.230-000
+CNPJ: 56.642.960/0270-67
+INSCR. ESTAD: 650.062.539.110
+FONE:  (015) 3379-9188
+ENDEREÇO: Rua Dante Carraro, 666 – Centro

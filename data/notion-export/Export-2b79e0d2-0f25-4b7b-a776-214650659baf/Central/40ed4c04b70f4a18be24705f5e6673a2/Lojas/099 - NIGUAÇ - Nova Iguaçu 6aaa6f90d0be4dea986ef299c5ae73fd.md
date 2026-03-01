@@ -1,0 +1,11 @@
+# 099 - NIGUAÇ - Nova Iguaçu
+
+L.: 99
+CIDADE: Nova Iguaçu
+UF: RJ
+CEP: 26.210-030
+COD OBRA: 135656
+CNPJ: 56.642.960/0011-81
+INSCR. ESTAD: 77.100.709
+FONE: (021) 2668-3340
+ENDEREÇO: Trav.: Rosinda Martins, 16 - Centro

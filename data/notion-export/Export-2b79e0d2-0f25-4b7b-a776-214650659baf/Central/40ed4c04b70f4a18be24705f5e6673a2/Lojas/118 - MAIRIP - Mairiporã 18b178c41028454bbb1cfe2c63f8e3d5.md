@@ -1,0 +1,11 @@
+# 118 - MAIRIP - Mairiporã
+
+L.: 118
+CIDADE: Mairiporã
+UF: SP 
+CEP: 07.600-000
+COD OBRA: 88048
+CNPJ: 56.642.960/0119-00
+INSCR. ESTAD: 433.092.060.114
+FONE: (011) 4419-5688
+ENDEREÇO: Rua: Coronel Fagundes, 130 - Centro

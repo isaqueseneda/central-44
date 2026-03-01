@@ -1,0 +1,18 @@
+# MOGI C. B. CUBAS
+
+OSu: OS-55
+Pedido : 7 de março de 2024 06:56
+Status: Não iniciada
+🚩: ⭐
+Lojas: 165 - MGCBRA - Mogi das Cruzes (../Lojas/165%20-%20MGCBRA%20-%20Mogi%20das%20Cruzes%200be431e0f90941f69bae1acaf85774f9.md)
+KM: 462
+Endereço: Av. Francisco Ferreira Lopes, 2615 - Vila Jundiaí
+Telefone: (011) 4735-4616
+Func. Count: 0
+Garantia: No
+Serviços: INSTALAR SENSOR NA BOCA DE LOBO (../Servi%C3%A7os/INSTALAR%20SENSOR%20NA%20BOCA%20DE%20LOBO%20cd31ded8b90c4612a16b068820107eca.md), SUBSTITUIR SENSORES IVP 5311 (../Servi%C3%A7os/SUBSTITUIR%20SENSORES%20IVP%205311%2001131b88b96f45ccbc95cde9f90b46ec.md), MANUTENÇÃO NO ALARME DE INTRUSÃO (../Servi%C3%A7os/MANUTEN%C3%87%C3%83O%20NO%20ALARME%20DE%20INTRUS%C3%83O%20562c335105314341b2c51042658876c2.md)
+$ HH: R$ 0,00
+$ MDO: R$ 0,00
+Pedágio: 97.8
+$ Transp: R$ 790,80
+$ Total: R$ 790,80

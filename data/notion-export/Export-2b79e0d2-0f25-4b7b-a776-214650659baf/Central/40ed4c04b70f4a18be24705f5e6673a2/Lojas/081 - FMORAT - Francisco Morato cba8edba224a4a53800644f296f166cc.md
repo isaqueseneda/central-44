@@ -1,0 +1,11 @@
+# 081 - FMORAT - Francisco Morato
+
+L.: 81
+CIDADE: Francisco Morato
+UF: SP 
+CEP: 07.902-000
+COD OBRA: 126237
+CNPJ: 56.642.960/0084-37
+INSCR. ESTAD: 311.026.203.119
+FONE: (011) 4488-3651
+ENDEREÇO: Rua: Demerson Gomes Romano, 42 - Centro

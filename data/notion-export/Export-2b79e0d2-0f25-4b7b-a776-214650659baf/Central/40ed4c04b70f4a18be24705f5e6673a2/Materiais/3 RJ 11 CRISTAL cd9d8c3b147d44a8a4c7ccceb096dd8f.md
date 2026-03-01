@@ -1,0 +1,4 @@
+# 3 RJ 11 CRISTAL
+
+Compra (unid, m, kg): R$ 3,50
+Venda (unid, m, kg): R$ 15,30

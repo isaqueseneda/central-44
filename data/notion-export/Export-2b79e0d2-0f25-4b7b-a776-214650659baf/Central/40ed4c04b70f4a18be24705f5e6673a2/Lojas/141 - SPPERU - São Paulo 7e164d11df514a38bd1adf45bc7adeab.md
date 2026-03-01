@@ -1,0 +1,11 @@
+# 141 - SPPERU - São Paulo
+
+L.: 141
+CIDADE: São Paulo
+UF: SP 
+CEP: 05.204-000
+COD OBRA: 88051
+CNPJ: 56.642.960/0144-02
+INSCR. ESTAD: 116.915.022.113
+FONE: (011) 3919-3569
+ENDEREÇO: Av. Dr. Sylvio de Campos, 380 - Vila Perus

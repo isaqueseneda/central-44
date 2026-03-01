@@ -1,0 +1,11 @@
+# 055 - FEVASC - Ferraz Vasconcelos
+
+L.: 55
+CIDADE: Ferraz Vasconcelos
+UF: SP 
+CEP: 08.500-020
+COD OBRA: 122365
+CNPJ: 56.642.960/0057-64
+INSCR. ESTAD: 305.034.253.110
+FONE: (011) 4674-0779
+ENDEREÇO: Av.: Brasil, 1300 - Centro

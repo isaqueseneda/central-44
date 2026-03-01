@@ -1,0 +1,11 @@
+# 252 - BANDEI - Bandeirantes
+
+L.: 252
+CIDADE: Bandeirantes
+UF: PR
+CEP: 86.360-000
+COD OBRA: 731985
+CNPJ: 56.642.960/0254-47
+INSCR. ESTAD: 90.763.685-27
+FONE: (043) 3145-4343
+ENDEREÇO: Av. Bandeirantes, 1012 – Centro

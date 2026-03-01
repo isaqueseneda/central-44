@@ -1,0 +1,11 @@
+# 285 - BIRMI - Biritiba - Mirim
+
+L.: 285
+CIDADE: Biritiba - Mirim
+UF: SP 
+CEP: 08.940-000
+COD OBRA: 777700
+CNPJ: 56.642.960/0288-96
+INSCR. ESTAD: 215.040.005.115
+FONE: (011)4692-6417
+ENDEREÇO: Rua Vinte e Cinco de Março, 100 - Jd. Pamela

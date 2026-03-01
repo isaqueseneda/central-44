@@ -1,0 +1,11 @@
+# 257 - SAPLAT - S. Antônio da Platina
+
+L.: 257
+CIDADE: S. Antônio da Platina
+UF: PR
+CEP: 86.430-000
+COD OBRA: 641009
+CNPJ: 56.642.960/0259-51
+INSCR. ESTAD: 90.779.672-89
+FONE: (043) 3141-6000
+ENDEREÇO: Rua Ruy Barbosa, 975 – Centro

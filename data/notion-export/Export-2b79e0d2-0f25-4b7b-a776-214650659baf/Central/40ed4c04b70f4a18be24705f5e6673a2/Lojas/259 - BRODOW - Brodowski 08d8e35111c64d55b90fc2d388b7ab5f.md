@@ -1,0 +1,11 @@
+# 259 - BRODOW - Brodowski
+
+L.: 259
+CIDADE: Brodowski
+UF: SP 
+CEP: 14.340-000
+COD OBRA: 683467
+CNPJ: 56.642.960/0260-95
+INSCR. ESTAD: 227.034.992.112
+FONE: (016) 3664-0834
+ENDEREÇO: Praça Martin Moreira, 16 – Centro

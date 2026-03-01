@@ -1,0 +1,11 @@
+# 236 - ARACSE - Araçoiaba da Serra
+
+L.: 236
+CIDADE: Araçoiaba da Serra
+UF: SP 
+CEP: 18.190-000
+COD OBRA: 407913
+CNPJ: 56.642.960/0239-08
+INSCR. ESTAD: 178.027.343.118
+FONE: (015) 3281-5227
+ENDEREÇO: Rua Professor Toledo, 22 – Centro

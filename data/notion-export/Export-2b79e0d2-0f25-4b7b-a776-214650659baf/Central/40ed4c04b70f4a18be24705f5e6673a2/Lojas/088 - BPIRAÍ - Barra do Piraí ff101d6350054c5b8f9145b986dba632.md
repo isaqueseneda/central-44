@@ -1,0 +1,11 @@
+# 088 - BPIRAÍ - Barra do Piraí
+
+L.: 88
+CIDADE: Barra do Piraí
+UF: RJ
+CEP: 27.123-040
+COD OBRA: 133602
+CNPJ: 56.642.960/0091-66
+INSCR. ESTAD: 76.020.604
+FONE: (024) 2443-2627
+ENDEREÇO: Trav.: Carmine Martuscello, 30 - Centro

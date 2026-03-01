@@ -1,0 +1,11 @@
+# 295 - RUBIP - Ribeirao Preto
+
+L.: 295
+CIDADE: Ribeirao Preto
+UF: SP 
+CEP: 14.055-620
+COD OBRA: 770666
+CNPJ: 56.642.960/0296-04
+INSCR. ESTAD: 797.792.784.119
+FONE: (016) 3966-5551
+ENDEREÇO: Avenida Dom Pedro I, 911 - Ipiranga

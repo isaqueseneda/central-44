@@ -1,0 +1,11 @@
+# 249 - ANGATU - Angatuba
+
+L.: 249
+CIDADE: Angatuba
+UF: SP 
+CEP: 18.240-000
+COD OBRA: 546233
+CNPJ: 56.642.960/0251-02
+INSCR. ESTAD: 171.036.230.114
+FONE: (015) 3355-0227
+ENDEREÇO: Rua Tenente José Marcos de Albuquerque, 190 – Centro

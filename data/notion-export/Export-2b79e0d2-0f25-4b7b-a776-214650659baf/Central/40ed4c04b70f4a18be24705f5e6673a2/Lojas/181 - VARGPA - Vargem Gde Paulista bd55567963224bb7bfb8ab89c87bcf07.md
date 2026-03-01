@@ -1,0 +1,11 @@
+# 181 - VARGPA - Vargem Gde Paulista
+
+L.: 181
+CIDADE: Vargem Gde Paulista
+UF: SP 
+CEP: 06.730-000
+COD OBRA: 166330
+CNPJ: 56.642.960/0180-76
+INSCR. ESTAD: 720.074.238.118
+FONE: (011) 4159-4917
+ENDEREÇO: Av. Presidente Tancredo Neves,556 - Centro

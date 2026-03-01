@@ -1,0 +1,11 @@
+# 223 - MGGALM - Mogi Guaçu
+
+L.: 223
+CIDADE: Mogi Guaçu
+UF: SP 
+CEP: 13.847-040
+COD OBRA: 329492
+CNPJ: 56.642.960/0225-02
+INSCR. ESTAD: 455.140.155.114
+FONE: (019) 3861-1871
+ENDEREÇO: Av. dos Trabalhadores, 3.550 – Jardim Almira

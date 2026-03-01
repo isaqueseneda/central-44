@@ -1,0 +1,11 @@
+# 261 - PARAGP - Paraguaçu Paulista
+
+L.: 261
+CIDADE: Paraguaçu Paulista
+UF: SP 
+CEP: 19.700-000
+COD OBRA: 695827
+CNPJ: 56.642.960/0262-57
+INSCR. ESTAD: 503.073.607.114
+FONE:  (018) 3362-1936
+ENDEREÇO: Rua Sete de Setembro, 707 – Centro

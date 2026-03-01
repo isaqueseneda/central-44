@@ -1,0 +1,11 @@
+# 267 - CORNEP - Cornélio Procópio
+
+L.: 267
+CIDADE: Cornélio Procópio
+UF: PR
+CEP: 86.300-000
+COD OBRA: 665075
+CNPJ: 56.642.960/0268-42
+INSCR. ESTAD: 90.799.214-48
+FONE: (043) 3132-0100
+ENDEREÇO: Av. XV de Novembro, 633 – Centro

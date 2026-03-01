@@ -1,0 +1,11 @@
+# 046 - BEBED - Bebedouro
+
+L.: 46
+CIDADE: Bebedouro
+UF: SP 
+CEP: 14.700-020
+COD OBRA: 166509
+CNPJ: 56.642.960/0049-54
+INSCR. ESTAD: 210.039.611.112
+FONE: (017) 3342-3644
+ENDEREÇO: Rua: Cel. João Manoel, 523 - Centro

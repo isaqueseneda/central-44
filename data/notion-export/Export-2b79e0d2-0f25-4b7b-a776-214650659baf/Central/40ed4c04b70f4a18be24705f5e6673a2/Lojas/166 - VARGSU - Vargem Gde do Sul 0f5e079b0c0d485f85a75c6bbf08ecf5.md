@@ -1,0 +1,11 @@
+# 166 - VARGSU - Vargem Gde. do Sul
+
+L.: 166
+CIDADE: Vargem Gde. do Sul
+UF: SP 
+CEP: 13.880-000
+COD OBRA: 87799
+CNPJ: 56.642.960/0166-18
+INSCR. ESTAD: 711.116.289.119
+FONE: (019) 3641-3607
+ENDEREÇO: Pça. Capitão João Pinto Fontão,11 - Centro

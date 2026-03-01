@@ -1,0 +1,11 @@
+# 087 - SLOURE - S. Lourenço
+
+L.: 87
+CIDADE: S. Lourenço
+UF: MG
+CEP: 37.470-000
+COD OBRA: 88549
+CNPJ: 56.642.960/0090-85
+INSCR. ESTAD: 637.649.701.0686
+FONE: (035) 3331-2774
+ENDEREÇO: Rua: Dr. Olavo Gomes Pinto, 50 - Centro

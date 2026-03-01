@@ -1,0 +1,10 @@
+# 296 - Porto Real - Porto Real
+
+L.: 296
+CIDADE: Porto Real
+UF: RJ
+CEP: 27.570-000
+COD OBRA: 794052
+CNPJ: 56.642.960/0300-17
+INSCR. ESTAD: 12.495.048
+ENDEREÇO: Avenida Dom Pedro II, 1182 - Centro

@@ -1,0 +1,14 @@
+# 147 - TABOAO - Taboão da Serra
+
+L.: 147
+CIDADE: Taboão da Serra
+UF: SP 
+CEP: 06.768-000
+COD OBRA: 87739
+CNPJ: 56.642.960/0149-17
+INSCR. ESTAD: 675.149.832.119
+FONE: (011) 4771-2312
+ENDEREÇO: Rod. Regis Bittencourt, 51 - Centro
+KM IDA E VOLTA: 380
+PEDÁGIO IDA E VOLTA: R$ 93,40
+Ordens de Serviço: TABOÃO SERRA (../Ordens%20de%20Servi%C3%A7o/TABO%C3%83O%20SERRA%20da5fb6fa9d8e48f4ab46b831204c986a.md)

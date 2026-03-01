@@ -1,0 +1,11 @@
+# 102 - PGROSS - Ponta Grossa
+
+L.: 102
+CIDADE: Ponta Grossa
+UF: PR
+CEP: 84.010-710
+COD OBRA: 326641
+CNPJ: 56.642.960/0103-34
+INSCR. ESTAD: 90.228.037.59
+FONE: (042) 3225-6079
+ENDEREÇO: Pça. Barão do Rio Branco, 41 - Centro

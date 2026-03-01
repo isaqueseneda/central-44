@@ -1,0 +1,11 @@
+# 019 - SCAET - São Caetano Sul
+
+L.: 19
+CIDADE: São Caetano Sul
+UF: SP 
+CEP: 09.510-100
+COD OBRA: 89300
+CNPJ: 56.642.960/0022-34
+INSCR. ESTAD: 636.088.367.110
+FONE: (011) 4221-7750
+ENDEREÇO: Rua: Manoel Coelho, 382 - Centro

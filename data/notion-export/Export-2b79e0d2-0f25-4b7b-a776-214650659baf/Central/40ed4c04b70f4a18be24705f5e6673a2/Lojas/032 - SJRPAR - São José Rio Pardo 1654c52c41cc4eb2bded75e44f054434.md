@@ -1,0 +1,11 @@
+# 032 - SJRPAR - São José Rio Pardo
+
+L.: 32
+CIDADE: São José Rio Pardo
+UF: SP 
+CEP: 13.720-000
+COD OBRA: 123572
+CNPJ: 56.642.960/0035-59
+INSCR. ESTAD: 646.022.829.116
+FONE: (019) 3608-3765
+ENDEREÇO: Rua: Marechal Deodoro, 319 - Centro

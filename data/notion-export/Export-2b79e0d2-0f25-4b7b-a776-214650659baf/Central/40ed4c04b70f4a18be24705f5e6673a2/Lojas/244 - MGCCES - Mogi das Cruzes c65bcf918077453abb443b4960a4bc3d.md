@@ -1,0 +1,11 @@
+# 244 - MGCCES - Mogi das Cruzes
+
+L.: 244
+CIDADE: Mogi das Cruzes
+UF: SP 
+CEP: 08.810-020
+COD OBRA: 423787
+CNPJ: 56.642.960/0246-37
+INSCR. ESTAD: 454.512.731.118
+FONE: (011) 4761-6766
+ENDEREÇO: Av. Ricieri José Marcatto, 1105 – Vila Suissa

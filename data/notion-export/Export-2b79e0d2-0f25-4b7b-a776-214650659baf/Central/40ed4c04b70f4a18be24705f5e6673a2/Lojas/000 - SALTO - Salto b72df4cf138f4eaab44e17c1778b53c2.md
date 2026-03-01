@@ -1,0 +1,14 @@
+# 000 - SALTO - Salto
+
+L.: 0
+CIDADE: Salto
+UF: SP 
+CEP: 13.320-000
+COD OBRA: 1513
+CNPJ: 56.642.960/0002-90
+INSCR. ESTAD: 600.003.895.113
+FONE: (011) 4029-4624
+ENDEREÇO: Rua: 9 de Julho, 400 - Centro
+KM IDA E VOLTA: 210
+PEDÁGIO IDA E VOLTA: R$ 45,00
+Ordens de Serviço: SALTO CT (../Ordens%20de%20Servi%C3%A7o/SALTO%20CT%200964a39e3f2c4cb9b1bd94208ef8d31e.md), Modelo Geral (../Ordens%20de%20Servi%C3%A7o/Modelo%20Geral%202d068adf5b8e80deba95f335fe849c8c.md)

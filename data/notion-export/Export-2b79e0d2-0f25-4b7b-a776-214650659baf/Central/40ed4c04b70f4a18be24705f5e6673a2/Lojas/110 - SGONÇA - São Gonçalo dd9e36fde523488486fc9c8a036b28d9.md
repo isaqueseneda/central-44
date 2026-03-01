@@ -1,0 +1,11 @@
+# 110 - SGONÇA - São Gonçalo
+
+L.: 110
+CIDADE: São Gonçalo
+UF: RJ
+CEP: 24.440-440
+COD OBRA: 133056
+CNPJ: 56.642.960/0111-44
+INSCR. ESTAD: 77.224.254
+FONE: (021) 3706-2030
+ENDEREÇO: Rua: Dr. Feliciano Sodré,61 - Centro

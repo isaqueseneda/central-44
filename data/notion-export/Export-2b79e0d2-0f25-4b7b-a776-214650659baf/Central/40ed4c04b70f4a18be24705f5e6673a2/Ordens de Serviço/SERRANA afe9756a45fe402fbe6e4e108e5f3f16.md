@@ -1,0 +1,18 @@
+# SERRANA
+
+OSu: OS-88
+Pedido : 7 de março de 2024 07:37
+Status: Não iniciada
+🚩: ⭐
+Lojas: 218 - SERANA - Serrana (../Lojas/218%20-%20SERANA%20-%20Serrana%20b17dc6f7baec482fb8bb5cdb4fc17a6d.md)
+KM: 340
+Endereço: Rua Nossa Senhora das Dores, 402 – Centro
+Telefone: (016) 3489-3256
+Func. Count: 0
+Garantia: No
+Serviços: MANUTENÇÃO NO ALARME DE INTRUSÃO (../Servi%C3%A7os/MANUTEN%C3%87%C3%83O%20NO%20ALARME%20DE%20INTRUS%C3%83O%20562c335105314341b2c51042658876c2.md), INSTALAR SENSOR NA BOCA DE LOBO (../Servi%C3%A7os/INSTALAR%20SENSOR%20NA%20BOCA%20DE%20LOBO%20cd31ded8b90c4612a16b068820107eca.md), SUBSTITUIR SENSORES IVP 5311 (../Servi%C3%A7os/SUBSTITUIR%20SENSORES%20IVP%205311%2001131b88b96f45ccbc95cde9f90b46ec.md)
+$ HH: R$ 0,00
+$ MDO: R$ 0,00
+Pedágio: 80.6
+$ Transp: R$ 590,60
+$ Total: R$ 590,60

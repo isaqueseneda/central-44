@@ -1,0 +1,13 @@
+# 300 - SJRPMI - São Jose do Rio Preto
+
+L.: 300
+CIDADE: São Jose do Rio Preto
+UF: SP 
+CEP: 15.043-501
+COD OBRA: 790190
+CNPJ: 56.642.960/0304-40
+INSCR. ESTAD: 124.391.942.119
+ENDEREÇO: Av. Mirassolandia,1717 - Solo Sagrado  - Mini Dist.Ind
+KM IDA E VOLTA: 550
+PEDÁGIO IDA E VOLTA: R$ 131,00
+Ordens de Serviço: SÃO JOSE RIO PRETO BR (../Ordens%20de%20Servi%C3%A7o/S%C3%83O%20JOSE%20RIO%20PRETO%20BR%20d55a9cffd6f34008a6339587eae7137d.md)

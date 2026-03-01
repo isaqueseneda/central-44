@@ -1,0 +1,11 @@
+# 034 - BRAGAN - Bragança Plta.
+
+L.: 34
+CIDADE: Bragança Plta.
+UF: SP 
+CEP: 12.900-301
+COD OBRA: 88056
+CNPJ: 56.642.960/0037-10
+INSCR. ESTAD: 225.067.555.116
+FONE: (011) 4034-0263
+ENDEREÇO: Av.: José Gomes da Rocha Leal, 2100 – Centro

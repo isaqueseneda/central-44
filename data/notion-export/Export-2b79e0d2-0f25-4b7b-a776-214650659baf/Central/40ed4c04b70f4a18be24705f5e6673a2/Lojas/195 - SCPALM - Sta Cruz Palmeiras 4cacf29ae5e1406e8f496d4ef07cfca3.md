@@ -1,0 +1,11 @@
+# 195 - SCPALM - Sta Cruz Palmeiras
+
+L.: 195
+CIDADE: Sta Cruz Palmeiras
+UF: SP 
+CEP: 13.650-000
+COD OBRA: 129170
+CNPJ: 56.642.960/0195-52
+INSCR. ESTAD: 611.017.563.110
+FONE:  (018) 3362-1936
+ENDEREÇO: Rua XV de Novembro, 448 – Centro

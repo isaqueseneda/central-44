@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "central44": {
+      "command": "npx",
+      "args": ["tsx", "mcp/src/index.ts"],
+      "env": {
+        "DATABASE_URL": "postgresql://isaqueseneda@localhost:5432/central44?schema=public"
+      }
+    }
+  }
+}

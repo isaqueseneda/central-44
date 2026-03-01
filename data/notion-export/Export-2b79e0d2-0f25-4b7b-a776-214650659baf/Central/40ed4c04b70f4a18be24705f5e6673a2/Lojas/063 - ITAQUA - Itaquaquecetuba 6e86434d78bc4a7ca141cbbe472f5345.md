@@ -1,0 +1,11 @@
+# 063 - ITAQUA - Itaquaquecetuba
+
+L.: 63
+CIDADE: Itaquaquecetuba
+UF: SP 
+CEP: 08.570-002
+COD OBRA: 133647
+CNPJ: 56.642.960/0066-55
+INSCR. ESTAD: 379.053.526.111
+FONE: (011) 4640-3403
+ENDEREÇO: Av.: Emancipação, 75 - Centro

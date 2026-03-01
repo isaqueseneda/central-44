@@ -1,0 +1,11 @@
+# 174 - SJBARR - São Joaquim da Barra
+
+L.: 174
+CIDADE: São Joaquim da Barra
+UF: SP 
+CEP: 14.600-000
+COD OBRA: 123627
+CNPJ: 56.642.960/0176-90
+INSCR. ESTAD: 642.101.868.111
+FONE: (016) 3811-2100
+ENDEREÇO: Rua São Paulo, 1.270 - Centro

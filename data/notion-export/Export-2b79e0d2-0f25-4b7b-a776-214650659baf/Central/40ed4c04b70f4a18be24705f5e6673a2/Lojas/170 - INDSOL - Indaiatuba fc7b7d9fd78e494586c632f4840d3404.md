@@ -1,0 +1,11 @@
+# 170 - INDSOL - Indaiatuba
+
+L.: 170
+CIDADE: Indaiatuba
+UF: SP 
+CEP: 13.345-360
+COD OBRA: 88534
+CNPJ: 56.642.960/0172-66
+INSCR. ESTAD: 353.253.884.116
+FONE: (019) 3875-8796
+ENDEREÇO: Av. Francisco de Paula Leite, 1.144 - Santa Cruz

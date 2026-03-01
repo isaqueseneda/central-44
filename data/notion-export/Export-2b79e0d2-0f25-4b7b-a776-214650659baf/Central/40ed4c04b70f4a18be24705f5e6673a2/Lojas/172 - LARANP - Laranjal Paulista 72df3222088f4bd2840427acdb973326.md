@@ -1,0 +1,11 @@
+# 172 - LARANP - Laranjal Paulista
+
+L.: 172
+CIDADE: Laranjal Paulista
+UF: SP 
+CEP: 18.500-000
+COD OBRA: 129815
+CNPJ: 56.642.960/0171-85
+INSCR. ESTAD: 412.085.862.114
+FONE: (015) 3283-2809
+ENDEREÇO: Rua Dr. Oscar Vieira Sampaio, 123 - Centro

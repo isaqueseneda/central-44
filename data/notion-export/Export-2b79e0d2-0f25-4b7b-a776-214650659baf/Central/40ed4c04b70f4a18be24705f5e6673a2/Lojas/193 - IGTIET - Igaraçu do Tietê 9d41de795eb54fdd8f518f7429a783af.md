@@ -1,0 +1,11 @@
+# 193 - IGTIET - Igaraçu do Tietê
+
+L.: 193
+CIDADE: Igaraçu do Tietê
+UF: SP 
+CEP: 17.350-000
+COD OBRA: 167303
+CNPJ: 56.642.960/0194-71
+INSCR. ESTAD: 348.012.711.110
+FONE: (014) 3644-4612
+ENDEREÇO: Rua Pereira Rezende, 757 – Centro

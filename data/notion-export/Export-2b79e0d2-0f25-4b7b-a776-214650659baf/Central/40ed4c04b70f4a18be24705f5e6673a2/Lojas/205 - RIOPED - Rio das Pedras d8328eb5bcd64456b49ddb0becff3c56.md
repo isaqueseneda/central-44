@@ -1,0 +1,11 @@
+# 205 - RIOPED - Rio das Pedras
+
+L.: 205
+CIDADE: Rio das Pedras
+UF: SP 
+CEP: 13.390-000
+COD OBRA: 282123
+CNPJ: 56.642.960/0205-69
+INSCR. ESTAD: 588.019.203.112
+FONE: (019) 3493-5097
+ENDEREÇO: Rua Prudente de Moraes, 17 – Centro

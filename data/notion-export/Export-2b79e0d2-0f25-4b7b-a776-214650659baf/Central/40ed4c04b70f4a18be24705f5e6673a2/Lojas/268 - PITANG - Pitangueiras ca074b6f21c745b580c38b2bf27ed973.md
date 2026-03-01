@@ -1,0 +1,11 @@
+# 268 - PITANG - Pitangueiras
+
+L.: 268
+CIDADE: Pitangueiras
+UF: SP 
+CEP: 14.750-000
+COD OBRA: 641007
+CNPJ: 56.642.960/0272-29
+INSCR. ESTAD: 543.042.697.114
+FONE:  (016) 3952-0937
+ENDEREÇO: Rua Amazonas, 53 – Centro

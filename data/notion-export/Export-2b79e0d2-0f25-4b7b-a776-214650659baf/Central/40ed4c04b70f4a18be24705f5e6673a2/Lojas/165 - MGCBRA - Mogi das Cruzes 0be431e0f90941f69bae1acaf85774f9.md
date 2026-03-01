@@ -1,0 +1,14 @@
+# 165 - MGCBRA - Mogi das Cruzes
+
+L.: 165
+CIDADE: Mogi das Cruzes
+UF: SP 
+CEP: 08.745-000
+COD OBRA: 20689
+CNPJ: 56.642.960/0167-07
+INSCR. ESTAD: 454.333.181.112
+FONE: (011) 4735-4616
+ENDEREÇO: Av. Francisco Ferreira Lopes, 2615 - Vila Jundiaí
+KM IDA E VOLTA: 462
+PEDÁGIO IDA E VOLTA: R$ 97,80
+Ordens de Serviço: MOGI C. B. CUBAS (../Ordens%20de%20Servi%C3%A7o/MOGI%20C%20B%20CUBAS%20ba31912912ce4dc2801b28efb1fdfe6f.md)

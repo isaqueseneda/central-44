@@ -1,0 +1,11 @@
+# 272 - JARIVA - Jaguariaíva
+
+L.: 272
+CIDADE: Jaguariaíva
+UF: PR
+CEP: 84200-000
+COD OBRA: 641006
+CNPJ: 56.642.960/0273-00
+INSCR. ESTAD: 90.815.681-19
+FONE:  (043) 3535-1084
+ENDEREÇO: Av. Antonio Cunha, 170 – Centro

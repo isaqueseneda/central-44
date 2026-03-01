@@ -1,0 +1,11 @@
+# 053 - SCRPAR - Sta. Cruz Rio Pardo
+
+L.: 53
+CIDADE: Sta. Cruz Rio Pardo
+UF: SP 
+CEP: 18.900-000
+COD OBRA: 118541
+CNPJ: 56.642.960/0056-83
+INSCR. ESTAD: 612.027.660.110
+FONE: (014) 3372-4400
+ENDEREÇO: Rua: Conselheiro Dantas, 610 - Centro

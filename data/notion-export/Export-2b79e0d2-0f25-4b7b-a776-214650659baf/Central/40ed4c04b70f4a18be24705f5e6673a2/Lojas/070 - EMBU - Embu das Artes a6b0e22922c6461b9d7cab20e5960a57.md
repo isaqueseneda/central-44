@@ -1,0 +1,11 @@
+# 070 - EMBU - Embu das Artes
+
+L.: 70
+CIDADE: Embu das Artes
+UF: SP 
+CEP: 06.803-440
+COD OBRA: 133638
+CNPJ: 56.642.960/0073-84
+INSCR. ESTAD: 298.053.207.111
+FONE: (011) 4781-1374
+ENDEREÇO: Rua: Belo Horizonte, 134 - Centro

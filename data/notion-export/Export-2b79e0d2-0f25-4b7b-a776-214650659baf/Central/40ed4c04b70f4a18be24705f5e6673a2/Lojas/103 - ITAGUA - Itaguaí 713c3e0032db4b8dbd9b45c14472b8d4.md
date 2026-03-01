@@ -1,0 +1,11 @@
+# 103 - ITAGUA - Itaguaí
+
+L.: 103
+CIDADE: Itaguaí
+UF: RJ
+CEP: 23.815-290
+COD OBRA: 103270
+CNPJ: 56.642.960/0105-04
+INSCR. ESTAD: 76.208.751
+FONE: (021)  2688-9000
+ENDEREÇO: Rua: Dr. Curvelo CavalcantI, 500 - Centro

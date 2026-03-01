@@ -1,0 +1,14 @@
+# 042 - MGGUAC - Mogi Guaçu
+
+L.: 42
+CIDADE: Mogi Guaçu
+UF: SP 
+CEP: 13.840-027
+COD OBRA: 89221
+CNPJ: 56.642.960/0046-01
+INSCR. ESTAD: 455.057.968.117
+FONE: (019) 3861-0432
+ENDEREÇO: Rua: Sgto. Aviador Osvaldo Fernandes, 147 – Centro
+KM IDA E VOLTA: 172
+PEDÁGIO IDA E VOLTA: R$ 39,00
+Ordens de Serviço: MOGI GUAÇU CT (../Ordens%20de%20Servi%C3%A7o/MOGI%20GUA%C3%87U%20CT%20227a2bb9a5ee41ab938c82fb49a3d594.md)

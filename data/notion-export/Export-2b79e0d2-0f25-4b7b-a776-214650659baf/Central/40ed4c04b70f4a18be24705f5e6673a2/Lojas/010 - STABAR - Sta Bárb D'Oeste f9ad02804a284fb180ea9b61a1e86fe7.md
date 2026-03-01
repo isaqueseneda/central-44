@@ -1,0 +1,11 @@
+# 010 - STABAR - Sta. Bárb. D'Oeste
+
+L.: 10
+CIDADE: Sta. Bárb. D'Oeste
+UF: SP 
+CEP: 13.450-026
+COD OBRA: 94777
+CNPJ: 56.642.960/0012-62
+INSCR. ESTAD: 606.023.860.110
+FONE: (019) 3455-1777
+ENDEREÇO: Rua: General Osório, 518 - Centro

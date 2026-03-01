@@ -1,0 +1,11 @@
+# 140 - PRAGRA - Praia Grande
+
+L.: 140
+CIDADE: Praia Grande
+UF: SP 
+CEP: 11.701-000
+COD OBRA: 20664
+CNPJ: 56.642.960/0138-64
+INSCR. ESTAD: 558.187.872.114
+FONE: (013) 3473-9800
+ENDEREÇO: Av. Presidente Costa e Silva, 395 - Boqueirão

@@ -1,0 +1,11 @@
+# 030 - GUARAT - Guaratinguetá
+
+L.: 30
+CIDADE: Guaratinguetá
+UF: SP 
+CEP: 12.500-210
+COD OBRA: 88030
+CNPJ: 56.642.960/0034-78
+INSCR. ESTAD: 332.043.890.110
+FONE: (012) 3132-1274
+ENDEREÇO: Rua: Marechal Deodoro, 166 - Centro
