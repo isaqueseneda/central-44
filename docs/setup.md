@@ -72,11 +72,11 @@ Agora abra o arquivo `.env` e preencha os valores. O Isaque vai te mandar as cha
 
 Os campos obrigatórios são:
 
-| Campo | O que é | De onde vem |
-|-------|---------|-------------|
-| `DATABASE_URL` | Conexão com o banco de dados na nuvem (Neon) | Isaque te manda |
-| `GOOGLE_MAPS_API_KEY` | Mapa das lojas | Google Cloud Console |
-| `OPENROUTER_API_KEY` | Assistente IA do sidebar | openrouter.ai |
+| Campo                 | O que é                                      | De onde vem          |
+| --------------------- | -------------------------------------------- | -------------------- |
+| `DATABASE_URL`        | Conexão com o banco de dados na nuvem (Neon) | Isaque te manda      |
+| `GOOGLE_MAPS_API_KEY` | Mapa das lojas                               | Google Cloud Console |
+| `OPENROUTER_API_KEY`  | Assistente IA do sidebar                     | openrouter.ai        |
 
 Os campos do Google OAuth (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`) só são necessários se quiser usar a importação do Google Drive.
 
@@ -147,27 +147,34 @@ O banco fica em: [console.neon.tech](https://console.neon.tech)
 ## Problemas comuns
 
 ### "command not found: node"
+
 Instale o Node.js: `brew install node`
 
 ### "command not found: git"
+
 Instale o Git: `brew install git`
 
 ### A página não carrega (localhost:3000)
+
 1. Verifique se o terminal está rodando `npm run dev`
 2. Espere uns 5-10 segundos depois de rodar o comando
 3. Tente `http://localhost:3000` no navegador
 
 ### "Error: Environment variable not found: DATABASE_URL"
+
 Você esqueceu de criar o arquivo `.env`. Veja o Passo 3.
 
 ### "Can't reach database server"
+
 1. Verifique se você tem internet
 2. Confira se o `DATABASE_URL` no `.env` está correto
 
 ### Erro de versão do Prisma
+
 Rode: `npx prisma generate`
 
 ### Porta 3000 ocupada
+
 ```bash
 lsof -ti :3000 | xargs kill -9
 npm run dev

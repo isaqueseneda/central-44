@@ -5,9 +5,9 @@
  * Run: npx tsx scripts/import-programacao-from-drive.ts
  */
 
-import pg from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
+import pg from "pg";
 
 const pool = new pg.Pool({
   connectionString:
@@ -87,13 +87,13 @@ function parseHours(val: string): number | null {
 }
 
 const dayOfWeekMap: Record<string, number> = {
-  "domingo": 0,
+  domingo: 0,
   "segunda-feira": 1,
   "terça-feira": 2,
   "quarta-feira": 3,
   "quinta-feira": 4,
   "sexta-feira": 5,
-  "sábado": 6,
+  sábado: 6,
 };
 
 function parseJobType(label: string): "MAN" | "REF" | "OBRA" | null {
@@ -141,7 +141,10 @@ function parseProgramacaoCSV(csvContent: string): ParsedDay[] {
     const dayOfWeek = dayOfWeekMap[dayName] ?? date.getDay();
 
     // Check if rest of line has FERIADO
-    const restOfLine = cols.slice(dataIdx + 5).join(" ").trim();
+    const restOfLine = cols
+      .slice(dataIdx + 5)
+      .join(" ")
+      .trim();
     const isHoliday = restOfLine.includes("FERIADO");
     const holidayName = isHoliday ? "Feriado" : null;
 
@@ -285,10 +288,7 @@ function parseProgramacaoCSV(csvContent: string): ParsedDay[] {
         const row = parseCSVRow(lines[i]);
         const firstCell = row[0]?.trim();
         // Stop when we hit the employee count row (starts with numbers) or MOTORISTA
-        if (
-          firstCell?.match(/^\d/) ||
-          firstCell?.toUpperCase() === "MOTORISTA"
-        )
+        if (firstCell?.match(/^\d/) || firstCell?.toUpperCase() === "MOTORISTA")
           break;
         if (row.every((c) => !c.trim())) {
           i++;
@@ -338,12 +338,7 @@ function parseProgramacaoCSV(csvContent: string): ParsedDay[] {
       const vehicleRow = parseCSVRow(lines[i]);
       for (const tc of teamColumns) {
         const plate = vehicleRow[tc.colIdx]?.trim();
-        if (
-          plate &&
-          plate !== "VEÍCULO" &&
-          plate !== "-" &&
-          plate.length > 3
-        ) {
+        if (plate && plate !== "VEÍCULO" && plate !== "-" && plate.length > 3) {
           vehicleByCol[tc.colIdx] = plate;
         }
       }
@@ -400,14 +395,14 @@ async function fetchFileContent(): Promise<string> {
   const auth = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
-    "http://localhost:3000/api/google/callback"
+    "http://localhost:3000/api/google/callback",
   );
   auth.setCredentials(tokens);
 
   const drive = google.drive({ version: "v3", auth });
   const exported = await drive.files.export(
     { fileId: PROGRAMACAO_FILE_ID, mimeType: "text/csv" },
-    { responseType: "text" }
+    { responseType: "text" },
   );
   return exported.data as string;
 }
@@ -461,7 +456,7 @@ async function main() {
   for (const v of vehicles) {
     vehicleByPlate.set(
       v.licensePlate.replace(/[\s-]/g, "").toUpperCase(),
-      v.id
+      v.id,
     );
   }
 
@@ -525,8 +520,8 @@ async function main() {
         Date.UTC(
           day.date.getFullYear(),
           day.date.getMonth(),
-          day.date.getDate()
-        )
+          day.date.getDate(),
+        ),
       );
 
       // Check if daily schedule already exists

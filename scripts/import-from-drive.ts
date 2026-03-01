@@ -5,9 +5,9 @@
  * Run: npx tsx scripts/import-from-drive.ts
  */
 
-import pg from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
+import pg from "pg";
 
 const pool = new pg.Pool({
   connectionString:
@@ -17,8 +17,7 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter } as any);
 
 // Google Drive file ID
-const EXECUTADOS_FILE_ID =
-  "1NznaEMkhx0ii7nRQREWqM1zqzrjUqex_m4MGFY87NfE";
+const EXECUTADOS_FILE_ID = "1NznaEMkhx0ii7nRQREWqM1zqzrjUqex_m4MGFY87NfE";
 
 interface OSRow {
   employee: string;
@@ -93,7 +92,7 @@ async function fetchFileContent(): Promise<string> {
   const auth = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
-    "http://localhost:3000/api/google/callback"
+    "http://localhost:3000/api/google/callback",
   );
   auth.setCredentials(tokens);
 
@@ -101,7 +100,7 @@ async function fetchFileContent(): Promise<string> {
 
   const exported = await drive.files.export(
     { fileId: EXECUTADOS_FILE_ID, mimeType: "text/csv" },
-    { responseType: "text" }
+    { responseType: "text" },
   );
 
   return exported.data as string;
@@ -170,7 +169,7 @@ async function main() {
   });
 
   console.log(
-    `📋 Existing: ${stores.length} stores, ${employees.length} employees, ${existingOS.length} OS`
+    `📋 Existing: ${stores.length} stores, ${employees.length} employees, ${existingOS.length} OS`,
   );
 
   // Build lookup maps
@@ -189,10 +188,7 @@ async function main() {
   }
 
   // Track the highest existing orderNumber
-  let maxOrderNum = Math.max(
-    ...existingOS.map((o) => o.orderNumber),
-    0
-  );
+  let maxOrderNum = Math.max(...existingOS.map((o) => o.orderNumber), 0);
 
   let created = 0;
   let skipped = 0;
@@ -204,7 +200,7 @@ async function main() {
       const alreadyExists = existingOS.some(
         (o) =>
           o.name.includes(row.osNumber) ||
-          o.name.toLowerCase() === row.city.toLowerCase()
+          o.name.toLowerCase() === row.city.toLowerCase(),
       );
 
       if (alreadyExists) {
@@ -229,7 +225,11 @@ async function main() {
       }
 
       // Find employee
-      const empName = row.employee.toLowerCase().split(/\s+/).slice(0, 2).join(" ");
+      const empName = row.employee
+        .toLowerCase()
+        .split(/\s+/)
+        .slice(0, 2)
+        .join(" ");
       let employee = employeeByName.get(empName);
       if (!employee) {
         // Try first name only
@@ -248,9 +248,17 @@ async function main() {
       // Determine OS type from services
       let type: "GENERAL" | "ALARM" | "LED" = "GENERAL";
       const servLower = row.servicesPerformed.toLowerCase();
-      if (servLower.includes("alarme") || servLower.includes("sensor") || servLower.includes("intrus")) {
+      if (
+        servLower.includes("alarme") ||
+        servLower.includes("sensor") ||
+        servLower.includes("intrus")
+      ) {
         type = "ALARM";
-      } else if (servLower.includes("led") || servLower.includes("luminaria") || servLower.includes("colmeia")) {
+      } else if (
+        servLower.includes("led") ||
+        servLower.includes("luminaria") ||
+        servLower.includes("colmeia")
+      ) {
         type = "LED";
       }
 

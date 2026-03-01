@@ -3,9 +3,9 @@
  * Run: npx tsx scripts/update-stores-from-drive.ts
  */
 
-import pg from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
+import pg from "pg";
 
 const pool = new pg.Pool({
   connectionString:
@@ -53,14 +53,14 @@ function parseStoreFromLine(
   numberStr: string,
   clientLine: string,
   addressLine: string,
-  distanceLine: string
+  distanceLine: string,
 ): StoreInfo | null {
   const num = parseInt(numberStr.trim());
   if (isNaN(num)) return null;
 
   // Parse city/state from "CLIENTE: LOJAS CEM S.A FILIAL: 003 - SÃO ROQUE - SP"
   const filialMatch = clientLine.match(
-    /FILIAL:\s*(\d+)\s*-\s*(.+?)\s*-\s*([A-Z]{2})/
+    /FILIAL:\s*(\d+)\s*-\s*(.+?)\s*-\s*([A-Z]{2})/,
   );
   if (!filialMatch) return null;
 
@@ -78,9 +78,7 @@ function parseStoreFromLine(
   if (distMatch) distance = parseInt(distMatch[1]) * 2; // Convert to round trip
 
   let phone: string | null = null;
-  const phoneMatch = distanceLine.match(
-    /FONE:\s*(\(\d+\)\s*[\d\-\s]+)/
-  );
+  const phoneMatch = distanceLine.match(/FONE:\s*(\(\d+\)\s*[\d\-\s]+)/);
   if (phoneMatch) phone = phoneMatch[1].trim();
 
   return { storeNumber: num, city, state, address, distance, phone };
@@ -96,14 +94,14 @@ async function fetchFileContent(): Promise<string> {
   const auth = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
-    "http://localhost:3000/api/google/callback"
+    "http://localhost:3000/api/google/callback",
   );
   auth.setCredentials(tokens);
 
   const drive = google.drive({ version: "v3", auth });
   const exported = await drive.files.export(
     { fileId: CABECALHO_FILE_ID, mimeType: "text/csv" },
-    { responseType: "text" }
+    { responseType: "text" },
   );
   return exported.data as string;
 }
@@ -129,7 +127,7 @@ async function main() {
         cols1[0],
         cols1[1],
         cols2[1] || "",
-        cols3[1] || ""
+        cols3[1] || "",
       );
       if (info) storeInfos.push(info);
     }
@@ -140,7 +138,7 @@ async function main() {
         cols1[3],
         cols1[4],
         cols2[4] || "",
-        cols3[4] || ""
+        cols3[4] || "",
       );
       if (info) storeInfos.push(info);
     }
@@ -171,7 +169,10 @@ async function main() {
     const updates: Record<string, any> = {};
 
     // Update distance if we don't have one
-    if (info.distance && (!existing.kmRoundTrip || existing.kmRoundTrip === 0)) {
+    if (
+      info.distance &&
+      (!existing.kmRoundTrip || existing.kmRoundTrip === 0)
+    ) {
       updates.kmRoundTrip = info.distance;
     }
 
@@ -181,10 +182,7 @@ async function main() {
     }
 
     // Update address if more complete
-    if (
-      info.address &&
-      info.address.length > (existing.address?.length || 0)
-    ) {
+    if (info.address && info.address.length > (existing.address?.length || 0)) {
       updates.address = info.address;
     }
 
