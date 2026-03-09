@@ -26,10 +26,9 @@ import {
   Undo,
   User,
   Wrench,
-  X,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, type DragEvent } from "react";
+import { useEffect, useRef, useState, type DragEvent } from "react";
 import { toast } from "sonner";
 
 // ──────────────────────────────────────────────
@@ -94,12 +93,25 @@ interface Props {
   teams: Team[];
   assignments: ScheduleAssignment[];
   serviceOrders: ServiceOrder[];
-  employees: { id: string; shortName: string }[];
+  employees: { id: string; shortName: string; rg?: string | null }[];
   vehicles: { id: string; name: string; licensePlate: string }[];
   scheduledOrderIds?: string[];
-  stores?: { id: string; sigla: string; city: string; code: string }[];
+  stores?: {
+    id: string;
+    sigla: string;
+    city: string;
+    code: string;
+    kmRoundTrip?: number | null;
+    tollRoundTrip?: number | null;
+    tollCostGoing?: number | null;
+    tollCostReturn?: number | null;
+    storeNumber?: number | null;
+    state?: string;
+    address?: string;
+  }[];
   serviceTypes?: { id: string; name: string }[];
-  materials?: { id: string; name: string }[];
+  materials?: { id: string; name: string; salePrice?: number | null }[];
+  settings?: Record<string, string>;
 }
 
 interface UndoAction {
@@ -181,9 +193,10 @@ function ServiceOrderCard({
 
   if (compact) {
     return (
-      <Card className="border-zinc-700/60 bg-zinc-800/80 hover:border-zinc-600 transition-colors overflow-hidden">
-        <div className="px-1 py-0.5 flex items-center gap-1 min-h-[16px] max-h-[16px]">
-          <span className="text-[9px] font-semibold text-zinc-100 truncate flex-1 leading-none">
+      <Card className="py-0 gap-0 overflow-hidden border-border/60 bg-linear-to-r from-muted/90 to-background/90 shadow-sm transition-all hover:-translate-y-0.5 hover:border-border hover:shadow-md">
+        <div className="px-1.5 py-0.5 flex items-center gap-1 min-h-5 max-h-5">
+          <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${config.bg}`} />
+          <span className="text-[10px] font-semibold text-foreground truncate flex-1 leading-none">
             {storeName}
           </span>
           <div className="flex items-center gap-0.5 shrink-0">
@@ -192,7 +205,7 @@ function ServiceOrderCard({
               <span className="text-[9px] text-yellow-400 leading-none">★</span>
             )}
             <span
-              className={`text-[8px] font-medium ${config.color} leading-none`}
+              className={`text-[9px] font-semibold ${config.color} leading-none`}
             >
               #{order.orderNumber}
             </span>
@@ -203,13 +216,13 @@ function ServiceOrderCard({
   }
 
   return (
-    <Card className="border-zinc-700/60 bg-zinc-800/80 hover:border-zinc-600 transition-colors overflow-hidden">
-      <CardContent className="p-2 space-y-1 max-w-full">
-        <div className="flex items-start justify-between gap-1">
-          <span className="text-xs font-semibold text-zinc-100 leading-tight truncate flex-1">
+    <Card className="py-0 gap-0 overflow-hidden border-border/60 bg-linear-to-br from-muted/95 to-background/95 shadow-sm transition-all hover:-translate-y-0.5 hover:border-border hover:shadow-md">
+      <CardContent className="!px-2.5 !py-1.5 space-y-1.5 max-w-full">
+        <div className="flex items-start justify-between gap-2">
+          <span className="text-sm font-semibold text-foreground leading-tight truncate flex-1">
             {storeName}
           </span>
-          <div className="flex items-center gap-0.5 shrink-0">
+          <div className="flex items-center gap-1 shrink-0">
             {order.isObra && (
               <span className="inline-flex items-center rounded px-1 py-0.5 text-[9px] font-bold bg-orange-600/20 text-orange-400">
                 OBRA
@@ -223,19 +236,22 @@ function ServiceOrderCard({
             </span>
           </div>
         </div>
-        {services.length > 0 && (
-          <div className="text-[10px] text-zinc-400 truncate">
-            {services.join(", ")}
-          </div>
-        )}
+        <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground min-h-3.5">
+          <Icon className={`h-2.5 w-2.5 shrink-0 ${config.color}`} />
+          <span className="truncate">
+            {services.length > 0 ? services.join(", ") : "Sem tipo de serviço"}
+          </span>
+        </div>
         <div className="flex items-center gap-1 flex-wrap">
           {order.priority > 0 && (
-            <span className="text-[10px] text-yellow-400">
+            <span className="text-[10px] text-yellow-400 bg-yellow-500/10 px-1.5 py-0.5 rounded">
               {"★".repeat(order.priority)}
             </span>
           )}
           {s && (
-            <Badge className={`${s.className} text-[9px] px-1 py-0 h-4`}>
+            <Badge
+              className={`${s.className} text-[9px] px-1.5 py-0 h-4 rounded-full`}
+            >
               {s.label}
             </Badge>
           )}
@@ -256,6 +272,7 @@ function DraggableCellCard({
   compact = false,
   spanDays = 1,
   osFormRefs,
+  osFormSettings,
 }: {
   assignment: ScheduleAssignment;
   onRemove: (assignmentId: string) => Promise<void>;
@@ -267,6 +284,7 @@ function DraggableCellCard({
   compact?: boolean;
   spanDays?: number;
   osFormRefs?: OSFormRefs;
+  osFormSettings?: Record<string, string>;
 }) {
   function handleDragStart(e: DragEvent<HTMLDivElement>) {
     e.dataTransfer.setData("serviceOrderId", assignment.serviceOrderId ?? "");
@@ -308,16 +326,33 @@ function DraggableCellCard({
     }
   }
 
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const wasDragged = useRef(false);
+
+  function handleMouseDown() {
+    wasDragged.current = false;
+  }
+
+  function handleCardClick() {
+    if (wasDragged.current) return;
+    if (osFormRefs) setDialogOpen(true);
+  }
+
+  // Mark as dragged once drag actually starts
+  function handleDragStartWrapped(e: DragEvent<HTMLDivElement>) {
+    wasDragged.current = true;
+    handleDragStart(e);
+  }
+
   if (!assignment.serviceOrder) return null;
 
   const orderData = assignment.serviceOrder;
   const typeConfig = {
-    GENERAL: { icon: Wrench, color: "text-blue-400", bg: "bg-blue-600/20" },
-    ALARM: { icon: Paintbrush, color: "text-amber-400", bg: "bg-amber-600/20" },
-    LED: { icon: HardHat, color: "text-emerald-400", bg: "bg-emerald-600/20" },
+    GENERAL: { bg: "bg-blue-600/20" },
+    ALARM: { bg: "bg-amber-600/20" },
+    LED: { bg: "bg-emerald-600/20" },
   };
   const config = typeConfig[orderData.type] || typeConfig.GENERAL;
-  const Icon = config.icon;
   const storeName =
     orderData.stores[0]?.store.sigla ??
     orderData.stores[0]?.store.city ??
@@ -339,116 +374,49 @@ function DraggableCellCard({
     serviceTypeIds:
       orderData.serviceTypes?.map((st) => st.serviceType.id) ?? [],
     teamIds: orderData.teamIds ?? [],
-    materialIds: [],
   };
 
   return (
     <div className="group/card relative w-full">
       <div
         draggable
-        onDragStart={handleDragStart}
+        onDragStart={handleDragStartWrapped}
         onDragEnd={handleDragEnd}
-        className="cursor-grab active:cursor-grabbing w-full"
+        onMouseDown={handleMouseDown}
+        onClick={handleCardClick}
+        className="cursor-pointer active:cursor-grabbing w-full"
       >
         <Card
-          className={`border-zinc-700/60 bg-zinc-800/80 hover:border-zinc-600 transition-colors w-full ${spanDays > 1 ? "border-sky-700/40 bg-zinc-800/90" : ""}`}
+          className={`w-full py-0 gap-0 border-border/60 bg-linear-to-r from-muted/90 to-background/90 shadow-sm transition-all hover:border-border hover:shadow-md ${spanDays > 1 ? "border-sky-700/40 from-sky-950/20 to-background/90" : ""}`}
         >
           {compact ? (
-            <div className="px-1 py-0.5 flex items-center gap-0.5 h-[18px] overflow-hidden">
-              <span className="text-[9px] font-semibold text-zinc-100 truncate leading-none min-w-0 flex-1">
+            <div className="px-1.5 py-0.5 flex items-center gap-1 overflow-hidden">
+              <span
+                className={`h-1.5 w-1.5 rounded-full shrink-0 ${config.bg}`}
+              />
+              <span className="text-xs font-semibold text-foreground truncate leading-none min-w-0 flex-1">
                 {storeName}
               </span>
               {spanDays > 1 && (
-                <span className="text-[8px] font-medium text-sky-400 leading-none shrink-0">
+                <span className="text-[10px] font-semibold text-sky-300 leading-none shrink-0 bg-sky-600/20 px-1 py-0.5 rounded">
                   {spanDays}d
                 </span>
               )}
-              <span
-                className={`text-[8px] font-medium ${config.color} leading-none shrink-0`}
-              >
-                #{orderData.orderNumber}
-              </span>
-              <div
-                className="flex items-center shrink-0"
-                draggable={false}
-                onDragStart={(e) => e.stopPropagation()}
-              >
-                {osFormRefs && (
-                  <OSFormDialog
-                    trigger={
-                      <button
-                        draggable={false}
-                        onClick={(e) => e.stopPropagation()}
-                        className="p-0.5 hover:bg-zinc-700/50 rounded"
-                        title="Editar OS"
-                      >
-                        <Pencil className="h-2.5 w-2.5 text-zinc-500 hover:text-zinc-200" />
-                      </button>
-                    }
-                    refs={osFormRefs}
-                    initialData={initialData}
-                  />
-                )}
-                <button
-                  draggable={false}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onRemove(assignment.id);
-                  }}
-                  className="p-0.5 hover:bg-red-600/20 rounded"
-                  title="Remover"
-                >
-                  <X className="h-2.5 w-2.5 text-red-400 hover:text-red-300" />
-                </button>
-              </div>
             </div>
           ) : (
-            <CardContent className="p-1.5 overflow-hidden">
-              <div className="flex items-center gap-1 overflow-hidden">
-                <span className="text-[11px] font-semibold text-zinc-100 truncate min-w-0 flex-1">
+            <CardContent className="!px-2 !py-1.5 overflow-hidden">
+              <div className="flex items-center gap-1.5 overflow-hidden">
+                <span
+                  className={`h-2 w-2 rounded-full shrink-0 ${config.bg}`}
+                />
+                <span className="text-sm font-semibold text-foreground truncate min-w-0 flex-1">
                   {storeName}
                 </span>
-                <div
-                  className="flex items-center gap-0.5 shrink-0"
-                  draggable={false}
-                  onDragStart={(e) => e.stopPropagation()}
-                >
-                  {spanDays > 1 && (
-                    <span className="text-[9px] font-medium text-sky-400 px-1 bg-sky-600/20 rounded">
-                      {spanDays}d
-                    </span>
-                  )}
-                  <span className={`text-[9px] font-medium ${config.color}`}>
-                    #{orderData.orderNumber}
+                {spanDays > 1 && (
+                  <span className="text-[9px] font-semibold text-sky-300 px-1.5 bg-sky-600/20 rounded-full shrink-0">
+                    {spanDays}d
                   </span>
-                  {osFormRefs && (
-                    <OSFormDialog
-                      trigger={
-                        <button
-                          draggable={false}
-                          onClick={(e) => e.stopPropagation()}
-                          className="p-0.5 hover:bg-zinc-700/50 rounded"
-                          title="Editar OS"
-                        >
-                          <Pencil className="h-3 w-3 text-zinc-500 hover:text-zinc-200" />
-                        </button>
-                      }
-                      refs={osFormRefs}
-                      initialData={initialData}
-                    />
-                  )}
-                  <button
-                    draggable={false}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onRemove(assignment.id);
-                    }}
-                    className="p-0.5 hover:bg-red-600/20 rounded"
-                    title="Remover"
-                  >
-                    <X className="h-3 w-3 text-red-400 hover:text-red-300" />
-                  </button>
-                </div>
+                )}
               </div>
             </CardContent>
           )}
@@ -473,6 +441,17 @@ function DraggableCellCard({
           <ChevronLeft className="h-3 w-3 text-red-400" />
         </button>
       )}
+
+      {/* OS Form Dialog (controlled externally via click) */}
+      {osFormRefs && (
+        <OSFormDialog
+          refs={osFormRefs}
+          settings={osFormSettings}
+          initialData={initialData}
+          externalOpen={dialogOpen}
+          onExternalOpenChange={setDialogOpen}
+        />
+      )}
     </div>
   );
 }
@@ -490,6 +469,7 @@ function ScheduleCell({
   onResize,
   compactView = false,
   osFormRefs,
+  osFormSettings,
 }: {
   team: Team;
   date: Date;
@@ -508,6 +488,7 @@ function ScheduleCell({
   ) => Promise<void>;
   compactView?: boolean;
   osFormRefs?: OSFormRefs;
+  osFormSettings?: Record<string, string>;
 }) {
   const [isDragOver, setIsDragOver] = useState(false);
   const dateStr = date.toISOString().slice(0, 10);
@@ -539,9 +520,9 @@ function ScheduleCell({
 
   return (
     <div
-      className={`schedule-cell relative border border-zinc-800 rounded transition-colors overflow-hidden h-full ${
-        compactView ? "min-h-8 p-0.5" : "min-h-20 p-1"
-      } ${isDragOver ? "ring-2 ring-sky-400 bg-sky-400/10" : "bg-zinc-900/50"}`}
+      className={`schedule-cell relative border border-border rounded transition-colors overflow-hidden h-full ${
+        compactView ? "min-h-8 p-0.5" : "min-h-12 p-1"
+      } ${isDragOver ? "ring-2 ring-sky-400 bg-sky-400/10" : "bg-muted/50"}`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
@@ -562,10 +543,43 @@ function ScheduleCell({
                 compact={compactView}
                 spanDays={spanDays}
                 osFormRefs={osFormRefs}
+                osFormSettings={osFormSettings}
               />
             );
           })}
       </div>
+      {/* Create OS button at bottom of cell */}
+      {osFormRefs && !isDragOver && (
+        <div
+          className={`flex justify-center ${compactView ? "pt-0.5 pb-0.5" : "pt-1 pb-1"}`}
+        >
+          <OSFormDialog
+            trigger={
+              <button
+                className={`flex items-center justify-center gap-0.5 rounded transition-colors w-full ${
+                  compactView
+                    ? "py-0.5 hover:bg-muted/80 text-muted-foreground hover:text-muted-foreground"
+                    : "py-1 hover:bg-muted/80 text-muted-foreground hover:text-muted-foreground"
+                }`}
+                title="Criar OS para esta equipe/data"
+              >
+                <Plus
+                  className={`${compactView ? "h-2.5 w-2.5" : "h-3 w-3"}`}
+                />
+                <span
+                  className={`font-medium ${compactView ? "text-[9px]" : "text-[10px]"}`}
+                >
+                  OS
+                </span>
+              </button>
+            }
+            refs={osFormRefs}
+            settings={osFormSettings}
+            defaultDate={dateStr}
+            defaultTeamIds={[team.id]}
+          />
+        </div>
+      )}
       {isDragOver && (
         <div
           className={`flex items-center justify-center ${
@@ -603,10 +617,11 @@ export function ScheduleViewNew({
   stores = [],
   serviceTypes = [],
   materials = [],
+  settings,
 }: Props) {
   const router = useRouter();
   const [currentWeek, setCurrentWeek] = useState(new Date());
-  const [compactView, setCompactView] = useState(true);
+  const [compactView, setCompactView] = useState(false);
   const [undoStack, setUndoStack] = useState<UndoAction[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -618,10 +633,17 @@ export function ScheduleViewNew({
 
   const osFormRefsShared: OSFormRefs = {
     stores: stores.map((s) => ({
-      ...s,
-      kmRoundTrip: null,
-      tollRoundTrip: null,
-      storeNumber: null,
+      id: s.id,
+      sigla: s.sigla,
+      city: s.city,
+      code: s.code,
+      kmRoundTrip: s.kmRoundTrip ?? null,
+      tollRoundTrip: s.tollRoundTrip ?? null,
+      tollCostGoing: s.tollCostGoing ?? null,
+      tollCostReturn: s.tollCostReturn ?? null,
+      storeNumber: s.storeNumber ?? null,
+      state: s.state,
+      address: s.address,
     })),
     employees,
     vehicles,
@@ -927,7 +949,7 @@ export function ScheduleViewNew({
             <span className="text-xs">Desfazer ({undoStack.length})</span>
           </Button>
         </div>
-        <h2 className="text-lg font-semibold text-zinc-100">{weekLabel}</h2>
+        <h2 className="text-lg font-semibold text-foreground">{weekLabel}</h2>
         <div className="flex items-center gap-2">
           <OSFormDialog
             trigger={
@@ -940,6 +962,7 @@ export function ScheduleViewNew({
               </Button>
             }
             refs={osFormRefsShared}
+            settings={settings}
           />
           <Button
             variant="outline"
@@ -970,7 +993,7 @@ export function ScheduleViewNew({
             className={`grid grid-cols-8 ${compactView ? "gap-0.5 mb-0.5" : "gap-2 mb-2"}`}
           >
             <div
-              className={`text-xs font-medium text-zinc-500 ${compactView ? "p-0.5" : "p-2"}`}
+              className={`text-xs font-medium text-muted-foreground ${compactView ? "p-0.5" : "p-2"}`}
             >
               Equipe
             </div>
@@ -985,12 +1008,12 @@ export function ScheduleViewNew({
                   }`}
                 >
                   <div
-                    className={`text-xs font-medium ${isWeekend ? "text-zinc-600" : "text-zinc-400"}`}
+                    className={`text-sm font-medium ${isWeekend ? "text-muted-foreground" : "text-muted-foreground"}`}
                   >
                     {dayLabels[(idx + 1) % 7]}
                   </div>
                   <div
-                    className={`text-xs ${isWeekend ? "text-zinc-600" : "text-zinc-500"}`}
+                    className={`text-sm ${isWeekend ? "text-muted-foreground" : "text-muted-foreground"}`}
                   >
                     {date.getDate()}/{date.getMonth() + 1}
                   </div>
@@ -1029,11 +1052,11 @@ export function ScheduleViewNew({
                   {/* Team Info Column */}
                   <div
                     style={{ gridColumn: 1, gridRow: 1 }}
-                    className={`flex flex-col justify-center border border-zinc-800 rounded bg-zinc-900/50 ${compactView ? "gap-0 p-0.5" : "gap-1.5 p-2"}`}
+                    className={`flex flex-col justify-center border border-border rounded bg-muted/50 ${compactView ? "gap-0 p-0.5" : "gap-1.5 p-2"}`}
                   >
                     <div className="flex items-center justify-between gap-1">
                       <span
-                        className={`font-semibold text-zinc-100 ${compactView ? "text-[9px] leading-none" : "text-sm"}`}
+                        className={`font-semibold text-foreground ${compactView ? "text-xs leading-none" : "text-base"}`}
                       >
                         {team.name}
                       </span>
@@ -1041,7 +1064,7 @@ export function ScheduleViewNew({
                         <PersistentTeamForm
                           trigger={
                             <button
-                              className="p-0.5 rounded hover:bg-zinc-700 text-zinc-500 hover:text-zinc-300 transition-colors"
+                              className="p-0.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
                               title="Editar equipe"
                             >
                               <Pencil className="h-3 w-3" />
@@ -1065,7 +1088,7 @@ export function ScheduleViewNew({
                           {team.members.map((m) => (
                             <span
                               key={m.employeeId}
-                              className={`text-[10px] rounded px-1 py-0.5 ${
+                              className={`text-xs rounded px-1 py-0.5 ${
                                 m.isLeader
                                   ? "bg-amber-600/20 text-amber-300 font-semibold"
                                   : "bg-violet-600/20 text-violet-400"
@@ -1077,13 +1100,13 @@ export function ScheduleViewNew({
                           ))}
                         </div>
                         {team.driverName && (
-                          <div className="flex items-center gap-1 text-[10px] text-zinc-400">
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
                             <User className="h-2.5 w-2.5" />
                             <span>{team.driverName}</span>
                           </div>
                         )}
                         {team.vehicleName && (
-                          <div className="flex items-center gap-1 text-[10px] text-zinc-500">
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
                             <Car className="h-2.5 w-2.5" />
                             <span>{team.vehicleName}</span>
                           </div>
@@ -1112,6 +1135,7 @@ export function ScheduleViewNew({
                           onResize={handleResize}
                           compactView={compactView}
                           osFormRefs={osFormRefsShared}
+                          osFormSettings={settings}
                         />
                       </div>
                     );
@@ -1155,6 +1179,7 @@ export function ScheduleViewNew({
                           compact={compactView}
                           spanDays={spanDays}
                           osFormRefs={osFormRefsShared}
+                          osFormSettings={settings}
                         />
                       </div>
                     );
@@ -1180,13 +1205,13 @@ export function ScheduleViewNew({
 
             return (
               <div
-                className={`grid grid-cols-8 ${compactView ? "gap-0.5 mb-0.5" : "gap-2 mb-2"} border-t border-dashed border-zinc-700/50 pt-2 mt-2`}
+                className={`grid grid-cols-8 ${compactView ? "gap-0.5 mb-0.5" : "gap-2 mb-2"} border-t border-dashed border-border/50 pt-2 mt-2`}
               >
                 <div
-                  className={`flex items-center ${compactView ? "px-1 py-0.5" : "px-3 py-2"} bg-zinc-900/50 rounded`}
+                  className={`flex items-center ${compactView ? "px-1 py-0.5" : "px-3 py-2"} bg-muted/50 rounded`}
                 >
                   <span
-                    className={`font-semibold text-zinc-500 italic ${compactView ? "text-[10px]" : "text-sm"}`}
+                    className={`font-semibold text-muted-foreground italic ${compactView ? "text-[10px]" : "text-sm"}`}
                   >
                     Sem Equipe
                   </span>
@@ -1203,7 +1228,7 @@ export function ScheduleViewNew({
                   return (
                     <div
                       key={idx}
-                      className={`rounded border border-dashed border-zinc-700/30 bg-zinc-900/30 overflow-hidden ${
+                      className={`rounded border border-dashed border-border/30 bg-background/30 overflow-hidden ${
                         compactView
                           ? "min-h-5 p-0.5 space-y-0.5"
                           : "min-h-14 p-1 space-y-1"
@@ -1236,20 +1261,20 @@ export function ScheduleViewNew({
       </div>
 
       {/* Unscheduled Service Orders - Draggable cards */}
-      <div className="border-t border-zinc-800 pt-4 mt-6">
+      <div className="border-t border-border pt-4 mt-6">
         <div className="flex items-center justify-between mb-3 gap-3">
-          <h3 className="text-sm font-semibold text-zinc-300 flex items-center gap-2">
+          <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
             <Calendar className="h-4 w-4" />
             Ordens de Serviço Disponíveis
           </h3>
           <div className="flex items-center gap-2 flex-1 max-w-md">
             <div className="relative flex-1">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500" />
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
               <Input
                 placeholder="Buscar OS..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 h-8 text-sm bg-zinc-900 border-zinc-700"
+                className="pl-8 h-8 text-sm bg-background border-border"
               />
             </div>
           </div>
@@ -1311,13 +1336,14 @@ export function ScheduleViewNew({
                   trigger={
                     <button
                       onClick={(e) => e.stopPropagation()}
-                      className="absolute top-1 right-1 p-1 opacity-0 group-hover/available-card:opacity-100 hover:bg-zinc-700/50 rounded transition-opacity z-10"
+                      className="absolute top-1 right-1 p-1 opacity-0 group-hover/available-card:opacity-100 hover:bg-muted/50 rounded transition-opacity z-10"
                       title="Editar OS"
                     >
-                      <Pencil className="h-3 w-3 text-zinc-400 hover:text-zinc-200" />
+                      <Pencil className="h-3 w-3 text-muted-foreground hover:text-foreground" />
                     </button>
                   }
                   refs={osFormRefsShared}
+                  settings={settings}
                   initialData={{
                     id: os.id,
                     name: os.name,
@@ -1332,7 +1358,6 @@ export function ScheduleViewNew({
                     serviceTypeIds:
                       os.serviceTypes?.map((st) => st.serviceType.id) ?? [],
                     teamIds: os.teamIds ?? [],
-                    materialIds: [],
                   }}
                 />
               </div>

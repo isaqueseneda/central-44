@@ -1,3 +1,4 @@
+import { prisma } from "@/lib/db";
 import {
   getEmployees,
   getMaterials,
@@ -23,17 +24,32 @@ function getMondayOfWeek(date: Date): Date {
 export default async function SchedulePage() {
   const monday = getMondayOfWeek(new Date());
 
-  const [teams, assignments, serviceOrders, employees, vehicles, stores, serviceTypes, materials] =
-    await Promise.all([
-      getTeams(),
-      getTeamScheduleAssignments(monday),
-      getServiceOrders(),
-      getEmployees(),
-      getVehicles(),
-      getStores(),
-      getServiceTypes(),
-      getMaterials(),
-    ]);
+  const [
+    teams,
+    assignments,
+    serviceOrders,
+    employees,
+    vehicles,
+    stores,
+    serviceTypes,
+    materials,
+    settingsRows,
+  ] = await Promise.all([
+    getTeams(),
+    getTeamScheduleAssignments(monday),
+    getServiceOrders(),
+    getEmployees(),
+    getVehicles(),
+    getStores(),
+    getServiceTypes(),
+    getMaterials(),
+    prisma.setting.findMany(),
+  ]);
+
+  const settings: Record<string, string> = {};
+  for (const s of settingsRows) {
+    settings[s.key] = s.value;
+  }
 
   const serializedTeams = teams
     .filter((t) => t.isActive)
@@ -114,6 +130,7 @@ export default async function SchedulePage() {
   const serializedEmployees = employees.map((e) => ({
     id: e.id,
     shortName: e.shortName,
+    rg: e.rg,
   }));
 
   const serializedVehicles = vehicles.map((v) => ({
@@ -127,6 +144,13 @@ export default async function SchedulePage() {
     sigla: s.sigla,
     city: s.city,
     code: s.code,
+    kmRoundTrip: s.kmRoundTrip,
+    tollRoundTrip: s.tollRoundTrip,
+    tollCostGoing: s.tollCostGoing,
+    tollCostReturn: s.tollCostReturn,
+    storeNumber: s.storeNumber,
+    state: s.state,
+    address: s.address,
   }));
 
   const serializedServiceTypes = serviceTypes.map((st) => ({
@@ -137,6 +161,7 @@ export default async function SchedulePage() {
   const serializedMaterials = materials.map((m) => ({
     id: m.id,
     name: m.name,
+    salePrice: m.salePrice,
   }));
 
   return (
@@ -162,6 +187,7 @@ export default async function SchedulePage() {
         stores={serializedStores}
         serviceTypes={serializedServiceTypes}
         materials={serializedMaterials}
+        settings={settings}
       />
     </div>
   );

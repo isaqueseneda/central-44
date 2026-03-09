@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { normalizeSearch } from "@/lib/utils";
 import { serviceOrderSchema } from "@/lib/validations";
 import { NextResponse } from "next/server";
 
@@ -15,9 +16,19 @@ export async function GET(req: Request) {
     const status = searchParams.get("status")?.trim();
     const type = searchParams.get("type")?.trim();
     const q = searchParams.get("q")?.trim();
-    const allowedSorts = ["createdAt", "name", "status", "type", "date", "orderNumber", "totalCost"] as const;
+    const allowedSorts = [
+      "createdAt",
+      "name",
+      "status",
+      "type",
+      "date",
+      "orderNumber",
+      "totalCost",
+    ] as const;
     const sortParam = searchParams.get("sort") || "createdAt";
-    const sort = allowedSorts.includes(sortParam as any) ? sortParam : "createdAt";
+    const sort = allowedSorts.includes(sortParam as any)
+      ? sortParam
+      : "createdAt";
     const order =
       searchParams.get("order") === "asc"
         ? ("asc" as const)
@@ -26,7 +37,15 @@ export async function GET(req: Request) {
     const where: any = {};
     if (status) where.status = status;
     if (type) where.type = type;
-    if (q) where.name = { contains: q, mode: "insensitive" };
+    if (q) {
+      const nq = normalizeSearch(q);
+      where.OR = [
+        { name: { contains: q, mode: "insensitive" } },
+        ...(nq !== q.toLowerCase()
+          ? [{ name: { contains: nq, mode: "insensitive" } }]
+          : []),
+      ];
+    }
 
     const [data, total] = await Promise.all([
       prisma.serviceOrder.findMany({
@@ -91,21 +110,33 @@ export async function POST(req: Request) {
     }
 
     // ── Auto-calculate costs if not provided ──
-    if (storeIds.length > 0 && data.transportCost == null) {
+    if (storeIds.length > 0) {
       const stores = await prisma.store.findMany({
         where: { id: { in: storeIds } },
-        select: { kmRoundTrip: true, tollRoundTrip: true },
+        select: { kmRoundTrip: true, tollRoundTrip: true, tollCostGoing: true, tollCostReturn: true },
       });
       const KM_PRICE = 1.6;
-      data.transportCost = stores.reduce(
-        (
-          acc: number,
-          s: { kmRoundTrip: number | null; tollRoundTrip: number | null },
-        ) => {
-          return acc + (s.kmRoundTrip ?? 0) * KM_PRICE + (s.tollRoundTrip ?? 0);
-        },
-        0,
-      );
+      // Transport = km × price (tolls tracked separately in tollDiscount/pedágio)
+      if (data.transportCost == null) {
+        data.transportCost = stores.reduce(
+          (acc: number, s: { kmRoundTrip: number | null }) =>
+            acc + (s.kmRoundTrip ?? 0) * KM_PRICE,
+          0,
+        );
+      }
+      // Auto-fill toll from store data if not provided
+      // Prefer tollCostGoing + tollCostReturn, fall back to tollRoundTrip
+      if (data.tollDiscount == null) {
+        data.tollDiscount = stores.reduce(
+          (acc: number, s: { tollRoundTrip: number | null; tollCostGoing: number | null; tollCostReturn: number | null }) => {
+            if (s.tollCostGoing != null || s.tollCostReturn != null) {
+              return acc + (s.tollCostGoing ?? 0) + (s.tollCostReturn ?? 0);
+            }
+            return acc + (s.tollRoundTrip ?? 0);
+          },
+          0,
+        );
+      }
     }
 
     if (data.totalCost == null) {

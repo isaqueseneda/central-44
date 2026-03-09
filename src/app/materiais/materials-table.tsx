@@ -1,12 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Search, Pencil, Trash2 } from "lucide-react";
-import { toast } from "sonner";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { MaterialForm } from "@/components/forms/material-form";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -15,8 +13,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { MaterialForm } from "@/components/forms/material-form";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { includesNormalized } from "@/lib/utils";
+import { Pencil, Search, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 
 interface MaterialRow {
   id: string;
@@ -56,9 +57,7 @@ export function MaterialsTable({ materials }: { materials: MaterialRow[] }) {
   const router = useRouter();
   const [search, setSearch] = useState("");
 
-  const filtered = materials.filter((m) =>
-    m.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = materials.filter((m) => includesNormalized(m.name, search));
 
   async function handleDelete(material: MaterialRow) {
     try {
@@ -140,7 +139,11 @@ export function MaterialsTable({ materials }: { materials: MaterialRow[] }) {
                     <div className="flex items-center gap-1">
                       <MaterialForm
                         trigger={
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-zinc-500 hover:text-zinc-200">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 text-zinc-500 hover:text-zinc-200"
+                          >
                             <Pencil className="h-3.5 w-3.5" />
                           </Button>
                         }
@@ -151,7 +154,11 @@ export function MaterialsTable({ materials }: { materials: MaterialRow[] }) {
                         description={`Tem certeza que deseja excluir "${material.name}"? Esta ação não pode ser desfeita.`}
                         onConfirm={() => handleDelete(material)}
                         trigger={
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-zinc-500 hover:text-red-400">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 text-zinc-500 hover:text-red-400"
+                          >
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
                         }

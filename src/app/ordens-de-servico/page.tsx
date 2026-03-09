@@ -56,6 +56,8 @@ export default async function OrdensDeServicoPage() {
     kmIdaVolta: order.kmIdaVolta,
     kmRodada: order.kmRodada,
     manHours: order.manHours,
+    extraHours: order.extraHours,
+    horasDia: order.horasDia,
     precoKm: order.precoKm,
     // Financial
     laborCost: order.laborCost,
@@ -109,6 +111,8 @@ export default async function OrdensDeServicoPage() {
       code: s.code,
       kmRoundTrip: s.kmRoundTrip,
       tollRoundTrip: s.tollRoundTrip,
+      tollCostGoing: s.tollCostGoing,
+      tollCostReturn: s.tollCostReturn,
       storeNumber: s.storeNumber,
       state: s.state,
       address: s.address,

@@ -108,7 +108,7 @@ export const DEFAULT_KM_PRICE = 1.6;
 export const DEFAULT_HOUR_PRICE = 48;
 
 /** Default hours per workday */
-export const DEFAULT_HOURS_PER_DAY = 8;
+export const DEFAULT_HOURS_PER_DAY = 9;
 
 /**
  * Compute transport cost from selected stores.

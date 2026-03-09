@@ -8,13 +8,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   Select,
@@ -33,13 +28,17 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+  DEFAULT_HOUR_PRICE,
+  DEFAULT_HOURS_PER_DAY,
   formatBRL,
   kanbanColumnConfig,
   statusConfig,
   type OrderStatus,
 } from "@/lib/format";
+import { includesNormalized } from "@/lib/utils";
 import {
   ArrowDown,
+  ArrowRight,
   ArrowUp,
   ArrowUpDown,
   FileSpreadsheet,
@@ -47,6 +46,7 @@ import {
   Pencil,
   Plus,
   Search,
+  X,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type DragEvent } from "react";
@@ -80,6 +80,8 @@ export interface SerializedServiceOrder {
   kmIdaVolta?: number | null;
   kmRodada?: number | null;
   manHours?: number | null;
+  extraHours?: number | null;
+  horasDia?: number | null;
   precoKm?: number | null;
   // Financial
   laborCost?: number | null;
@@ -118,10 +120,14 @@ function KanbanCardComponent({
   order,
   onClick,
   refs,
+  isSelected,
+  onToggleSelect,
 }: {
   order: SerializedServiceOrder;
   onClick: () => void;
   refs: OSFormRefs;
+  isSelected: boolean;
+  onToggleSelect: (id: string) => void;
 }) {
   const storeName =
     order.stores[0]?.store.sigla ?? order.stores[0]?.store.city ?? order.name;
@@ -147,64 +153,61 @@ function KanbanCardComponent({
       onClick={onClick}
       className="cursor-grab active:cursor-grabbing group/kanban-card relative"
     >
-      <Card className="border-zinc-700/60 bg-zinc-800/80 hover:border-zinc-600 transition-colors">
-        <CardContent className="p-3 space-y-2">
-          <div className="flex items-start justify-between gap-2">
-            <span className="font-semibold text-sm text-zinc-100 leading-tight">
-              {storeName}
-            </span>
-            {order.warranty && (
-              <Badge className="bg-yellow-600/20 text-yellow-400 text-[10px] px-1.5 py-0">
-                GAR
-              </Badge>
-            )}
-            {order.isObra && (
-              <Badge className="bg-orange-600/20 text-orange-400 text-[10px] px-1.5 py-0 font-bold">
-                OBRA
-              </Badge>
-            )}
+      <Card className={`border-border hover:border-border/80 bg-muted/80 transition-colors py-0 gap-0 rounded-lg ${isSelected ? "ring-2 ring-blue-500/60 bg-blue-500/5" : ""}`}>
+        <CardContent className="px-2 py-1 space-y-0">
+          {/* Selection checkbox — visible on hover or when selected */}
+          <div
+            className={`absolute top-1 left-1 z-10 ${isSelected ? "opacity-100" : "opacity-0 group-hover/kanban-card:opacity-100"} transition-opacity`}
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <Checkbox
+              checked={isSelected}
+              onCheckedChange={() => onToggleSelect(order.id)}
+              className="h-4 w-4 border-zinc-600 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+            />
           </div>
-          <span className="text-xs text-zinc-500 font-mono">
-            OS-{order.orderNumber}
-          </span>
-          {teams.length > 0 && (
-            <div className="space-y-1">
-              {teams.map((t) => (
-                <div key={t.team.id} className="space-y-0.5">
-                  <Badge className="bg-violet-600/20 text-violet-300 text-[10px] px-1.5 py-0">
-                    {t.team.name}
+          {/* Row 1: OS number badge + name + warranty/obra badges */}
+          <div className="flex items-start gap-1.5 pl-4">
+            <div className="flex items-center gap-1 min-w-0 flex-1">
+              <Badge variant="secondary" className="shrink-0 text-[10px] font-mono px-1 py-0 bg-zinc-700 text-zinc-300">
+                {order.orderNumber}
+              </Badge>
+              <span className="font-medium text-sm text-foreground leading-tight line-clamp-2">
+                {storeName}
+              </span>
+            </div>
+            <div className="flex gap-0.5 shrink-0">
+              {order.priority > 0 && (
+                <span className="text-xs text-yellow-400">{"★".repeat(order.priority)}</span>
+              )}
+              {order.warranty && (
+                <Badge className="bg-yellow-600/20 text-yellow-400 text-[10px] px-1 py-0">GAR</Badge>
+              )}
+              {order.isObra && (
+                <Badge className="bg-orange-600/20 text-orange-400 text-[10px] px-1 py-0 font-bold">OBRA</Badge>
+              )}
+            </div>
+          </div>
+          {/* Row 2: Team badge + members */}
+          {teams.length > 0 &&
+            teams.map((t) => (
+              <div key={t.team.id}>
+                <div className="flex items-center gap-1 text-xs leading-tight">
+                  <Badge className="bg-violet-600/20 text-violet-300 text-[11px] px-1 py-0 shrink-0">
+                    🏢 {t.team.name}
                   </Badge>
-                  {t.team.members.length > 0 && (
-                    <div className="flex flex-wrap gap-0.5 pl-0.5">
-                      {t.team.members.map((m, idx) => (
-                        <span
-                          key={`${m.employeeName}-${idx}`}
-                          className="text-[9px] text-zinc-500"
-                        >
-                          {m.employeeName}
-                          {idx < t.team.members.length - 1 ? "," : ""}
-                        </span>
-                      ))}
-                    </div>
-                  )}
+                  <span className="text-muted-foreground truncate">
+                    👷 {t.team.members.map((m) => m.employeeName).join(", ")}
+                  </span>
                 </div>
-              ))}
-            </div>
-          )}
-          {services.length > 0 && (
-            <ul className="space-y-0.5">
-              {services.map((s) => (
-                <li key={s} className="text-xs text-zinc-400 truncate">
-                  {s}
-                </li>
-              ))}
-            </ul>
-          )}
-          {order.priority > 0 && (
-            <div className="text-xs text-yellow-400">
-              {"★".repeat(order.priority)}
-            </div>
-          )}
+                {t.team.vehicleName && (
+                  <div className="text-[11px] text-zinc-500 pl-0.5 leading-tight">
+                    🚗 {t.team.vehicleName}
+                  </div>
+                )}
+              </div>
+            ))}
         </CardContent>
         <OSFormDialog
           trigger={
@@ -212,10 +215,10 @@ function KanbanCardComponent({
               onClick={(e) => {
                 e.stopPropagation();
               }}
-              className="absolute top-2 right-2 p-1 opacity-0 group-hover/kanban-card:opacity-100 hover:bg-zinc-700/50 rounded transition-opacity z-10"
+              className="absolute top-1 right-1 p-0.5 opacity-0 group-hover/kanban-card:opacity-100 hover:bg-muted/50 rounded transition-opacity z-10"
               title="Editar OS"
             >
-              <Pencil className="h-3 w-3 text-zinc-400 hover:text-zinc-200" />
+              <Pencil className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground" />
             </button>
           }
           refs={refs}
@@ -232,7 +235,27 @@ function KanbanCardComponent({
             storeIds: order.stores.map((s) => s.store.id),
             serviceTypeIds: order.serviceTypes.map((st) => st.serviceType.id),
             teamIds: order.teams?.map((t) => t.team.id) ?? [],
-                        materialIds: [],
+            materialIds: order.materials.map((m) => m.material.id),
+            materialDetails: order.materials
+              .filter((m) => m.quantity != null || m.unitPrice != null)
+              .map((m) => ({
+                materialId: m.material.id,
+                quantity: m.quantity ?? null,
+                unitPrice: m.unitPrice ?? null,
+              })),
+            kmIdaVolta: order.kmIdaVolta,
+            kmRodada: order.kmRodada,
+            precoKm: order.precoKm,
+            laborCost: order.laborCost,
+            materialCost: order.materialCost,
+            transportCost: order.transportCost,
+            totalCost: order.totalCost,
+            mealAllowance: order.mealAllowance,
+            overnightAllowance: order.overnightAllowance,
+            tollDiscount: order.tollDiscount,
+            parking: order.parking,
+            manHours: order.manHours,
+            extraHours: order.extraHours,
           }}
         />
       </Card>
@@ -249,6 +272,9 @@ function KanbanColumn({
   onCardClick,
   onStatusChange,
   refs,
+  selectedIds,
+  onToggleSelect,
+  onToggleSelectAll,
 }: {
   status: string;
   label: string;
@@ -258,8 +284,16 @@ function KanbanColumn({
   onCardClick: (order: SerializedServiceOrder) => void;
   onStatusChange: (orderId: string, newStatus: string) => void;
   refs: OSFormRefs;
+  selectedIds: Set<string>;
+  onToggleSelect: (id: string) => void;
+  onToggleSelectAll: (status: string, cardIds: string[]) => void;
 }) {
   const [isDragOver, setIsDragOver] = useState(false);
+
+  const columnCardIds = cards.map((c) => c.id);
+  const selectedInColumn = columnCardIds.filter((id) => selectedIds.has(id));
+  const allSelected = cards.length > 0 && selectedInColumn.length === cards.length;
+  const someSelected = selectedInColumn.length > 0 && !allSelected;
 
   function handleDragOver(e: DragEvent<HTMLDivElement>) {
     e.preventDefault();
@@ -268,7 +302,6 @@ function KanbanColumn({
   }
 
   function handleDragLeave(e: DragEvent<HTMLDivElement>) {
-    // Only leave if we're truly exiting the column, not entering a child
     if (e.currentTarget.contains(e.relatedTarget as Node)) return;
     setIsDragOver(false);
   }
@@ -284,17 +317,24 @@ function KanbanColumn({
 
   return (
     <div
-      className="w-64 shrink-0 space-y-3"
+      className="w-72 shrink-0 space-y-3"
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
       <div className="flex items-center gap-2">
+        {cards.length > 0 && (
+          <Checkbox
+            checked={allSelected ? true : someSelected ? "indeterminate" : false}
+            onCheckedChange={() => onToggleSelectAll(status, columnCardIds)}
+            className="h-4 w-4 border-zinc-600 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+          />
+        )}
         <div className={`h-2 w-2 rounded-full ${headerBg}`} />
-        <h3 className={`text-sm font-semibold ${color}`}>{label}</h3>
+        <h3 className={`text-base font-semibold ${color}`}>{label}</h3>
         <Badge
           variant="secondary"
-          className="ml-auto bg-zinc-800 text-zinc-400 text-xs"
+          className="ml-auto bg-muted text-muted-foreground text-sm"
         >
           {cards.length}
         </Badge>
@@ -306,12 +346,12 @@ function KanbanColumn({
         }`}
       >
         {isDragOver && (
-          <div className="flex items-center justify-center py-2 text-xs text-sky-400 animate-pulse">
+          <div className="flex items-center justify-center py-2 text-sm text-sky-400 animate-pulse">
             Soltar aqui
           </div>
         )}
         {cards.length === 0 && !isDragOver ? (
-          <div className="rounded-lg border border-dashed border-zinc-700/50 p-6 text-center text-xs text-zinc-600">
+          <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
             Nenhuma OS
           </div>
         ) : (
@@ -321,6 +361,8 @@ function KanbanColumn({
               order={order}
               onClick={() => onCardClick(order)}
               refs={refs}
+              isSelected={selectedIds.has(order.id)}
+              onToggleSelect={onToggleSelect}
             />
           ))
         )}
@@ -339,11 +381,35 @@ function KanbanBoard({
   refs: OSFormRefs;
 }) {
   const router = useRouter();
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkMoving, setBulkMoving] = useState(false);
 
   const grouped = kanbanColumnConfig.map((col) => ({
     ...col,
     cards: orders.filter((o) => o.status === col.status),
   }));
+
+  function toggleSelect(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleSelectAll(status: string, cardIds: string[]) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      const allSelected = cardIds.every((id) => next.has(id));
+      if (allSelected) {
+        cardIds.forEach((id) => next.delete(id));
+      } else {
+        cardIds.forEach((id) => next.add(id));
+      }
+      return next;
+    });
+  }
 
   async function handleStatusChange(orderId: string, newStatus: string) {
     try {
@@ -361,25 +427,91 @@ function KanbanBoard({
     }
   }
 
+  async function handleBulkMove(newStatus: string) {
+    if (selectedIds.size === 0) return;
+    setBulkMoving(true);
+    try {
+      const promises = Array.from(selectedIds).map((id) =>
+        fetch(`/api/ordens/${id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: newStatus }),
+        }),
+      );
+      const results = await Promise.all(promises);
+      const failed = results.filter((r) => !r.ok).length;
+      if (failed > 0) {
+        toast.error(`${failed} OS falharam ao atualizar`);
+      } else {
+        const cfg = statusConfig[newStatus as OrderStatus];
+        toast.success(
+          `${selectedIds.size} OS movidas para ${cfg?.label ?? newStatus}`,
+        );
+      }
+      setSelectedIds(new Set());
+      router.refresh();
+    } catch {
+      toast.error("Erro ao mover OS em lote");
+    } finally {
+      setBulkMoving(false);
+    }
+  }
+
   return (
-    <ScrollArea className="w-full">
-      <div className="flex gap-4 pb-4 min-w-max">
-        {grouped.map((col) => (
-          <KanbanColumn
-            key={col.status}
-            status={col.status}
-            label={col.label}
-            color={col.color}
-            headerBg={col.headerBg}
-            cards={col.cards}
-            onCardClick={onCardClick}
-            onStatusChange={handleStatusChange}
-            refs={refs}
-          />
-        ))}
-      </div>
-      <ScrollBar orientation="horizontal" />
-    </ScrollArea>
+    <div className="space-y-3">
+      {/* Bulk action bar */}
+      {selectedIds.size > 0 && (
+        <div className="flex items-center gap-3 rounded-lg border border-blue-600/30 bg-blue-600/10 px-4 py-2">
+          <span className="text-sm font-medium text-blue-400">
+            {selectedIds.size} OS selecionada{selectedIds.size > 1 ? "s" : ""}
+          </span>
+          <ArrowRight className="h-4 w-4 text-zinc-500" />
+          <div className="flex items-center gap-1.5">
+            {kanbanColumnConfig.map((col) => {
+              const cfg = statusConfig[col.status];
+              return (
+                <button
+                  key={col.status}
+                  onClick={() => handleBulkMove(col.status)}
+                  disabled={bulkMoving}
+                  className={`rounded-full px-3 py-1 text-xs font-medium transition-all disabled:opacity-50 ${cfg.className} hover:opacity-80`}
+                >
+                  {col.label}
+                </button>
+              );
+            })}
+          </div>
+          <button
+            onClick={() => setSelectedIds(new Set())}
+            className="ml-auto text-zinc-500 hover:text-zinc-300 p-1"
+            title="Limpar seleção"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
+      <ScrollArea className="w-full">
+        <div className="flex gap-4 pb-4 min-w-max">
+          {grouped.map((col) => (
+            <KanbanColumn
+              key={col.status}
+              status={col.status}
+              label={col.label}
+              color={col.color}
+              headerBg={col.headerBg}
+              cards={col.cards}
+              onCardClick={onCardClick}
+              onStatusChange={handleStatusChange}
+              refs={refs}
+              selectedIds={selectedIds}
+              onToggleSelect={toggleSelect}
+              onToggleSelectAll={toggleSelectAll}
+            />
+          ))}
+        </div>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
+    </div>
   );
 }
 
@@ -402,7 +534,7 @@ function SortableHead({
   const isActive = currentKey === sortKey;
   return (
     <TableHead
-      className="text-zinc-400 cursor-pointer select-none hover:text-zinc-200 transition-colors"
+      className="text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors"
       onClick={() => onSort(sortKey)}
     >
       <span className="flex items-center gap-1">
@@ -464,7 +596,7 @@ function AllOrdersTable({
   return (
     <Table>
       <TableHeader>
-        <TableRow className="border-zinc-800 hover:bg-transparent">
+        <TableRow className="border-border hover:bg-transparent">
           <SortableHead
             label="Nº OS"
             sortKey="orderNumber"
@@ -486,7 +618,7 @@ function AllOrdersTable({
             currentDir={sortDir}
             onSort={handleSort}
           />
-          <TableHead className="text-zinc-400">Equipe</TableHead>
+          <TableHead className="text-muted-foreground">Equipe</TableHead>
           <SortableHead
             label="Data"
             sortKey="date"
@@ -494,7 +626,7 @@ function AllOrdersTable({
             currentDir={sortDir}
             onSort={handleSort}
           />
-          <TableHead className="text-zinc-400">Serviços</TableHead>
+          <TableHead className="text-muted-foreground">Serviços</TableHead>
           <SortableHead
             label="Total"
             sortKey="totalCost"
@@ -518,38 +650,38 @@ function AllOrdersTable({
           return (
             <TableRow
               key={order.id}
-              className="border-zinc-800 hover:bg-zinc-800/50 cursor-pointer"
+              className="border-border hover:bg-muted/50 cursor-pointer"
               onClick={() => onRowClick(order)}
             >
-              <TableCell className="font-mono font-medium text-zinc-200">
+              <TableCell className="font-mono font-medium text-foreground">
                 OS-{order.orderNumber}
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-1">
                   <Badge className={s?.className}>{s?.label}</Badge>
                   {order.isObra && (
-                    <Badge className="bg-orange-600/20 text-orange-400 text-[9px] px-1 py-0 font-bold">
+                    <Badge className="bg-orange-600/20 text-orange-400 text-xs px-1 py-0 font-bold">
                       OBRA
                     </Badge>
                   )}
                   {order.warranty && (
-                    <Badge className="bg-yellow-600/20 text-yellow-400 text-[9px] px-1 py-0">
+                    <Badge className="bg-yellow-600/20 text-yellow-400 text-xs px-1 py-0">
                       GAR
                     </Badge>
                   )}
                 </div>
               </TableCell>
-              <TableCell className="font-medium text-zinc-200">
+              <TableCell className="font-medium text-foreground">
                 {order.name}
               </TableCell>
-              <TableCell className="text-zinc-400">
-                {teamInfo || <span className="text-zinc-600">—</span>}
+              <TableCell className="text-muted-foreground">
+                {teamInfo || <span className="text-muted-foreground/60">—</span>}
               </TableCell>
-              <TableCell className="text-zinc-400">{dateStr}</TableCell>
-              <TableCell className="text-zinc-400 max-w-[180px] truncate">
+              <TableCell className="text-muted-foreground">{dateStr}</TableCell>
+              <TableCell className="text-muted-foreground max-w-[180px] truncate">
                 {serviceNames || "—"}
               </TableCell>
-              <TableCell className="text-zinc-300 font-mono text-sm">
+              <TableCell className="text-foreground font-mono text-sm">
                 {order.totalCost ? `R$ ${order.totalCost.toFixed(2)}` : "—"}
               </TableCell>
             </TableRow>
@@ -571,18 +703,18 @@ function PendingOrdersTable({
   return (
     <Table>
       <TableHeader>
-        <TableRow className="border-zinc-800 hover:bg-transparent">
-          <TableHead className="text-zinc-400">Nº OS</TableHead>
-          <TableHead className="text-zinc-400">Nome</TableHead>
-          <TableHead className="text-zinc-400">Equipes</TableHead>
-          <TableHead className="text-zinc-400">Serviços</TableHead>
-          <TableHead className="text-zinc-400">Materiais</TableHead>
+        <TableRow className="border-border hover:bg-transparent">
+          <TableHead className="text-muted-foreground">Nº OS</TableHead>
+          <TableHead className="text-muted-foreground">Nome</TableHead>
+          <TableHead className="text-muted-foreground">Equipes</TableHead>
+          <TableHead className="text-muted-foreground">Serviços</TableHead>
+          <TableHead className="text-muted-foreground">Materiais</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {pendingOrders.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={5} className="text-center text-zinc-500 py-8">
+            <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
               Nenhuma OS pendente 🎉
             </TableCell>
           </TableRow>
@@ -602,24 +734,24 @@ function PendingOrdersTable({
             return (
               <TableRow
                 key={order.id}
-                className="border-zinc-800 hover:bg-zinc-800/50 cursor-pointer"
+                className="border-border hover:bg-muted/50 cursor-pointer"
                 onClick={() => onRowClick(order)}
               >
-                <TableCell className="font-mono font-medium text-zinc-200">
+                <TableCell className="font-mono font-medium text-foreground">
                   OS-{order.orderNumber}
                 </TableCell>
-                <TableCell className="font-medium text-zinc-200">
+                <TableCell className="font-medium text-foreground">
                   {order.name}
                 </TableCell>
-                <TableCell className="text-zinc-400">
+                <TableCell className="text-muted-foreground">
                   {teamNames || (
-                    <span className="text-red-400 text-xs">Sem equipe</span>
+                    <span className="text-red-400 text-sm">Sem equipe</span>
                   )}
                 </TableCell>
-                <TableCell className="text-zinc-400 max-w-[200px] truncate">
+                <TableCell className="text-muted-foreground max-w-[200px] truncate">
                   {serviceNames || "—"}
                 </TableCell>
-                <TableCell className="text-zinc-400 max-w-[160px] truncate">
+                <TableCell className="text-muted-foreground max-w-[160px] truncate">
                   {materialNames || "—"}
                 </TableCell>
               </TableRow>
@@ -709,7 +841,7 @@ function SpreadsheetCell({
         onChange={(e) => setLocalVal(e.target.value)}
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
-        className="w-full bg-zinc-700 border border-sky-500/50 rounded px-1.5 py-0.5 text-xs text-zinc-100 outline-none text-right"
+        className="w-full bg-muted border border-sky-500/50 rounded px-1.5 py-0.5 text-sm text-foreground outline-none text-right"
       />
     );
   }
@@ -717,11 +849,146 @@ function SpreadsheetCell({
   return (
     <span
       onClick={() => setEditing(true)}
-      className={`block w-full cursor-text px-1.5 py-0.5 text-xs rounded hover:bg-zinc-700/50 transition-colors text-right ${
-        value != null && value !== 0 ? "text-zinc-300" : "text-zinc-600"
+      className={`block w-full cursor-text px-1.5 py-0.5 text-sm rounded hover:bg-muted/50 transition-colors text-right ${
+        value != null && value !== 0 ? "text-foreground" : "text-muted-foreground"
       }`}
     >
       {display}
+    </span>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Read-only cell for computed fields (greyed out)
+// ---------------------------------------------------------------------------
+
+function ReadOnlyCell({ value }: { value: number | null | undefined }) {
+  const display =
+    value != null && value !== 0
+      ? value.toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      : "—";
+  return (
+    <span className="block w-full px-1.5 py-0.5 text-sm text-right text-zinc-500">
+      {display}
+    </span>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// HorasDia cell — editable, auto-recalcs manHours + laborCost on save
+// ---------------------------------------------------------------------------
+
+function HorasDiaCell({
+  order,
+  globalHorasDia,
+  globalPrecoHora,
+  onSaved,
+}: {
+  order: SerializedServiceOrder;
+  globalHorasDia: number;
+  globalPrecoHora: number;
+  onSaved?: () => void;
+}) {
+  const currentVal = order.horasDia ?? globalHorasDia;
+  const [editing, setEditing] = useState(false);
+  const [localVal, setLocalVal] = useState(String(currentVal));
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setLocalVal(String(order.horasDia ?? globalHorasDia));
+  }, [order.horasDia, globalHorasDia]);
+
+  useEffect(() => {
+    if (editing && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [editing]);
+
+  // Count employees from teams
+  function getEmployeeCount(): number {
+    if (!order.teams || order.teams.length === 0) return 0;
+    return order.teams.reduce(
+      (acc, t) => acc + (t.team.members?.length ?? 0),
+      0,
+    );
+  }
+
+  async function handleBlur() {
+    setEditing(false);
+    const parsed = parseFloat(localVal.replace(",", ".")) || 0;
+    if (parsed === currentVal) return;
+
+    const employees = getEmployeeCount();
+    const mh = employees * parsed;
+    const labor = mh * globalPrecoHora;
+    const totalCost =
+      labor +
+      (order.materialCost ?? 0) +
+      (order.transportCost ?? 0) +
+      (order.mealAllowance ?? 0) +
+      (order.overnightAllowance ?? 0) +
+      (order.tollDiscount ?? 0) +
+      (order.parking ?? 0);
+
+    try {
+      const res = await fetch(`/api/ordens/${order.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          horasDia: parsed,
+          manHours: mh,
+          laborCost: labor,
+          totalCost,
+        }),
+      });
+      if (!res.ok) {
+        const errBody = await res.text();
+        console.error("HorasDia save error:", res.status, errBody);
+        throw new Error(errBody);
+      }
+      onSaved?.();
+    } catch (err) {
+      console.error("HorasDia save failed:", err);
+      toast.error("Erro ao salvar");
+      setLocalVal(String(currentVal));
+    }
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+    if (e.key === "Escape") {
+      setLocalVal(String(currentVal));
+      setEditing(false);
+    }
+  }
+
+  if (editing) {
+    return (
+      <input
+        ref={inputRef}
+        type="text"
+        inputMode="decimal"
+        value={localVal}
+        onChange={(e) => setLocalVal(e.target.value)}
+        onBlur={handleBlur}
+        onKeyDown={handleKeyDown}
+        className="w-full bg-muted border border-sky-500/50 rounded px-1.5 py-0.5 text-sm text-foreground outline-none text-right"
+      />
+    );
+  }
+
+  return (
+    <span
+      onClick={() => setEditing(true)}
+      className={`block w-full cursor-text px-1.5 py-0.5 text-sm rounded hover:bg-muted/50 transition-colors text-right ${
+        currentVal ? "text-foreground" : "text-muted-foreground"
+      }`}
+    >
+      {currentVal}
     </span>
   );
 }
@@ -734,11 +1001,16 @@ function SpreadsheetTable({
   orders,
   onRowClick,
   onRefresh,
+  settings,
 }: {
   orders: SerializedServiceOrder[];
   onRowClick: (order: SerializedServiceOrder) => void;
   onRefresh: () => void;
+  settings?: Record<string, string>;
 }) {
+  const globalHorasDia = Number(settings?.horasDia) || DEFAULT_HOURS_PER_DAY;
+  const globalPrecoHora = Number(settings?.precoHora) || DEFAULT_HOUR_PRICE;
+
   // Column totals
   const sum = (fn: (o: SerializedServiceOrder) => number) =>
     orders.reduce((acc, o) => acc + fn(o), 0);
@@ -747,50 +1019,50 @@ function SpreadsheetTable({
     <div className="overflow-x-auto">
       <table className="w-full text-xs whitespace-nowrap">
         <thead>
-          <tr className="border-b border-zinc-700 bg-zinc-800/50">
-            <th className="sticky left-0 bg-zinc-800 z-10 px-2 py-2 text-left text-zinc-500 font-semibold w-10">
+          <tr className="border-b border-border bg-muted/50">
+            <th className="sticky left-0 bg-muted z-10 px-2 py-2 text-left text-muted-foreground font-semibold w-10">
               #
             </th>
-            <th className="sticky left-10 bg-zinc-800 z-10 px-2 py-2 text-left text-zinc-500 font-semibold w-16">
+            <th className="sticky left-10 bg-muted z-10 px-2 py-2 text-left text-muted-foreground font-semibold w-16">
               O.S.
             </th>
-            <th className="px-2 py-2 text-left text-zinc-500 font-semibold w-16">
+            <th className="px-2 py-2 text-left text-muted-foreground font-semibold w-16">
               FILIAL
             </th>
-            <th className="px-2 py-2 text-left text-zinc-500 font-semibold w-28">
-              CIDADE
-            </th>
-            <th className="px-2 py-2 text-right text-zinc-500 font-semibold w-20">
+            <th className="px-2 py-2 text-right text-muted-foreground font-semibold w-20">
               IDA/VOLTA
             </th>
-            <th className="px-2 py-2 text-right text-zinc-500 font-semibold w-20">
+            <th className="px-2 py-2 text-right text-muted-foreground font-semibold w-20">
               KM RODADA
             </th>
-            <th className="px-2 py-2 text-right text-zinc-500 font-semibold w-16">
-              H/hs
-            </th>
-            <th className="px-2 py-2 text-right text-zinc-500 font-semibold w-20">
-              MÃO OBRA
-            </th>
-            <th className="px-2 py-2 text-right text-zinc-500 font-semibold w-20">
-              MATERIAL
-            </th>
-            <th className="px-2 py-2 text-right text-zinc-500 font-semibold w-20">
+            <th className="px-2 py-2 text-right text-muted-foreground font-semibold w-20">
               TRANSPORTE
             </th>
-            <th className="px-2 py-2 text-right text-zinc-500 font-semibold w-18">
+            <th className="px-2 py-2 text-right text-muted-foreground font-semibold w-14">
+              H/DIA
+            </th>
+            <th className="px-2 py-2 text-right text-zinc-600 font-semibold w-16">
+              H/hs
+            </th>
+            <th className="px-2 py-2 text-right text-zinc-600 font-semibold w-20">
+              MÃO OBRA
+            </th>
+            <th className="px-2 py-2 text-right text-muted-foreground font-semibold w-20">
+              MATERIAL
+            </th>
+            <th className="px-2 py-2 text-right text-muted-foreground font-semibold w-18">
               REFEIÇÃO
             </th>
-            <th className="px-2 py-2 text-right text-zinc-500 font-semibold w-18">
+            <th className="px-2 py-2 text-right text-muted-foreground font-semibold w-18">
               PERNOITE
             </th>
-            <th className="px-2 py-2 text-right text-zinc-500 font-semibold w-18">
+            <th className="px-2 py-2 text-right text-muted-foreground font-semibold w-18">
               PEDÁGIO
             </th>
-            <th className="px-2 py-2 text-right text-zinc-500 font-semibold w-18">
+            <th className="px-2 py-2 text-right text-muted-foreground font-semibold w-18">
               ESTAC.
             </th>
-            <th className="px-2 py-2 text-right text-zinc-400 font-bold w-22">
+            <th className="px-2 py-2 text-right text-muted-foreground font-bold w-22">
               TOTAL
             </th>
           </tr>
@@ -801,22 +1073,19 @@ function SpreadsheetTable({
             return (
               <tr
                 key={order.id}
-                className="border-b border-zinc-800/50 hover:bg-zinc-800/30 group"
+                className="border-b border-border/50 hover:bg-muted/30 group"
               >
-                <td className="sticky left-0 bg-zinc-900 z-10 px-2 py-1 text-zinc-600 font-mono">
+                <td className="sticky left-0 bg-background z-10 px-2 py-1 text-muted-foreground font-mono">
                   {idx + 1}
                 </td>
                 <td
-                  className="sticky left-10 bg-zinc-900 z-10 px-2 py-1 font-mono font-medium text-zinc-300 cursor-pointer hover:text-blue-400"
+                  className="sticky left-10 bg-background z-10 px-2 py-1 font-mono font-medium text-foreground cursor-pointer hover:text-blue-400"
                   onClick={() => onRowClick(order)}
                 >
                   {order.orderNumber}
                 </td>
-                <td className="px-2 py-1 text-zinc-400">
+                <td className="px-2 py-1 text-muted-foreground">
                   {store?.sigla ?? "—"}
-                </td>
-                <td className="px-2 py-1 text-zinc-300 font-medium">
-                  {store?.city ?? order.name}
                 </td>
                 <td className="px-2 py-1">
                   <SpreadsheetCell
@@ -835,34 +1104,27 @@ function SpreadsheetTable({
                   />
                 </td>
                 <td className="px-2 py-1">
-                  <SpreadsheetCell
-                    value={order.manHours ?? null}
-                    orderId={order.id}
-                    field="manHours"
+                  <ReadOnlyCell value={order.transportCost} />
+                </td>
+                <td className="px-2 py-1">
+                  <HorasDiaCell
+                    order={order}
+                    globalHorasDia={globalHorasDia}
+                    globalPrecoHora={globalPrecoHora}
                     onSaved={onRefresh}
                   />
                 </td>
                 <td className="px-2 py-1">
-                  <SpreadsheetCell
-                    value={order.laborCost ?? null}
-                    orderId={order.id}
-                    field="laborCost"
-                    onSaved={onRefresh}
-                  />
+                  <ReadOnlyCell value={order.manHours} />
+                </td>
+                <td className="px-2 py-1">
+                  <ReadOnlyCell value={order.laborCost} />
                 </td>
                 <td className="px-2 py-1">
                   <SpreadsheetCell
                     value={order.materialCost ?? null}
                     orderId={order.id}
                     field="materialCost"
-                    onSaved={onRefresh}
-                  />
-                </td>
-                <td className="px-2 py-1">
-                  <SpreadsheetCell
-                    value={order.transportCost ?? null}
-                    orderId={order.id}
-                    field="transportCost"
                     onSaved={onRefresh}
                   />
                 </td>
@@ -898,7 +1160,7 @@ function SpreadsheetTable({
                     onSaved={onRefresh}
                   />
                 </td>
-                <td className="px-2 py-1 text-right font-mono font-bold text-zinc-200">
+                <td className="px-2 py-1 text-right font-mono font-bold text-foreground">
                   {order.totalCost ? formatBRL(order.totalCost) : "—"}
                 </td>
               </tr>
@@ -906,41 +1168,44 @@ function SpreadsheetTable({
           })}
         </tbody>
         <tfoot>
-          <tr className="border-t-2 border-zinc-700 bg-zinc-800/60">
+          <tr className="border-t-2 border-border bg-muted/60">
             <td
-              colSpan={4}
-              className="sticky left-0 bg-zinc-800/60 z-10 px-2 py-2 text-zinc-400 font-bold text-xs"
+              colSpan={3}
+              className="sticky left-0 bg-muted/60 z-10 px-2 py-2 text-muted-foreground font-bold text-xs"
             >
               TOTAL ({orders.length} OS)
             </td>
-            <td className="px-2 py-2 text-right text-zinc-300 font-bold text-xs">
+            <td className="px-2 py-2 text-right text-foreground font-bold text-xs">
               {sum((o) => o.kmIdaVolta ?? 0).toLocaleString("pt-BR")}
             </td>
-            <td className="px-2 py-2 text-right text-zinc-300 font-bold text-xs">
+            <td className="px-2 py-2 text-right text-foreground font-bold text-xs">
               {sum((o) => o.kmRodada ?? 0).toLocaleString("pt-BR")}
             </td>
-            <td className="px-2 py-2 text-right text-zinc-300 font-bold text-xs">
-              {sum((o) => o.manHours ?? 0).toLocaleString("pt-BR")}
-            </td>
-            <td className="px-2 py-2 text-right text-zinc-300 font-bold text-xs">
-              {formatBRL(sum((o) => o.laborCost ?? 0))}
-            </td>
-            <td className="px-2 py-2 text-right text-zinc-300 font-bold text-xs">
-              {formatBRL(sum((o) => o.materialCost ?? 0))}
-            </td>
-            <td className="px-2 py-2 text-right text-zinc-300 font-bold text-xs">
+            <td className="px-2 py-2 text-right text-foreground font-bold text-xs">
               {formatBRL(sum((o) => o.transportCost ?? 0))}
             </td>
-            <td className="px-2 py-2 text-right text-zinc-300 font-bold text-xs">
+            <td className="px-2 py-2 text-right text-zinc-600 font-bold text-xs">
+              —
+            </td>
+            <td className="px-2 py-2 text-right text-zinc-600 font-bold text-xs">
+              {sum((o) => o.manHours ?? 0).toLocaleString("pt-BR")}
+            </td>
+            <td className="px-2 py-2 text-right text-zinc-600 font-bold text-xs">
+              {formatBRL(sum((o) => o.laborCost ?? 0))}
+            </td>
+            <td className="px-2 py-2 text-right text-foreground font-bold text-xs">
+              {formatBRL(sum((o) => o.materialCost ?? 0))}
+            </td>
+            <td className="px-2 py-2 text-right text-foreground font-bold text-xs">
               {formatBRL(sum((o) => o.mealAllowance ?? 0))}
             </td>
-            <td className="px-2 py-2 text-right text-zinc-300 font-bold text-xs">
+            <td className="px-2 py-2 text-right text-foreground font-bold text-xs">
               {formatBRL(sum((o) => o.overnightAllowance ?? 0))}
             </td>
-            <td className="px-2 py-2 text-right text-zinc-300 font-bold text-xs">
+            <td className="px-2 py-2 text-right text-foreground font-bold text-xs">
               {formatBRL(sum((o) => o.tollDiscount ?? 0))}
             </td>
-            <td className="px-2 py-2 text-right text-zinc-300 font-bold text-xs">
+            <td className="px-2 py-2 text-right text-foreground font-bold text-xs">
               {formatBRL(sum((o) => o.parking ?? 0))}
             </td>
             <td className="px-2 py-2 text-right font-mono font-bold text-orange-400 text-xs">
@@ -973,9 +1238,7 @@ export default function OSListClient({
     useState<SerializedServiceOrder | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  // Medição export state
-  const [medicaoFrom, setMedicaoFrom] = useState("");
-  const [medicaoTo, setMedicaoTo] = useState("");
+  // (medicao date state removed — now status-only)
 
   function handleCardClick(order: SerializedServiceOrder) {
     setSelectedOrder(order);
@@ -985,17 +1248,15 @@ export default function OSListClient({
   const filteredOrders = orders.filter((o) => {
     const matchesSearch =
       !search ||
-      o.name.toLowerCase().includes(search.toLowerCase()) ||
+      includesNormalized(o.name, search) ||
       o.orderNumber.toString().includes(search) ||
       o.stores.some(
         (s) =>
-          s.store.city.toLowerCase().includes(search.toLowerCase()) ||
-          s.store.sigla.toLowerCase().includes(search.toLowerCase()),
+          includesNormalized(s.store.city, search) ||
+          includesNormalized(s.store.sigla, search),
       ) ||
       (o.teams?.some((t) =>
-        t.team.members.some((m) =>
-          m.employeeName.toLowerCase().includes(search.toLowerCase()),
-        ),
+        t.team.members.some((m) => includesNormalized(m.employeeName, search)),
       ) ??
         false);
     const matchesStatus = statusFilter === "all" || o.status === statusFilter;
@@ -1006,111 +1267,21 @@ export default function OSListClient({
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-zinc-100">Ordens de Serviço</h1>
+        <h1 className="text-3xl font-bold text-foreground">Ordens de Serviço</h1>
         <div className="flex items-center gap-2">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className="border-zinc-700 text-zinc-300 hover:bg-zinc-800"
-              >
-                <FileSpreadsheet className="h-4 w-4 mr-1" />
-                Medição
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-72" align="end">
-              <div className="space-y-3">
-                <h4 className="font-medium text-sm text-zinc-100">
-                  Exportar Resumo de Medição
-                </h4>
-                <p className="text-xs text-zinc-500">
-                  Selecione o período para gerar o PDF de medições.
-                </p>
-                {/* Quick buttons */}
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="flex-1 text-xs border-zinc-700"
-                    onClick={() => {
-                      const now = new Date();
-                      const day = now.getDay(); // 0=Sun, 1=Mon...
-                      const diffToMon = day === 0 ? -6 : 1 - day;
-                      const mon = new Date(now);
-                      mon.setDate(now.getDate() + diffToMon);
-                      const fri = new Date(mon);
-                      fri.setDate(mon.getDate() + 4);
-                      const fmt = (d: Date) => d.toISOString().slice(0, 10);
-                      setMedicaoFrom(fmt(mon));
-                      setMedicaoTo(fmt(fri));
-                    }}
-                  >
-                    Esta Semana
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="flex-1 text-xs border-zinc-700"
-                    onClick={() => {
-                      const now = new Date();
-                      const first = new Date(
-                        now.getFullYear(),
-                        now.getMonth(),
-                        1,
-                      );
-                      const last = new Date(
-                        now.getFullYear(),
-                        now.getMonth() + 1,
-                        0,
-                      );
-                      const fmt = (d: Date) => d.toISOString().slice(0, 10);
-                      setMedicaoFrom(fmt(first));
-                      setMedicaoTo(fmt(last));
-                    }}
-                  >
-                    Este Mês
-                  </Button>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="space-y-1">
-                    <Label className="text-xs text-zinc-400">De</Label>
-                    <Input
-                      type="date"
-                      value={medicaoFrom}
-                      onChange={(e) => setMedicaoFrom(e.target.value)}
-                      className="h-8 text-sm"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs text-zinc-400">Até</Label>
-                    <Input
-                      type="date"
-                      value={medicaoTo}
-                      onChange={(e) => setMedicaoTo(e.target.value)}
-                      className="h-8 text-sm"
-                    />
-                  </div>
-                </div>
-                <Button
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
-                  disabled={!medicaoFrom || !medicaoTo}
-                  onClick={() => {
-                    if (medicaoFrom && medicaoTo) {
-                      window.open(
-                        `/api/ordens/medicao/pdf?from=${medicaoFrom}&to=${medicaoTo}`,
-                        "_blank",
-                      );
-                    }
-                  }}
-                >
-                  <FileSpreadsheet className="h-4 w-4 mr-1" />
-                  Gerar PDF
-                </Button>
-              </div>
-            </PopoverContent>
-          </Popover>
+          <Button
+            variant="outline"
+            className="border-border text-foreground hover:bg-muted"
+            onClick={() => {
+              window.open(
+                `/api/ordens/medicao/pdf?status=MEASUREMENT`,
+                "_blank",
+              );
+            }}
+          >
+            <FileSpreadsheet className="h-4 w-4 mr-1" />
+            Medição
+          </Button>
           <OSFormDialog
             trigger={
               <Button className="bg-blue-600 hover:bg-blue-700 text-white">
@@ -1132,11 +1303,11 @@ export default function OSListClient({
             placeholder="Buscar por nome, OS, loja ou funcionário..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 border-zinc-800 bg-zinc-900/50"
+            className="pl-9 border-border bg-muted/50"
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-44 border-zinc-800 bg-zinc-900/50">
+          <SelectTrigger className="w-44 border-border bg-muted/50">
             <Filter className="h-3.5 w-3.5 mr-1 text-zinc-500" />
             <SelectValue placeholder="Status" />
           </SelectTrigger>
@@ -1150,14 +1321,14 @@ export default function OSListClient({
             <SelectItem value="REWORK">Retrabalho</SelectItem>
           </SelectContent>
         </Select>
-        <Badge variant="secondary" className="bg-zinc-800 text-zinc-400">
+        <Badge variant="secondary" className="bg-muted text-muted-foreground">
           {filteredOrders.length} OS
         </Badge>
       </div>
 
       {/* Tabs */}
       <Tabs defaultValue="status">
-        <TabsList className="bg-zinc-800/60">
+        <TabsList className="bg-muted/60">
           <TabsTrigger value="status">Status</TabsTrigger>
           <TabsTrigger value="todas">Todas</TabsTrigger>
           <TabsTrigger value="planilha">Planilha</TabsTrigger>
@@ -1165,11 +1336,15 @@ export default function OSListClient({
         </TabsList>
 
         <TabsContent value="status" className="mt-6">
-          <KanbanBoard orders={filteredOrders} onCardClick={handleCardClick} refs={refs} />
+          <KanbanBoard
+            orders={filteredOrders}
+            onCardClick={handleCardClick}
+            refs={refs}
+          />
         </TabsContent>
 
         <TabsContent value="todas" className="mt-6">
-          <Card className="border-zinc-800 bg-zinc-900/50">
+          <Card className="border-border bg-muted/50">
             <CardContent className="p-0">
               <AllOrdersTable
                 orders={filteredOrders}
@@ -1180,19 +1355,32 @@ export default function OSListClient({
         </TabsContent>
 
         <TabsContent value="planilha" className="mt-6">
-          <Card className="border-zinc-800 bg-zinc-900/50">
+          <Card className="border-border bg-muted/50">
             <CardContent className="p-0">
               <SpreadsheetTable
-                orders={filteredOrders}
+                orders={orders.filter((o) => {
+                  if (o.status !== "MEASUREMENT") return false;
+                  if (!search) return true;
+                  return (
+                    includesNormalized(o.name, search) ||
+                    o.orderNumber.toString().includes(search) ||
+                    o.stores.some(
+                      (s) =>
+                        includesNormalized(s.store.city, search) ||
+                        includesNormalized(s.store.sigla, search),
+                    )
+                  );
+                })}
                 onRowClick={handleCardClick}
                 onRefresh={() => router.refresh()}
+                settings={settings}
               />
             </CardContent>
           </Card>
         </TabsContent>
 
         <TabsContent value="pendentes" className="mt-6">
-          <Card className="border-zinc-800 bg-zinc-900/50">
+          <Card className="border-border bg-muted/50">
             <CardContent className="p-0">
               <PendingOrdersTable
                 orders={filteredOrders}

@@ -24,14 +24,17 @@ model Store {
   phone             String?
   kmRoundTrip       Float?
   tollRoundTrip     Float?
+  tollCostGoing     Float?
+  tollCostReturn    Float?
   storeNumber       Int?
   latitude          Float?
   longitude         Float?
 
-  serviceOrders  ServiceOrderStore[]
-  travelExpenses TravelExpense[]
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  serviceOrders   ServiceOrderStore[]
+  travelExpenses  TravelExpense[]
+  dataSuggestions DataSuggestion[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
 
   @@index([state])
   @@index([city])
@@ -122,12 +125,27 @@ model ServiceOrder {
   transportCost Float?
   laborCost     Float?
   manHours      Float?
+  extraHours    Float?   // Horas extras
+  horasDia      Float?   // Horas por dia (default from settings)
   totalCost     Float?
 
   materialsUsedNotes  String?
   servicesPerformed   String?  // SERVIÇOS EXECUTADOS
   managerComment      String?
   managerSignatureUrl String?
+
+  // OS execution fields (filled by technician / store manager)
+  technicianNotes       String?    // SERVIÇOS EXECUTADOS FORA DO SOLICITADO / OBSERVAÇÃO DO TÉCNICO
+  materialsDescribed    String?    // MATERIAIS DESCRITOS PELO SERVIÇO
+  clientRating          String?    // EXCELENTE, ÓTIMO, BOM, REGULAR, INSATISFEITO
+  clientComment         String?    // COMENTÁRIOS DO CLIENTE (GERENTE)
+  receivedByName        String?    // RECEBIDO E CONFERIDO - NOME
+  receivedByCargo       String?    // RECEBIDO E CONFERIDO - CARGO
+  executionDate         DateTime?  // DATA EXECUÇÃO
+  entryTime             String?    // HR ENTRADA
+  exitTime              String?    // HR SAÍDA
+  executedByName        String?    // EXECUTADO POR - nome
+  executedByCargo       String?    // EXECUTADO POR - cargo
 
   vehicleId String?
   vehicle   Vehicle? @relation(fields: [vehicleId], references: [id])
@@ -298,12 +316,39 @@ model TeamScheduleAssignment {
   serviceOrderId String?
   serviceOrder   ServiceOrder? @relation("ScheduledServiceOrders", fields: [serviceOrderId], references: [id], onDelete: SetNull)
   notes          String?
+  routeOrder     Int?          // Position in daily route (1, 2, 3...)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
   @@index([teamId, date])
   @@index([date])
   @@index([serviceOrderId])
+}
+
+// ============================================
+// Data Suggestions (enrichment review workflow)
+// ============================================
+
+model DataSuggestion {
+  id         String               @id @default(cuid())
+  storeId    String
+  store      Store                @relation(fields: [storeId], references: [id])
+  field      String               // e.g. "address", "phone", "cep", "latitude", "longitude", "kmRoundTrip", "tollRoundTrip"
+  oldValue   String?              // Current value
+  newValue   String               // Suggested value
+  source     String?              // e.g. "google_places", "google_directions"
+  status     DataSuggestionStatus @default(PENDING)
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @updatedAt
+
+  @@index([storeId])
+  @@index([status])
+}
+
+enum DataSuggestionStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 // ============================================

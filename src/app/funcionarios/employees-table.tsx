@@ -1,13 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Search, Pencil, Trash2 } from "lucide-react";
-import { toast } from "sonner";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmployeeForm } from "@/components/forms/employee-form";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -16,9 +14,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { EmployeeForm } from "@/components/forms/employee-form";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { includesNormalized } from "@/lib/utils";
 import type { Employee } from "@prisma/client";
+import { Pencil, Search, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 
 interface EmployeesTableProps {
   employees: Employee[];
@@ -30,9 +31,8 @@ export function EmployeesTable({ employees }: EmployeesTableProps) {
 
   const filteredEmployees = employees.filter(
     (employee) =>
-      employee.shortName.toLowerCase().includes(search.toLowerCase()) ||
-      (employee.fullName &&
-        employee.fullName.toLowerCase().includes(search.toLowerCase()))
+      includesNormalized(employee.shortName, search) ||
+      (employee.fullName && includesNormalized(employee.fullName, search)),
   );
 
   async function handleDelete(employee: Employee) {
@@ -116,7 +116,11 @@ export function EmployeesTable({ employees }: EmployeesTableProps) {
                     <div className="flex items-center gap-1">
                       <EmployeeForm
                         trigger={
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-zinc-500 hover:text-zinc-200">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 text-zinc-500 hover:text-zinc-200"
+                          >
                             <Pencil className="h-3.5 w-3.5" />
                           </Button>
                         }
@@ -127,7 +131,11 @@ export function EmployeesTable({ employees }: EmployeesTableProps) {
                         description={`Tem certeza que deseja excluir "${employee.shortName}"? Esta ação não pode ser desfeita.`}
                         onConfirm={() => handleDelete(employee)}
                         trigger={
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-zinc-500 hover:text-red-400">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 text-zinc-500 hover:text-red-400"
+                          >
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
                         }

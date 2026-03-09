@@ -1,12 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Search, Pencil, Trash2, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
-import { toast } from "sonner";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { StoreForm } from "@/components/forms/store-form";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -15,9 +13,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { StoreForm } from "@/components/forms/store-form";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { includesNormalized } from "@/lib/utils";
 import type { Store } from "@prisma/client";
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  Pencil,
+  Search,
+  Trash2,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 
 function formatCurrency(value: number | null): string {
   if (value === null) return "—";
@@ -36,7 +44,20 @@ interface StoresTableProps {
   stores: Store[];
 }
 
-type StoreSortKey = "code" | "city" | "sigla" | "state" | "kmRoundTrip" | "tollRoundTrip";
+function getTollTotal(store: Store): number {
+  if (store.tollCostGoing != null || store.tollCostReturn != null) {
+    return (store.tollCostGoing ?? 0) + (store.tollCostReturn ?? 0);
+  }
+  return store.tollRoundTrip ?? 0;
+}
+
+type StoreSortKey =
+  | "code"
+  | "city"
+  | "sigla"
+  | "state"
+  | "kmRoundTrip"
+  | "tollRoundTrip";
 type StoreSortDir = "asc" | "desc";
 
 function SortableStoreHead({
@@ -93,10 +114,10 @@ export function StoresTable({ stores }: StoresTableProps) {
 
   const filteredStores = stores.filter(
     (store) =>
-      store.city.toLowerCase().includes(search.toLowerCase()) ||
-      store.code.toLowerCase().includes(search.toLowerCase()) ||
-      store.sigla.toLowerCase().includes(search.toLowerCase()) ||
-      store.address.toLowerCase().includes(search.toLowerCase())
+      includesNormalized(store.city, search) ||
+      includesNormalized(store.code, search) ||
+      includesNormalized(store.sigla, search) ||
+      includesNormalized(store.address, search),
   );
 
   async function handleDelete(store: Store) {
@@ -137,90 +158,150 @@ export function StoresTable({ stores }: StoresTableProps) {
             <TableHeader>
               <TableRow className="border-zinc-800 hover:bg-transparent">
                 <TableHead className="text-zinc-400">#</TableHead>
-                <SortableStoreHead label="Código" sortKey="code" currentKey={sortKey} currentDir={sortDir} onSort={handleSort} />
-                <SortableStoreHead label="Cidade" sortKey="city" currentKey={sortKey} currentDir={sortDir} onSort={handleSort} />
-                <SortableStoreHead label="Sigla" sortKey="sigla" currentKey={sortKey} currentDir={sortDir} onSort={handleSort} />
+                <SortableStoreHead
+                  label="Código"
+                  sortKey="code"
+                  currentKey={sortKey}
+                  currentDir={sortDir}
+                  onSort={handleSort}
+                />
+                <SortableStoreHead
+                  label="Cidade"
+                  sortKey="city"
+                  currentKey={sortKey}
+                  currentDir={sortDir}
+                  onSort={handleSort}
+                />
+                <SortableStoreHead
+                  label="Sigla"
+                  sortKey="sigla"
+                  currentKey={sortKey}
+                  currentDir={sortDir}
+                  onSort={handleSort}
+                />
                 <TableHead className="text-zinc-400">Endereço</TableHead>
-                <SortableStoreHead label="UF" sortKey="state" currentKey={sortKey} currentDir={sortDir} onSort={handleSort} />
+                <SortableStoreHead
+                  label="UF"
+                  sortKey="state"
+                  currentKey={sortKey}
+                  currentDir={sortDir}
+                  onSort={handleSort}
+                />
                 <TableHead className="text-zinc-400">Fone</TableHead>
-                <SortableStoreHead label="KM I/V" sortKey="kmRoundTrip" currentKey={sortKey} currentDir={sortDir} onSort={handleSort} className="text-right" />
-                <SortableStoreHead label="Pedágio I/V" sortKey="tollRoundTrip" currentKey={sortKey} currentDir={sortDir} onSort={handleSort} className="text-right" />
+                <SortableStoreHead
+                  label="KM I/V"
+                  sortKey="kmRoundTrip"
+                  currentKey={sortKey}
+                  currentDir={sortDir}
+                  onSort={handleSort}
+                  className="text-right"
+                />
+                <SortableStoreHead
+                  label="Pedágio I/V"
+                  sortKey="tollRoundTrip"
+                  currentKey={sortKey}
+                  currentDir={sortDir}
+                  onSort={handleSort}
+                  className="text-right"
+                />
                 <TableHead className="text-zinc-400 w-20">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {[...filteredStores].sort((a, b) => {
-                const dir = sortDir === "asc" ? 1 : -1;
-                switch (sortKey) {
-                  case "code":
-                    return (a.storeNumber ?? 0) - (b.storeNumber ?? 0) !== 0
-                      ? ((a.storeNumber ?? 0) - (b.storeNumber ?? 0)) * dir
-                      : a.code.localeCompare(b.code) * dir;
-                  case "city":
-                    return a.city.localeCompare(b.city) * dir;
-                  case "sigla":
-                    return a.sigla.localeCompare(b.sigla) * dir;
-                  case "state":
-                    return a.state.localeCompare(b.state) * dir;
-                  case "kmRoundTrip":
-                    return ((a.kmRoundTrip ?? 0) - (b.kmRoundTrip ?? 0)) * dir;
-                  case "tollRoundTrip":
-                    return ((a.tollRoundTrip ?? 0) - (b.tollRoundTrip ?? 0)) * dir;
-                  default:
-                    return 0;
-                }
-              }).map((store, index) => (
-                <TableRow
-                  key={store.id}
-                  className="border-zinc-800 hover:bg-zinc-800/50 group"
-                >
-                  <TableCell className="font-mono text-zinc-500">
-                    {index + 1}
-                  </TableCell>
-                  <TableCell className="text-zinc-400">
-                    {store.storeNumber ?? store.code}
-                  </TableCell>
-                  <TableCell className="font-medium text-zinc-200">
-                    {store.city}
-                  </TableCell>
-                  <TableCell className="text-zinc-400">{store.sigla}</TableCell>
-                  <TableCell className="text-zinc-400 max-w-[200px] truncate">
-                    {store.address}
-                  </TableCell>
-                  <TableCell className="text-zinc-400">{store.state}</TableCell>
-                  <TableCell className="text-zinc-400">
-                    {store.phone ?? "—"}
-                  </TableCell>
-                  <TableCell className="text-right text-zinc-400">
-                    {formatKm(store.kmRoundTrip)}
-                  </TableCell>
-                  <TableCell className="text-right text-zinc-300 font-medium">
-                    {formatCurrency(store.tollRoundTrip)}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1">
-                      <StoreForm
-                        trigger={
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-zinc-500 hover:text-zinc-200">
-                            <Pencil className="h-3.5 w-3.5" />
-                          </Button>
-                        }
-                        initialData={store}
-                      />
-                      <ConfirmDialog
-                        title="Excluir Loja"
-                        description={`Tem certeza que deseja excluir a loja "${store.city} (${store.sigla})"? Esta ação não pode ser desfeita.`}
-                        onConfirm={() => handleDelete(store)}
-                        trigger={
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-zinc-500 hover:text-red-400">
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </Button>
-                        }
-                      />
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {[...filteredStores]
+                .sort((a, b) => {
+                  const dir = sortDir === "asc" ? 1 : -1;
+                  switch (sortKey) {
+                    case "code":
+                      return (a.storeNumber ?? 0) - (b.storeNumber ?? 0) !== 0
+                        ? ((a.storeNumber ?? 0) - (b.storeNumber ?? 0)) * dir
+                        : a.code.localeCompare(b.code) * dir;
+                    case "city":
+                      return a.city.localeCompare(b.city) * dir;
+                    case "sigla":
+                      return a.sigla.localeCompare(b.sigla) * dir;
+                    case "state":
+                      return a.state.localeCompare(b.state) * dir;
+                    case "kmRoundTrip":
+                      return (
+                        ((a.kmRoundTrip ?? 0) - (b.kmRoundTrip ?? 0)) * dir
+                      );
+                    case "tollRoundTrip":
+                      return (getTollTotal(a) - getTollTotal(b)) * dir;
+                    default:
+                      return 0;
+                  }
+                })
+                .map((store, index) => (
+                  <TableRow
+                    key={store.id}
+                    className="border-zinc-800 hover:bg-zinc-800/50 group"
+                  >
+                    <TableCell className="font-mono text-zinc-500">
+                      {index + 1}
+                    </TableCell>
+                    <TableCell className="text-zinc-400">
+                      {store.storeNumber ?? store.code}
+                    </TableCell>
+                    <TableCell className="font-medium text-zinc-200">
+                      {store.city}
+                    </TableCell>
+                    <TableCell className="text-zinc-400">
+                      {store.sigla}
+                    </TableCell>
+                    <TableCell className="text-zinc-400 max-w-[200px] truncate">
+                      {store.address}
+                    </TableCell>
+                    <TableCell className="text-zinc-400">
+                      {store.state}
+                    </TableCell>
+                    <TableCell className="text-zinc-400">
+                      {store.phone ?? "—"}
+                    </TableCell>
+                    <TableCell className="text-right text-zinc-400">
+                      {formatKm(store.kmRoundTrip)}
+                    </TableCell>
+                    <TableCell className="text-right text-zinc-300 font-medium">
+                      {store.tollCostGoing != null || store.tollCostReturn != null ? (
+                        <span title={`Ida: ${formatCurrency(store.tollCostGoing ?? 0)} / Volta: ${formatCurrency(store.tollCostReturn ?? 0)}`}>
+                          {formatCurrency(getTollTotal(store))}
+                        </span>
+                      ) : (
+                        formatCurrency(store.tollRoundTrip)
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1">
+                        <StoreForm
+                          trigger={
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 text-zinc-500 hover:text-zinc-200"
+                            >
+                              <Pencil className="h-3.5 w-3.5" />
+                            </Button>
+                          }
+                          initialData={store}
+                        />
+                        <ConfirmDialog
+                          title="Excluir Loja"
+                          description={`Tem certeza que deseja excluir a loja "${store.city} (${store.sigla})"? Esta ação não pode ser desfeita.`}
+                          onConfirm={() => handleDelete(store)}
+                          trigger={
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 text-zinc-500 hover:text-red-400"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          }
+                        />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         </CardContent>

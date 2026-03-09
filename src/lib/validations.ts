@@ -101,6 +101,7 @@ export const serviceOrderSchema = z.object({
   transportCost: z.number().nullable().optional(),
   laborCost: z.number().nullable().optional(),
   manHours: z.number().nullable().optional(),
+  extraHours: z.number().nullable().optional(),
   totalCost: z.number().nullable().optional(),
   materialsUsedNotes: z.string().nullable().optional(),
   servicesPerformed: z.string().nullable().optional(),

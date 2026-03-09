@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { normalizeSearch } from "@/lib/utils";
 import { serviceTypeSchema } from "@/lib/validations";
+import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
@@ -8,16 +9,29 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
-    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "50")));
+    const limit = Math.min(
+      100,
+      Math.max(1, parseInt(searchParams.get("limit") || "50")),
+    );
     const q = searchParams.get("q")?.trim();
     const allowedSorts = ["name", "createdAt"] as const;
     const sortParam = searchParams.get("sort") || "name";
     const sort = allowedSorts.includes(sortParam as any) ? sortParam : "name";
-    const order = searchParams.get("order") === "desc" ? "desc" as const : "asc" as const;
+    const order =
+      searchParams.get("order") === "desc"
+        ? ("desc" as const)
+        : ("asc" as const);
 
     const where: any = {};
     if (q) {
-      where.name = { contains: q, mode: "insensitive" };
+      const nq = normalizeSearch(q);
+      const useNormalized = nq !== q.toLowerCase();
+      where.OR = [
+        { name: { contains: q, mode: "insensitive" } },
+        ...(useNormalized
+          ? [{ name: { contains: nq, mode: "insensitive" } }]
+          : []),
+      ];
     }
 
     const [data, total] = await Promise.all([
@@ -36,7 +50,10 @@ export async function GET(req: Request) {
     });
   } catch (error) {
     console.error("[GET /api/servicos]", error);
-    return NextResponse.json({ error: "Failed to fetch service types" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch service types" },
+      { status: 500 },
+    );
   }
 }
 
@@ -47,6 +64,9 @@ export async function POST(req: Request) {
     const serviceType = await prisma.serviceType.create({ data: parsed });
     return NextResponse.json(serviceType, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed to create service type" }, { status: 400 });
+    return NextResponse.json(
+      { error: error.message || "Failed to create service type" },
+      { status: 400 },
+    );
   }
 }

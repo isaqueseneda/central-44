@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { includesNormalized } from "@/lib/utils";
 import { Crown, GripVertical, Search, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FormEvent, ReactNode, useState } from "react";
@@ -152,7 +153,7 @@ export function PersistentTeamForm({
 
   const filteredEmployees = memberSearch
     ? refs.employees.filter((e) =>
-        e.shortName.toLowerCase().includes(memberSearch.toLowerCase()),
+        includesNormalized(e.shortName, memberSearch),
       )
     : refs.employees;
 

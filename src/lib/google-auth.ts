@@ -4,7 +4,10 @@ import path from "path";
 
 const TOKEN_PATH = path.join(process.cwd(), "google-tokens.json");
 
-const SCOPES = ["https://www.googleapis.com/auth/drive.readonly"];
+const SCOPES = [
+  "https://www.googleapis.com/auth/drive.readonly",
+  "https://www.googleapis.com/auth/drive.file",
+];
 
 export function getOAuth2Client() {
   return new google.auth.OAuth2(

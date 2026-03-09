@@ -87,7 +87,7 @@ export async function getTeamScheduleAssignments(weekStart: Date) {
           type: true,
           stores: {
             include: {
-              store: { select: { id: true, sigla: true, city: true } },
+              store: { select: { id: true, sigla: true, city: true, latitude: true, longitude: true, address: true } },
             },
           },
           serviceTypes: {
@@ -96,7 +96,7 @@ export async function getTeamScheduleAssignments(weekStart: Date) {
         },
       },
     },
-    orderBy: [{ date: "asc" }, { team: { name: "asc" } }],
+    orderBy: [{ date: "asc" }, { routeOrder: "asc" }, { team: { name: "asc" } }],
   });
 }
 

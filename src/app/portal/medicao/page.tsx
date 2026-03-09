@@ -1,30 +1,47 @@
 "use client";
 
+import { FileDown } from "lucide-react";
 import { useState } from "react";
-import { FileDown, Calendar } from "lucide-react";
+
+/** Format a local Date as YYYY-MM-DD without timezone shift */
+function toLocalDateStr(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
 
 export default function PortalMedicaoPage() {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
 
   function setThisWeek() {
+    // Weeks start on Sunday. PDF is generated Monday–Saturday.
     const now = new Date();
-    const day = now.getDay();
-    const diffToMon = day === 0 ? -6 : 1 - day;
-    const mon = new Date(now);
-    mon.setDate(now.getDate() + diffToMon);
-    const fri = new Date(mon);
-    fri.setDate(mon.getDate() + 4);
-    setFrom(mon.toISOString().slice(0, 10));
-    setTo(fri.toISOString().slice(0, 10));
+    const day = now.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+
+    // Find the most recent Sunday (start of current week)
+    const sunday = new Date(now);
+    sunday.setDate(now.getDate() - day);
+
+    // Monday = Sunday + 1
+    const monday = new Date(sunday);
+    monday.setDate(sunday.getDate() + 1);
+
+    // Saturday = Sunday + 6
+    const saturday = new Date(sunday);
+    saturday.setDate(sunday.getDate() + 6);
+
+    setFrom(toLocalDateStr(monday));
+    setTo(toLocalDateStr(saturday));
   }
 
   function setThisMonth() {
     const now = new Date();
     const first = new Date(now.getFullYear(), now.getMonth(), 1);
     const last = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    setFrom(first.toISOString().slice(0, 10));
-    setTo(last.toISOString().slice(0, 10));
+    setFrom(toLocalDateStr(first));
+    setTo(toLocalDateStr(last));
   }
 
   return (
@@ -56,7 +73,9 @@ export default function PortalMedicaoPage() {
         {/* Date range */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-zinc-500 mb-1">De</label>
+            <label className="block text-xs font-medium text-zinc-500 mb-1">
+              De
+            </label>
             <input
               type="date"
               value={from}
@@ -65,7 +84,9 @@ export default function PortalMedicaoPage() {
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-zinc-500 mb-1">Até</label>
+            <label className="block text-xs font-medium text-zinc-500 mb-1">
+              Até
+            </label>
             <input
               type="date"
               value={to}
@@ -80,7 +101,10 @@ export default function PortalMedicaoPage() {
           disabled={!from || !to}
           onClick={() => {
             if (from && to) {
-              window.open(`/api/ordens/medicao/pdf?from=${from}&to=${to}`, "_blank");
+              window.open(
+                `/api/ordens/medicao/pdf?from=${from}&to=${to}&status=MEASUREMENT`,
+                "_blank",
+              );
             }
           }}
           className="w-full flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"

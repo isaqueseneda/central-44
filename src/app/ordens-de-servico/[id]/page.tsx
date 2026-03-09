@@ -39,6 +39,7 @@ export default async function OSDetailPage({
     kmRodada: os.kmRodada,
     precoKm: os.precoKm,
     manHours: os.manHours,
+    extraHours: os.extraHours,
     // Financial
     mealAllowance: os.mealAllowance,
     overnightAllowance: os.overnightAllowance,
@@ -63,6 +64,8 @@ export default async function OSDetailPage({
         address: store.address,
         kmRoundTrip: store.kmRoundTrip,
         tollRoundTrip: store.tollRoundTrip,
+        tollCostGoing: store.tollCostGoing,
+        tollCostReturn: store.tollCostReturn,
       },
     })),
     employees: os.employees.map((e) => ({

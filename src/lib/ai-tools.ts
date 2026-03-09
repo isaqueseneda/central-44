@@ -1,4 +1,5 @@
 import { prisma } from "./db";
+import { normalizeSearch } from "./utils";
 
 // ============================================
 // AI Tool Functions - These are called by the
@@ -7,6 +8,8 @@ import { prisma } from "./db";
 // ============================================
 
 export async function searchStores(query: string, state?: string) {
+  const nq = query ? normalizeSearch(query) : "";
+  const useNormalized = query && nq !== query.toLowerCase();
   return prisma.store.findMany({
     where: {
       AND: [
@@ -18,6 +21,16 @@ export async function searchStores(query: string, state?: string) {
                 { sigla: { contains: query, mode: "insensitive" as const } },
                 { code: { contains: query, mode: "insensitive" as const } },
                 { address: { contains: query, mode: "insensitive" as const } },
+                ...(useNormalized
+                  ? [
+                      { city: { contains: nq, mode: "insensitive" as const } },
+                      { sigla: { contains: nq, mode: "insensitive" as const } },
+                      { code: { contains: nq, mode: "insensitive" as const } },
+                      {
+                        address: { contains: nq, mode: "insensitive" as const },
+                      },
+                    ]
+                  : []),
               ],
             }
           : {},
@@ -36,11 +49,22 @@ export async function searchServiceOrders(params: {
 }) {
   const { status, storeName, employeeName, limit = 10 } = params;
 
+  const storeNq = storeName ? normalizeSearch(storeName) : "";
+  const empNq = employeeName ? normalizeSearch(employeeName) : "";
+
   return prisma.serviceOrder.findMany({
     where: {
       AND: [
         status
-          ? { status: status as "NOT_STARTED" | "IN_PROGRESS" | "PAID" | "RETURN_VISIT" | "MEASUREMENT" | "REWORK" }
+          ? {
+              status: status as
+                | "NOT_STARTED"
+                | "IN_PROGRESS"
+                | "PAID"
+                | "RETURN_VISIT"
+                | "MEASUREMENT"
+                | "REWORK",
+            }
           : {},
         storeName
           ? {
@@ -48,8 +72,34 @@ export async function searchServiceOrders(params: {
                 some: {
                   store: {
                     OR: [
-                      { city: { contains: storeName, mode: "insensitive" as const } },
-                      { sigla: { contains: storeName, mode: "insensitive" as const } },
+                      {
+                        city: {
+                          contains: storeName,
+                          mode: "insensitive" as const,
+                        },
+                      },
+                      {
+                        sigla: {
+                          contains: storeName,
+                          mode: "insensitive" as const,
+                        },
+                      },
+                      ...(storeNq !== storeName.toLowerCase()
+                        ? [
+                            {
+                              city: {
+                                contains: storeNq,
+                                mode: "insensitive" as const,
+                              },
+                            },
+                            {
+                              sigla: {
+                                contains: storeNq,
+                                mode: "insensitive" as const,
+                              },
+                            },
+                          ]
+                        : []),
                     ],
                   },
                 },
@@ -61,7 +111,24 @@ export async function searchServiceOrders(params: {
               employees: {
                 some: {
                   employee: {
-                    shortName: { contains: employeeName, mode: "insensitive" as const },
+                    OR: [
+                      {
+                        shortName: {
+                          contains: employeeName,
+                          mode: "insensitive" as const,
+                        },
+                      },
+                      ...(empNq !== employeeName.toLowerCase()
+                        ? [
+                            {
+                              shortName: {
+                                contains: empNq,
+                                mode: "insensitive" as const,
+                              },
+                            },
+                          ]
+                        : []),
+                    ],
                   },
                 },
               },
@@ -154,14 +221,13 @@ export async function getEmployeeWorkload() {
     name: e.shortName,
     totalAssignments: e.assignments.length,
     activeOS: e.assignments.filter(
-      (a) => a.serviceOrder.status === "IN_PROGRESS"
+      (a) => a.serviceOrder.status === "IN_PROGRESS",
     ).length,
     pendingOS: e.assignments.filter(
-      (a) => a.serviceOrder.status === "NOT_STARTED"
+      (a) => a.serviceOrder.status === "NOT_STARTED",
     ).length,
-    completedOS: e.assignments.filter(
-      (a) => a.serviceOrder.status === "PAID"
-    ).length,
+    completedOS: e.assignments.filter((a) => a.serviceOrder.status === "PAID")
+      .length,
   }));
 }
 
@@ -248,7 +314,7 @@ export async function getStoresByRegion(state: string) {
     tollRoundTrip: s.tollRoundTrip,
     totalOS: s.serviceOrders.length,
     pendingOS: s.serviceOrders.filter(
-      (so) => so.serviceOrder.status === "NOT_STARTED"
+      (so) => so.serviceOrder.status === "NOT_STARTED",
     ).length,
     totalRevenue: s.serviceOrders
       .filter((so) => so.serviceOrder.status === "PAID")
@@ -274,9 +340,12 @@ export async function getMaterialsInventory() {
     name: m.name,
     purchasePrice: m.purchasePrice,
     salePrice: m.salePrice,
-    margin: m.purchasePrice && m.salePrice
-      ? ((m.salePrice - m.purchasePrice) / m.purchasePrice * 100).toFixed(1) + "%"
-      : "N/A",
+    margin:
+      m.purchasePrice && m.salePrice
+        ? (((m.salePrice - m.purchasePrice) / m.purchasePrice) * 100).toFixed(
+            1,
+          ) + "%"
+        : "N/A",
     usedInOS: m.serviceOrders.length,
   }));
 }
@@ -300,10 +369,10 @@ export async function getServiceTypeStats() {
     tags: st.tags,
     totalOS: st.serviceOrders.length,
     completedOS: st.serviceOrders.filter(
-      (so) => so.serviceOrder.status === "PAID"
+      (so) => so.serviceOrder.status === "PAID",
     ).length,
     pendingOS: st.serviceOrders.filter(
-      (so) => so.serviceOrder.status === "NOT_STARTED"
+      (so) => so.serviceOrder.status === "NOT_STARTED",
     ).length,
     totalRevenue: st.serviceOrders
       .filter((so) => so.serviceOrder.status === "PAID")

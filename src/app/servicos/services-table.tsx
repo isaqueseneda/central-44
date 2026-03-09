@@ -1,12 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Search, Pencil, Trash2 } from "lucide-react";
-import { toast } from "sonner";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ServiceTypeForm } from "@/components/forms/service-type-form";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -15,8 +13,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ServiceTypeForm } from "@/components/forms/service-type-form";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { includesNormalized } from "@/lib/utils";
+import { Pencil, Search, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 
 interface ServiceRow {
   id: string;
@@ -46,8 +47,8 @@ export function ServicesTable({ services }: { services: ServiceRow[] }) {
 
   const filtered = services.filter(
     (s) =>
-      s.name.toLowerCase().includes(search.toLowerCase()) ||
-      s.tags.some((t) => t.toLowerCase().includes(search.toLowerCase()))
+      includesNormalized(s.name, search) ||
+      s.tags.some((t) => includesNormalized(t, search)),
   );
 
   async function handleDelete(service: ServiceRow) {
@@ -121,7 +122,11 @@ export function ServicesTable({ services }: { services: ServiceRow[] }) {
                     <div className="flex items-center gap-1">
                       <ServiceTypeForm
                         trigger={
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-zinc-500 hover:text-zinc-200">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 text-zinc-500 hover:text-zinc-200"
+                          >
                             <Pencil className="h-3.5 w-3.5" />
                           </Button>
                         }
@@ -132,7 +137,11 @@ export function ServicesTable({ services }: { services: ServiceRow[] }) {
                         description={`Tem certeza que deseja excluir "${service.name}"? Esta ação não pode ser desfeita.`}
                         onConfirm={() => handleDelete(service)}
                         trigger={
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-zinc-500 hover:text-red-400">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 text-zinc-500 hover:text-red-400"
+                          >
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
                         }

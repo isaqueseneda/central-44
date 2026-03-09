@@ -1,25 +1,16 @@
 import { prisma } from "@/lib/db";
+import {
+  fmt,
+  fmtInt,
+  loadLogoBase64,
+  renderRelatorioPage,
+  MONTHS,
+} from "@/lib/pdf-utils";
 import { jsPDF } from "jspdf";
 import { autoTable } from "jspdf-autotable";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
-
-function fmt(v: number | null | undefined): string {
-  if (v == null) return "0,00";
-  return v.toLocaleString("pt-BR", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-}
-
-function fmtInt(v: number | null | undefined): string {
-  if (v == null) return "0";
-  return v.toLocaleString("pt-BR", {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  });
-}
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -27,88 +18,114 @@ export async function GET(req: Request) {
   const to = searchParams.get("to"); // YYYY-MM-DD
   const status = searchParams.get("status"); // optional filter
 
-  if (!from || !to) {
-    return NextResponse.json(
-      { error: "Query params 'from' and 'to' are required (YYYY-MM-DD)" },
-      { status: 400 },
-    );
+  const where: any = {
+    isObra: false,
+  };
+
+  // When dates are provided, apply date-range filter (backwards compat with portal)
+  if (from && to) {
+    const fromDate = new Date(from + "T00:00:00-03:00");
+    const toDate = new Date(to + "T23:59:59-03:00");
+    where.OR = [
+      { date: { gte: fromDate, lte: toDate } },
+      {
+        scheduledAssignments: {
+          some: {
+            OR: [
+              { date: { gte: fromDate, lte: toDate } },
+              { endDate: { gte: fromDate, lte: toDate } },
+            ],
+          },
+        },
+      },
+    ];
   }
 
-  const fromDate = new Date(from + "T00:00:00");
-  const toDate = new Date(to + "T23:59:59");
-
-  // Fetch OS in the date range
-  const where: any = {
-    date: { gte: fromDate, lte: toDate },
-    isObra: false, // Exclude obra orders from medição
-  };
   if (status) {
     where.status = status;
   }
 
+  // Fetch with full includes for individual relatório pages
   const orders = await prisma.serviceOrder.findMany({
     where,
     include: {
       stores: { include: { store: true } },
       employees: { include: { employee: true } },
       vehicle: true,
+      serviceTypes: { include: { serviceType: true } },
+      materials: { include: { material: true } },
+      teams: { include: { team: { include: { members: { include: { employee: true } }, vehicle: true } } } },
     },
     orderBy: { orderNumber: "asc" },
   });
 
   if (orders.length === 0) {
     return NextResponse.json(
-      { error: "Nenhuma OS encontrada no período" },
+      { error: "Nenhuma OS encontrada para medição" },
       { status: 404 },
     );
   }
 
-  // ─── Build PDF (Landscape A4) ───
-  const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+  const logoBase64 = loadLogoBase64();
+
+  // ─── Build PDF (Landscape A4) — Cover page ───
+  const doc = new jsPDF({
+    orientation: "landscape",
+    unit: "mm",
+    format: "a4",
+  });
   const pageW = doc.internal.pageSize.getWidth();
-  const pageH = doc.internal.pageSize.getHeight();
   const margin = 8;
   let y = margin;
 
-  // ─── HEADER ───
-  // Company logo area
-  doc.setFontSize(12);
-  doc.setFont("helvetica", "bold");
-  doc.text("CENTRAL", margin + 2, y + 6);
-  doc.setFontSize(6);
-  doc.setFont("helvetica", "normal");
-  doc.text("ENGENHARIA ELÉTRICA", margin + 2, y + 9);
+  // ─── HEADER with logo ───
+  const logoH = 9;
+  const logoW = logoH * (596 / 173);
+  try {
+    doc.addImage(logoBase64, "PNG", margin + 2, y + 2, logoW, logoH);
+  } catch {
+    // fallback
+  }
 
   // Period and client
-  const months = [
-    "JANEIRO",
-    "FEVEREIRO",
-    "MARÇO",
-    "ABRIL",
-    "MAIO",
-    "JUNHO",
-    "JULHO",
-    "AGOSTO",
-    "SETEMBRO",
-    "OUTUBRO",
-    "NOVEMBRO",
-    "DEZEMBRO",
-  ];
-
-  const dayFrom = fromDate.getDate();
-  const dayTo = toDate.getDate();
-  const monthName = months[fromDate.getMonth()];
-  const year = fromDate.getFullYear();
-  const periodStr = `PERIODO: ${dayFrom} A ${dayTo} DE ${monthName} ${year}`;
+  let periodStr: string;
+  if (from && to) {
+    const fromDate = new Date(from + "T00:00:00-03:00");
+    const toDate = new Date(to + "T23:59:59-03:00");
+    const dayFrom = fromDate.getDate();
+    const dayTo = toDate.getDate();
+    const monthName = MONTHS[fromDate.getMonth()];
+    const year = fromDate.getFullYear();
+    const monthCapitalized = monthName.charAt(0) + monthName.slice(1).toLowerCase();
+    periodStr = `PERIODO: ${dayFrom} a ${dayTo} de ${monthCapitalized} de ${year}`;
+  } else {
+    // Derive period from the earliest and latest OS dates
+    const dates = orders
+      .map((o) => o.date)
+      .filter(Boolean)
+      .map((d) => new Date(d!).getTime());
+    if (dates.length > 0) {
+      const earliest = new Date(Math.min(...dates));
+      const latest = new Date(Math.max(...dates));
+      const monthName = MONTHS[earliest.getMonth()];
+      const monthCap = monthName.charAt(0) + monthName.slice(1).toLowerCase();
+      periodStr = `PERIODO: ${earliest.getDate()} a ${latest.getDate()} de ${monthCap} de ${earliest.getFullYear()}`;
+    } else {
+      const now = new Date();
+      const monthName = MONTHS[now.getMonth()];
+      periodStr = `MEDIÇÃO - ${monthName} ${now.getFullYear()}`;
+    }
+  }
 
   doc.setFontSize(10);
   doc.setFont("helvetica", "bold");
-  doc.text(periodStr, margin + 50, y + 7);
+  doc.text(periodStr, margin + logoW + 8, y + 7);
 
-  // Client name (right)
   doc.setFontSize(16);
   doc.setFont("helvetica", "bold");
-  doc.text("CLIENTE: LOJAS CEM", pageW - margin - 2, y + 8, { align: "right" });
+  doc.text("CLIENTE: LOJAS CEM", pageW - margin - 2, y + 8, {
+    align: "right",
+  });
 
   y += 14;
 
@@ -142,8 +159,6 @@ export async function GET(req: Request) {
     const estac = o.parking ?? 0;
     const materialCost = o.materialCost ?? 0;
     const laborCost = o.laborCost ?? 0;
-
-    // Man-hours: use stored manHours or derive from laborCost / 48
     const mh = o.manHours ?? (laborCost > 0 ? Math.round(laborCost / 48) : 0);
 
     const total =
@@ -204,7 +219,6 @@ export async function GET(req: Request) {
     },
   );
 
-  // Build table rows
   const tableBody = rows.map((r, i) => [
     String(i + 1),
     String(r.orderNumber),
@@ -223,7 +237,6 @@ export async function GET(req: Request) {
     fmt(r.total),
   ]);
 
-  // Totals row
   const totalsRow = [
     "",
     "",
@@ -242,7 +255,6 @@ export async function GET(req: Request) {
     fmt(totals.total),
   ];
 
-  // Multi-row header matching the original format
   autoTable(doc, {
     startY: y,
     margin: { left: margin, right: margin },
@@ -277,6 +289,8 @@ export async function GET(req: Request) {
       lineColor: [0, 0, 0],
       lineWidth: 0.2,
       overflow: "linebreak",
+      fontStyle: "bold",
+      halign: "center",
     },
     headStyles: {
       fillColor: [255, 255, 255],
@@ -294,30 +308,46 @@ export async function GET(req: Request) {
       lineWidth: 0.3,
     },
     columnStyles: {
-      0: { halign: "center", cellWidth: 10 }, // ITEM
-      1: { halign: "center", cellWidth: 16 }, // O.S.
-      2: { halign: "center", cellWidth: 12 }, // FILIAL
-      3: { cellWidth: 55 }, // CIDADE
-      4: { halign: "right", cellWidth: 14 }, // IDA E VOLTA
-      5: { halign: "right", cellWidth: 14 }, // RODADO
-      6: { halign: "right", cellWidth: 18 }, // KM R$
-      7: { halign: "right", cellWidth: 10 }, // H/hs
-      8: { halign: "right", cellWidth: 18 }, // MÃO DE OBRA R$
-      9: { halign: "right", cellWidth: 18 }, // MATERIAL
-      10: { halign: "right", cellWidth: 16 }, // REFEIÇÃO
-      11: { halign: "right", cellWidth: 16 }, // PERNOITE
-      12: { halign: "right", cellWidth: 14 }, // PEDÁGIO
-      13: { halign: "right", cellWidth: 12 }, // ESTAC.
-      14: { halign: "right", cellWidth: 20 }, // TOTAL
+      0: { halign: "center", cellWidth: 10 },
+      1: { halign: "center", cellWidth: 16 },
+      2: { halign: "center", cellWidth: 12 },
+      3: { cellWidth: 55 },
+      4: { halign: "right", cellWidth: 14 },
+      5: { halign: "right", cellWidth: 14 },
+      6: { halign: "right", cellWidth: 18 },
+      7: { halign: "right", cellWidth: 10 },
+      8: { halign: "right", cellWidth: 18 },
+      9: { halign: "right", cellWidth: 18 },
+      10: { halign: "right", cellWidth: 16 },
+      11: { halign: "right", cellWidth: 16 },
+      12: { halign: "right", cellWidth: 14 },
+      13: { halign: "right", cellWidth: 12 },
+      14: { halign: "right", cellWidth: 20 },
     },
     theme: "grid",
   });
 
+  // ─── Individual relatório pages for each OS ───
+  for (const order of orders) {
+    doc.addPage("a4", "portrait");
+    renderRelatorioPage(doc, order as any, logoBase64);
+  }
+
   // Generate PDF buffer
   const pdfBuffer = Buffer.from(doc.output("arraybuffer"));
 
-  const monthAbbr = monthName.slice(0, 3);
-  const filename = `LOJAS CEM - MEDICOES DE ${dayFrom}A${dayTo}${monthAbbr}${String(year).slice(2)}.pdf`;
+  // Build filename
+  let filename: string;
+  if (from && to) {
+    const fromDate = new Date(from + "T00:00:00-03:00");
+    const toDate = new Date(to + "T23:59:59-03:00");
+    const monthName = MONTHS[fromDate.getMonth()];
+    const monthSafe = monthName.charAt(0) + monthName.slice(1).toLowerCase();
+    const monthNoAccent = monthSafe.replace(/ç/g, "c").replace(/[àáâãä]/g, "a").replace(/[èéêë]/g, "e").replace(/[ìíîï]/g, "i").replace(/[òóôõö]/g, "o").replace(/[ùúûü]/g, "u");
+    filename = `Medicao ${fromDate.getDate()} a ${toDate.getDate()} de ${monthNoAccent}.pdf`;
+  } else {
+    filename = `Medicao.pdf`;
+  }
 
   return new NextResponse(pdfBuffer, {
     status: 200,

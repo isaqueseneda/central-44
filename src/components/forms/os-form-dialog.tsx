@@ -4,11 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -26,20 +21,30 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   calcTotalCost,
   DEFAULT_HOUR_PRICE,
+  DEFAULT_HOURS_PER_DAY,
   DEFAULT_KM_PRICE,
   formatBRL,
 } from "@/lib/format";
+import { includesNormalized } from "@/lib/utils";
+import { Switch } from "@/components/ui/switch";
 import {
   Calculator,
   Car,
-  ChevronDown,
   FileText,
   HardHat,
+  Info,
   Loader2,
   MapPin,
   Package,
+  Pencil,
   Plus,
   Search,
   Trash2,
@@ -59,6 +64,25 @@ import {
 import { toast } from "sonner";
 
 // ──────────────────────────────────────────────
+// InfoTip — reusable label + info icon + tooltip
+// ──────────────────────────────────────────────
+
+function InfoTip({ text }: { text: string }) {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Info className="h-3 w-3 text-zinc-600 hover:text-zinc-400 cursor-help inline-block ml-1 shrink-0" />
+        </TooltipTrigger>
+        <TooltipContent side="top" className="max-w-64 text-xs">
+          {text}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
+
+// ──────────────────────────────────────────────
 // Types
 // ──────────────────────────────────────────────
 
@@ -69,9 +93,19 @@ export interface RefStore {
   code: string;
   kmRoundTrip?: number | null;
   tollRoundTrip?: number | null;
+  tollCostGoing?: number | null;
+  tollCostReturn?: number | null;
   storeNumber?: number | null;
   state?: string;
   address?: string;
+}
+
+/** Get effective toll for a store: prefer going+return, fallback to roundTrip */
+function getStoreToll(s: RefStore): number {
+  if (s.tollCostGoing != null || s.tollCostReturn != null) {
+    return (s.tollCostGoing ?? 0) + (s.tollCostReturn ?? 0);
+  }
+  return s.tollRoundTrip ?? 0;
 }
 
 export interface RefEmployee {
@@ -132,7 +166,7 @@ interface OSInitialData {
   vehicleId: string | null;
   storeIds: string[];
   serviceTypeIds: string[];
-  materialIds: string[];
+  materialIds?: string[];
   servicesPerformed?: string | null;
   managerComment?: string | null;
   materialsUsedNotes?: string | null;
@@ -152,15 +186,21 @@ interface OSInitialData {
   tollDiscount?: number | null;
   parking?: number | null;
   manHours?: number | null;
+  extraHours?: number | null;
+  horasDia?: number | null;
   materialDetails?: MaterialDetailEntry[];
   teamIds?: string[];
 }
 
 interface OSFormDialogProps {
-  trigger: ReactNode;
+  trigger?: ReactNode;
   refs: OSFormRefs;
   initialData?: OSInitialData;
   settings?: Record<string, string>;
+  defaultDate?: string;
+  defaultTeamIds?: string[];
+  externalOpen?: boolean;
+  onExternalOpenChange?: (open: boolean) => void;
 }
 
 // ──────────────────────────────────────────────
@@ -193,7 +233,7 @@ function MultiSelectSearch<T extends { id: string }>({
   const [creating, setCreating] = useState(false);
 
   const filtered = search
-    ? items.filter((item) => searchFn(item, search.toLowerCase()))
+    ? items.filter((item) => searchFn(item, search))
     : items;
   const selectedItems = items.filter((i) => selected.includes(i.id));
   const displayItems = expanded ? filtered : filtered.slice(0, 6);
@@ -302,6 +342,607 @@ function MultiSelectSearch<T extends { id: string }>({
 }
 
 // ──────────────────────────────────────────────
+// Service Table Select (inline table with autocomplete)
+// ──────────────────────────────────────────────
+
+function ServiceTableSelect({
+  items,
+  selected,
+  onAdd,
+  onRemove,
+  onCreateNew,
+  onRenameService,
+  onServiceRenamed,
+}: {
+  items: RefServiceType[];
+  selected: string[];
+  onAdd: (id: string) => void;
+  onRemove: (id: string) => void;
+  onCreateNew: (name: string) => Promise<void>;
+  onRenameService?: (id: string, name: string) => Promise<void>;
+  onServiceRenamed?: (id: string, name: string) => void;
+}) {
+  const [search, setSearch] = useState("");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const editRef = useRef<HTMLInputElement>(null);
+
+  const selectedItems = selected
+    .map((id) => items.find((i) => i.id === id))
+    .filter(Boolean) as RefServiceType[];
+  const available = items.filter(
+    (i) => !selected.includes(i.id) && (!search || includesNormalized(i.name, search)),
+  );
+
+  async function handleCreate() {
+    if (!search.trim()) return;
+    setCreating(true);
+    try {
+      await onCreateNew(search.trim().toUpperCase());
+      setSearch("");
+      setDropdownOpen(false);
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao criar serviço");
+    } finally {
+      setCreating(false);
+    }
+  }
+
+  async function handleRenameBlur(id: string, originalName: string) {
+    setEditingId(null);
+    const trimmed = editName.trim();
+    if (!trimmed || trimmed === originalName) return;
+    if (onRenameService) {
+      try {
+        await onRenameService(id, trimmed);
+        onServiceRenamed?.(id, trimmed);
+        toast.success("Serviço renomeado");
+      } catch {
+        toast.error("Erro ao renomear serviço");
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (editingId && editRef.current) {
+      editRef.current.focus();
+      editRef.current.select();
+    }
+  }, [editingId]);
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center gap-1.5 text-xs text-zinc-500 font-medium">
+        <Wrench className="h-3 w-3" />
+        Serviços
+        {selected.length > 0 && (
+          <Badge variant="secondary" className="bg-zinc-800 text-zinc-400 text-[10px] h-4 px-1.5">
+            {selected.length}
+          </Badge>
+        )}
+      </div>
+      <div className="rounded border border-zinc-800 overflow-hidden">
+        <table className="w-full text-xs">
+          <thead>
+            <tr className="bg-zinc-900/60 border-b border-zinc-800">
+              <th className="text-left px-1.5 py-1 text-zinc-500 font-medium">Serviço</th>
+              <th className="w-12" />
+            </tr>
+          </thead>
+          <tbody>
+            {selectedItems.length > 0 ? selectedItems.map((svc) => (
+              <tr key={svc.id} className="border-b border-zinc-800/30 last:border-0 hover:bg-zinc-800/30">
+                <td className="px-1.5 py-0.5 text-zinc-300">
+                  {editingId === svc.id ? (
+                    <input
+                      ref={editRef}
+                      type="text"
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      onBlur={() => handleRenameBlur(svc.id, svc.name)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+                        if (e.key === "Escape") setEditingId(null);
+                      }}
+                      className="w-full bg-transparent border-0 text-xs text-zinc-300 outline-none focus:bg-zinc-800/50 rounded px-0.5 py-0"
+                    />
+                  ) : (
+                    <span
+                      className="cursor-text hover:text-zinc-100"
+                      onClick={() => { setEditingId(svc.id); setEditName(svc.name); }}
+                    >
+                      {svc.name}
+                    </span>
+                  )}
+                </td>
+                <td className="text-center">
+                  <div className="flex items-center">
+                    <button type="button" onClick={() => { setEditingId(svc.id); setEditName(svc.name); }} className="text-zinc-600 hover:text-orange-400 p-0.5" title="Editar">
+                      <Pencil className="h-2.5 w-2.5" />
+                    </button>
+                    <button type="button" onClick={() => onRemove(svc.id)} className="text-zinc-600 hover:text-red-400 p-0.5">
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            )) : (
+              <tr><td colSpan={2} className="text-zinc-600 text-center py-1.5">Nenhum serviço</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+      {/* Autocomplete add */}
+      <div className="relative">
+        <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-500" />
+        <Input
+          ref={inputRef}
+          placeholder="Adicionar serviço..."
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setDropdownOpen(true);
+          }}
+          onFocus={() => setDropdownOpen(true)}
+          onBlur={() => setTimeout(() => setDropdownOpen(false), 200)}
+          className="pl-8 h-8 text-sm border-zinc-800 bg-zinc-900/50"
+        />
+        {dropdownOpen && (search || available.length > 0) && (
+          <div className="absolute z-20 w-full mt-1 max-h-32 overflow-y-auto rounded-lg border border-zinc-800 bg-zinc-900 shadow-lg">
+            {available.slice(0, 8).map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => {
+                  onAdd(item.id);
+                  setSearch("");
+                  setDropdownOpen(false);
+                }}
+                className="w-full text-left px-3 py-1.5 text-xs text-zinc-300 hover:bg-zinc-800 cursor-pointer"
+              >
+                {item.name}
+              </button>
+            ))}
+            {search.trim() && available.length === 0 && (
+              <button
+                type="button"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={handleCreate}
+                disabled={creating}
+                className="flex items-center gap-1.5 w-full px-3 py-1.5 text-xs text-emerald-400 hover:bg-emerald-800/30"
+              >
+                <Plus className="h-3 w-3" />
+                {creating ? "Criando..." : `Criar "${search.trim().toUpperCase()}"`}
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ──────────────────────────────────────────────
+// Material Edit Sub-Dialog
+// ──────────────────────────────────────────────
+
+function MaterialEditDialog({
+  material,
+  detail,
+  open,
+  onOpenChange,
+  onSaveName,
+  onSaveDetail,
+}: {
+  material: RefMaterial;
+  detail: MaterialDetailEntry;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSaveName: (id: string, name: string) => Promise<void>;
+  onSaveDetail: (updated: MaterialDetailEntry) => void;
+}) {
+  const [name, setName] = useState(material.name);
+  const [qty, setQty] = useState(detail.quantity?.toString() ?? "");
+  const [price, setPrice] = useState(detail.unitPrice?.toString() ?? "");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setName(material.name);
+      setQty(detail.quantity?.toString() ?? "");
+      setPrice(detail.unitPrice?.toString() ?? "");
+    }
+  }, [open, material.name, detail.quantity, detail.unitPrice]);
+
+  async function handleSave() {
+    const nameChanged = name.trim() !== material.name;
+    const newDetail: MaterialDetailEntry = {
+      materialId: detail.materialId,
+      quantity: qty ? Number(qty) : null,
+      unitPrice: price ? Number(price) : null,
+    };
+
+    setSaving(true);
+    try {
+      if (nameChanged && name.trim()) {
+        await onSaveName(material.id, name.trim());
+      }
+      onSaveDetail(newDetail);
+      onOpenChange(false);
+    } catch {
+      toast.error("Erro ao salvar material");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-sm" onClick={(e) => e.stopPropagation()}>
+        <DialogHeader>
+          <DialogTitle className="text-base">Editar Material</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3">
+          <div className="space-y-1">
+            <Label className="text-xs text-zinc-400">Nome</Label>
+            <Input value={name} onChange={(e) => setName(e.target.value)} className="h-8 text-sm" />
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1">
+              <Label className="text-xs text-zinc-400">Quantidade</Label>
+              <Input type="number" step="1" min="0" value={qty} onChange={(e) => setQty(e.target.value)} className="h-8 text-sm" placeholder="0" />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs text-zinc-400">Preço unitário (R$)</Label>
+              <Input type="number" step="0.01" min="0" value={price} onChange={(e) => setPrice(e.target.value)} className="h-8 text-sm" placeholder="0,00" />
+            </div>
+          </div>
+          {(Number(qty) || 0) > 0 && (Number(price) || 0) > 0 && (
+            <p className="text-xs text-zinc-400">
+              Total: <span className="text-zinc-200 font-medium">{formatBRL((Number(qty) || 0) * (Number(price) || 0))}</span>
+            </p>
+          )}
+          <div className="flex justify-end gap-2 pt-1">
+            <Button type="button" variant="outline" size="sm" onClick={() => onOpenChange(false)}>Cancelar</Button>
+            <Button type="button" size="sm" onClick={handleSave} disabled={saving} className="bg-blue-600 hover:bg-blue-700">
+              {saving ? "Salvando..." : "Salvar"}
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ──────────────────────────────────────────────
+// Material Table Select (inline details table with autocomplete)
+// ──────────────────────────────────────────────
+
+function MaterialTableSelect({
+  items,
+  selected,
+  details,
+  onAdd,
+  onRemove,
+  onCreateNew,
+  onDetailChange,
+  onRenameMaterial,
+  onMaterialRenamed,
+}: {
+  items: RefMaterial[];
+  selected: string[];
+  details: MaterialDetailEntry[];
+  onAdd: (id: string) => void;
+  onRemove: (id: string) => void;
+  onCreateNew: (name: string) => Promise<void>;
+  onDetailChange: (updated: MaterialDetailEntry[]) => void;
+  onRenameMaterial: (id: string, name: string) => Promise<void>;
+  onMaterialRenamed: (id: string, name: string) => void;
+}) {
+  const [search, setSearch] = useState("");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [editDialogMaterialId, setEditDialogMaterialId] = useState<string | null>(null);
+
+  const available = items.filter(
+    (i) => !selected.includes(i.id) && (!search || includesNormalized(i.name, search)),
+  );
+
+  async function handleCreate() {
+    if (!search.trim()) return;
+    setCreating(true);
+    try {
+      await onCreateNew(search.trim().toUpperCase());
+      setSearch("");
+      setDropdownOpen(false);
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao criar material");
+    } finally {
+      setCreating(false);
+    }
+  }
+
+  const editMat = editDialogMaterialId ? items.find((m) => m.id === editDialogMaterialId) : null;
+  const editDetail = editDialogMaterialId ? details.find((d) => d.materialId === editDialogMaterialId) : null;
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center gap-1.5 text-xs text-zinc-500 font-medium">
+        <Package className="h-3 w-3" />
+        Materiais
+        {selected.length > 0 && (
+          <Badge variant="secondary" className="bg-zinc-800 text-zinc-400 text-[10px] h-4 px-1.5">
+            {selected.length}
+          </Badge>
+        )}
+      </div>
+      <div className="rounded border border-zinc-800 overflow-hidden">
+        <table className="w-full text-xs">
+          <thead>
+            <tr className="bg-zinc-900/60 border-b border-zinc-800">
+              <th className="text-left px-1.5 py-1 text-zinc-500 font-medium">Material</th>
+              <th className="text-center px-0.5 py-1 text-zinc-500 font-medium w-12">Qtd</th>
+              <th className="text-center px-0.5 py-1 text-zinc-500 font-medium w-16">Unit R$</th>
+              <th className="text-right px-1 py-1 text-zinc-500 font-medium w-14">Total</th>
+              <th className="w-10" />
+            </tr>
+          </thead>
+          <tbody>
+            {selected.length > 0 ? details.map((md, idx) => {
+              const mat = items.find((m) => m.id === md.materialId);
+              const lineTotal = (md.quantity ?? 0) * (md.unitPrice ?? 0);
+              return (
+                <tr key={md.materialId} className="border-b border-zinc-800/30 last:border-0 hover:bg-zinc-800/30">
+                  <td className="px-1.5 py-0.5 text-zinc-300 truncate max-w-[120px]">
+                    <span title={mat?.name}>{mat?.name ?? "?"}</span>
+                  </td>
+                  <td className="px-0.5 py-0.5">
+                    <input
+                      type="number" step="1" min="0"
+                      value={md.quantity ?? ""}
+                      onChange={(e) => {
+                        const updated = [...details];
+                        updated[idx] = { ...md, quantity: e.target.value ? Number(e.target.value) : null };
+                        onDetailChange(updated);
+                      }}
+                      className="w-full bg-transparent border-0 text-xs text-center text-zinc-300 outline-none focus:bg-zinc-800/50 rounded px-1 py-0.5 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      placeholder="0"
+                    />
+                  </td>
+                  <td className="px-0.5 py-0.5">
+                    <input
+                      type="number" step="0.01" min="0"
+                      value={md.unitPrice ?? ""}
+                      onChange={(e) => {
+                        const updated = [...details];
+                        updated[idx] = { ...md, unitPrice: e.target.value ? Number(e.target.value) : null };
+                        onDetailChange(updated);
+                      }}
+                      className="w-full bg-transparent border-0 text-xs text-center text-zinc-300 outline-none focus:bg-zinc-800/50 rounded px-1 py-0.5 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      placeholder="0,00"
+                    />
+                  </td>
+                  <td className="px-1 py-0.5 text-right text-zinc-500 text-[10px]">
+                    {lineTotal > 0 ? lineTotal.toFixed(2) : "—"}
+                  </td>
+                  <td className="text-center">
+                    <div className="flex items-center">
+                      <button type="button" onClick={() => setEditDialogMaterialId(md.materialId)} className="text-zinc-600 hover:text-orange-400 p-0.5" title="Editar">
+                        <Pencil className="h-2.5 w-2.5" />
+                      </button>
+                      <button type="button" onClick={() => onRemove(md.materialId)} className="text-zinc-600 hover:text-red-400 p-0.5" title="Remover">
+                        <X className="h-2.5 w-2.5" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            }) : (
+              <tr><td colSpan={5} className="text-zinc-600 text-center py-1.5">Nenhum material</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+      {/* Edit material sub-dialog */}
+      {editMat && editDetail && (
+        <MaterialEditDialog
+          material={editMat}
+          detail={editDetail}
+          open={!!editDialogMaterialId}
+          onOpenChange={(open) => { if (!open) setEditDialogMaterialId(null); }}
+          onSaveName={async (id, newName) => {
+            await onRenameMaterial(id, newName);
+            onMaterialRenamed(id, newName);
+          }}
+          onSaveDetail={(updated) => {
+            const newDetails = details.map((d) => d.materialId === updated.materialId ? updated : d);
+            onDetailChange(newDetails);
+          }}
+        />
+      )}
+      {/* Autocomplete add */}
+      <div className="relative">
+        <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-500" />
+        <Input
+          placeholder="Adicionar material..."
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setDropdownOpen(true);
+          }}
+          onFocus={() => setDropdownOpen(true)}
+          onBlur={() => setTimeout(() => setDropdownOpen(false), 200)}
+          className="pl-8 h-8 text-sm border-zinc-800 bg-zinc-900/50"
+        />
+        {dropdownOpen && (search || available.length > 0) && (
+          <div className="absolute z-20 w-full mt-1 max-h-32 overflow-y-auto rounded-lg border border-zinc-800 bg-zinc-900 shadow-lg">
+            {available.slice(0, 8).map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => {
+                  onAdd(item.id);
+                  setSearch("");
+                  setDropdownOpen(false);
+                }}
+                className="w-full text-left px-3 py-1.5 text-xs text-zinc-300 hover:bg-zinc-800 cursor-pointer"
+              >
+                {item.name}
+              </button>
+            ))}
+            {search.trim() && available.length === 0 && (
+              <button
+                type="button"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={handleCreate}
+                disabled={creating}
+                className="flex items-center gap-1.5 w-full px-3 py-1.5 text-xs text-emerald-400 hover:bg-emerald-800/30"
+              >
+                <Plus className="h-3 w-3" />
+                {creating ? "Criando..." : `Criar "${search.trim().toUpperCase()}"`}
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ──────────────────────────────────────────────
+// Team Edit Sub-Dialog
+// ──────────────────────────────────────────────
+
+function TeamEditDialog({
+  team,
+  allEmployees,
+  open,
+  onOpenChange,
+  onSaved,
+}: {
+  team: RefTeam;
+  allEmployees: RefEmployee[];
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSaved: (teamId: string, newMembers: string[]) => void;
+}) {
+  const [memberIds, setMemberIds] = useState<string[]>([]);
+  const [saving, setSaving] = useState(false);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    if (open) {
+      // Find employee IDs by matching names
+      const ids = team.memberNames
+        .map((name) => allEmployees.find((e) => e.shortName === name)?.id)
+        .filter(Boolean) as string[];
+      setMemberIds(ids);
+      setSearch("");
+    }
+  }, [open, team.id]);
+
+  const available = allEmployees.filter(
+    (e) => !memberIds.includes(e.id) && (!search || includesNormalized(e.shortName, search)),
+  );
+
+  async function handleSave() {
+    setSaving(true);
+    try {
+      const res = await fetch(`/api/equipes/${team.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: team.name,
+          memberIds,
+        }),
+      });
+      if (!res.ok) throw new Error("Erro ao salvar equipe");
+      onSaved(team.id, memberIds);
+      onOpenChange(false);
+      toast.success("Equipe atualizada");
+    } catch {
+      toast.error("Erro ao salvar equipe");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-sm" onClick={(e) => e.stopPropagation()}>
+        <DialogHeader>
+          <DialogTitle className="text-base">Editar Equipe: {team.name}</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3">
+          <div className="space-y-1">
+            <Label className="text-xs text-zinc-400">Membros</Label>
+            {memberIds.length > 0 && (
+              <div className="flex flex-wrap gap-1">
+                {memberIds.map((id) => {
+                  const emp = allEmployees.find((e) => e.id === id);
+                  return emp ? (
+                    <Badge
+                      key={id}
+                      variant="secondary"
+                      className="bg-violet-600/10 text-violet-400 text-xs cursor-pointer hover:bg-violet-600/20"
+                      onClick={() => setMemberIds(memberIds.filter((x) => x !== id))}
+                    >
+                      {emp.shortName}
+                      <X className="h-3 w-3 ml-1" />
+                    </Badge>
+                  ) : null;
+                })}
+              </div>
+            )}
+          </div>
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-500" />
+            <Input
+              placeholder="Buscar funcionário..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-8 h-8 text-sm"
+            />
+          </div>
+          <div className="max-h-32 overflow-y-auto space-y-0.5 rounded-lg border border-zinc-800 bg-zinc-900/30 p-1.5">
+            {available.map((emp) => (
+              <label
+                key={emp.id}
+                className="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-zinc-800/50 cursor-pointer text-xs"
+              >
+                <Checkbox
+                  checked={memberIds.includes(emp.id)}
+                  onCheckedChange={() => {
+                    setMemberIds(
+                      memberIds.includes(emp.id)
+                        ? memberIds.filter((x) => x !== emp.id)
+                        : [...memberIds, emp.id],
+                    );
+                  }}
+                  className="h-3.5 w-3.5"
+                />
+                <span className="text-zinc-300">{emp.shortName}</span>
+              </label>
+            ))}
+          </div>
+          <div className="flex justify-end gap-2 pt-1">
+            <Button type="button" variant="outline" size="sm" onClick={() => onOpenChange(false)}>Cancelar</Button>
+            <Button type="button" size="sm" onClick={handleSave} disabled={saving} className="bg-blue-600 hover:bg-blue-700">
+              {saving ? "Salvando..." : "Salvar"}
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ──────────────────────────────────────────────
 // Main Form
 // ──────────────────────────────────────────────
 
@@ -310,14 +951,26 @@ export function OSFormDialog({
   refs,
   initialData,
   settings,
+  defaultDate,
+  defaultTeamIds,
+  externalOpen,
+  onExternalOpenChange,
 }: OSFormDialogProps) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = externalOpen !== undefined;
+  const open = isControlled ? externalOpen : internalOpen;
+  const setOpen = isControlled
+    ? (v: boolean) => onExternalOpenChange?.(v)
+    : setInternalOpen;
   const [loading, setLoading] = useState(false);
   const [autoSaving, setAutoSaving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const isEdit = !!initialData;
+
+  // Track whether materialIds was provided in initialData (to avoid wiping data on auto-save)
+  const materialIdsProvided = initialData?.materialIds !== undefined;
 
   // Global settings
   const globalPrecoKm = Number(settings?.precoKm) || DEFAULT_KM_PRICE;
@@ -326,16 +979,23 @@ export function OSFormDialog({
   // Local refs state (for inline creates)
   const [localServiceTypes, setLocalServiceTypes] = useState(refs.serviceTypes);
   const [localMaterials, setLocalMaterials] = useState(refs.materials);
+  const [localTeams, setLocalTeams] = useState(refs.teams ?? []);
+  const [editingTeamId, setEditingTeamId] = useState<string | null>(null);
 
   // Form state
+  const [editingName, setEditingName] = useState(false);
   const [name, setName] = useState(initialData?.name ?? "");
   const [type, setType] = useState(initialData?.type ?? "GENERAL");
   const [priority, setPriority] = useState(
     initialData?.priority?.toString() ?? "0",
   );
   const [warranty, setWarranty] = useState(initialData?.warranty ?? false);
-  const [date, setDate] = useState(initialData?.date?.slice(0, 10) ?? "");
-  const [endDate, setEndDate] = useState(initialData?.endDate?.slice(0, 10) ?? "");
+  const [date, setDate] = useState(
+    initialData?.date?.slice(0, 10) ?? defaultDate ?? "",
+  );
+  const [endDate, setEndDate] = useState(
+    initialData?.endDate?.slice(0, 10) ?? "",
+  );
   const [vehicleId, setVehicleId] = useState(initialData?.vehicleId ?? "none");
   const [isObra, setIsObra] = useState(initialData?.isObra ?? false);
   const [storeIds, setStoreIds] = useState<string[]>(
@@ -347,7 +1007,9 @@ export function OSFormDialog({
   const [materialIds, setMaterialIds] = useState<string[]>(
     initialData?.materialIds ?? [],
   );
-  const [teamIds, setTeamIds] = useState<string[]>(initialData?.teamIds ?? []);
+  const [teamIds, setTeamIds] = useState<string[]>(
+    initialData?.teamIds ?? defaultTeamIds ?? [],
+  );
 
   // Report fields
   const [numeroChamado, setNumeroChamado] = useState(
@@ -386,12 +1048,19 @@ export function OSFormDialog({
   const [laborCost, setLaborCost] = useState(
     initialData?.laborCost?.toString() ?? "",
   );
+  const [extraHours, setExtraHours] = useState(
+    initialData?.extraHours?.toString() ?? "",
+  );
   const [materialCost, setMaterialCost] = useState(
     initialData?.materialCost?.toString() ?? "",
   );
-  const [transportCost, setTransportCost] = useState(
-    initialData?.transportCost?.toString() ?? "",
-  );
+  // Transport: always compute from km × price (read-only field)
+  const [transportCost, setTransportCost] = useState(() => {
+    const km = Number(initialData?.kmRodada ?? initialData?.kmIdaVolta ?? 0);
+    const price = Number(initialData?.precoKm) || globalPrecoKm;
+    const cost = km * price;
+    return cost > 0 ? cost.toFixed(2) : "";
+  });
   const [totalCost, setTotalCost] = useState(
     initialData?.totalCost?.toString() ?? "",
   );
@@ -401,23 +1070,30 @@ export function OSFormDialog({
   const [overnightAllowance, setOvernightAllowance] = useState(
     initialData?.overnightAllowance?.toString() ?? "",
   );
-  const [tollDiscount, setTollDiscount] = useState(
-    initialData?.tollDiscount?.toString() ?? "",
-  );
+  // Toll: always compute from store data on open, user can override by typing
+  const [tollDiscount, setTollDiscount] = useState(() => {
+    const selectedStores = (initialData?.storeIds ?? [])
+      .map((id) => refs.stores.find((s) => s.id === id))
+      .filter(Boolean) as RefStore[];
+    const tolls = selectedStores.reduce(
+      (acc, s) => acc + getStoreToll(s),
+      0,
+    );
+    return tolls > 0 ? tolls.toFixed(2) : "";
+  });
   const [parking, setParking] = useState(
     initialData?.parking?.toString() ?? "",
   );
-
   // Per-material details
   const [materialDetailsList, setMaterialDetailsList] = useState<
     MaterialDetailEntry[]
   >(initialData?.materialDetails ?? []);
 
-  // Sections default OPEN
-  const [materialsDetailOpen, setMaterialsDetailOpen] = useState(true);
-
-  // Quick-entry mode
-  const [quickEntry, setQuickEntry] = useState(false);
+  // Horas/Dia (editable, defaults from initialData then global setting)
+  const globalHorasDia = Number(settings?.horasDia) || DEFAULT_HOURS_PER_DAY;
+  const [horasDia, setHorasDia] = useState(
+    initialData?.horasDia?.toString() ?? globalHorasDia.toString(),
+  );
 
   // Auto-calc control
   const [manualOverride, setManualOverride] = useState<Record<string, boolean>>(
@@ -429,18 +1105,19 @@ export function OSFormDialog({
   const isDirty = useRef(false);
 
   function resetForm() {
+    setEditingName(false);
     setName(initialData?.name ?? "");
     setType(initialData?.type ?? "GENERAL");
     setPriority(initialData?.priority?.toString() ?? "0");
     setWarranty(initialData?.warranty ?? false);
-    setDate(initialData?.date?.slice(0, 10) ?? "");
+    setDate(initialData?.date?.slice(0, 10) ?? defaultDate ?? "");
     setEndDate(initialData?.endDate?.slice(0, 10) ?? "");
     setVehicleId(initialData?.vehicleId ?? "none");
     setIsObra(initialData?.isObra ?? false);
     setStoreIds(initialData?.storeIds ?? []);
     setServiceTypeIds(initialData?.serviceTypeIds ?? []);
     setMaterialIds(initialData?.materialIds ?? []);
-    setTeamIds(initialData?.teamIds ?? []);
+    setTeamIds(initialData?.teamIds ?? defaultTeamIds ?? []);
     setNumeroChamado(initialData?.numeroChamado ?? "");
     setSolicitadoPor(initialData?.solicitadoPor ?? "");
     setEnderecoAtendimento(initialData?.enderecoAtendimento ?? "");
@@ -451,20 +1128,35 @@ export function OSFormDialog({
     setKmRodada(initialData?.kmRodada?.toString() ?? "");
     setPrecoKm(initialData?.precoKm?.toString() ?? globalPrecoKm.toString());
     setLaborCost(initialData?.laborCost?.toString() ?? "");
+    setExtraHours(initialData?.extraHours?.toString() ?? "");
     setMaterialCost(initialData?.materialCost?.toString() ?? "");
-    setTransportCost(initialData?.transportCost?.toString() ?? "");
+    // Recompute transport from km × price
+    const resetKm = Number(initialData?.kmRodada ?? initialData?.kmIdaVolta ?? 0);
+    const resetPrice = Number(initialData?.precoKm) || globalPrecoKm;
+    const resetTransport = resetKm * resetPrice;
+    setTransportCost(resetTransport > 0 ? resetTransport.toFixed(2) : "");
     setTotalCost(initialData?.totalCost?.toString() ?? "");
     setMealAllowance(initialData?.mealAllowance?.toString() ?? "");
     setOvernightAllowance(initialData?.overnightAllowance?.toString() ?? "");
-    setTollDiscount(initialData?.tollDiscount?.toString() ?? "");
+    // Recompute toll from store data
+    const resetStores = (initialData?.storeIds ?? [])
+      .map((id) => refs.stores.find((s) => s.id === id))
+      .filter(Boolean) as RefStore[];
+    const resetTolls = resetStores.reduce(
+      (acc, s) => acc + getStoreToll(s),
+      0,
+    );
+    setTollDiscount(resetTolls > 0 ? resetTolls.toFixed(2) : "");
     setParking(initialData?.parking?.toString() ?? "");
     setMaterialDetailsList(initialData?.materialDetails ?? []);
-    setMaterialsDetailOpen(true);
+    setHorasDia(globalHorasDia.toString());
     setManualOverride({});
     setShowDeleteConfirm(false);
     isDirty.current = false;
     setLocalServiceTypes(refs.serviceTypes);
     setLocalMaterials(refs.materials);
+    setLocalTeams(refs.teams ?? []);
+    setEditingTeamId(null);
   }
 
   // ── Auto-save for edit mode ───────────────────────
@@ -493,17 +1185,29 @@ export function OSFormDialog({
       }
       // Also update the schedule assignment's endDate if applicable
       if (initialData.scheduleAssignmentId) {
-        const endDateVal = endDate ? (() => { const d = new Date(endDate + "T12:00:00"); d.setUTCHours(0, 0, 0, 0); return d.toISOString(); })() : null;
-        const schedRes = await fetch(`/api/team-schedule/${initialData.scheduleAssignmentId}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ endDate: endDateVal }),
-        });
+        const endDateVal = endDate
+          ? (() => {
+              const d = new Date(endDate + "T12:00:00");
+              d.setUTCHours(0, 0, 0, 0);
+              return d.toISOString();
+            })()
+          : null;
+        const schedRes = await fetch(
+          `/api/team-schedule/${initialData.scheduleAssignmentId}`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ endDate: endDateVal }),
+          },
+        );
         if (!schedRes.ok) {
-          console.error("[Auto-save] Failed to update schedule assignment endDate");
+          console.error(
+            "[Auto-save] Failed to update schedule assignment endDate",
+          );
         }
       }
       isDirty.current = false;
+      router.refresh();
     } catch {
       // Silent fail for auto-save, user can still manual save
     } finally {
@@ -533,30 +1237,17 @@ export function OSFormDialog({
     if (!manualOverride.kmRodada) {
       setKmRodada(totalKm > 0 ? totalKm.toString() : "");
     }
-    if (!manualOverride.transport) {
-      const km = manualOverride.kmRodada ? Number(kmRodada) || 0 : totalKm;
-      const price = Number(precoKm) || globalPrecoKm;
-      const tolls = selectedStores.reduce(
-        (acc, s) => acc + (s.tollRoundTrip ?? 0),
-        0,
-      );
-      const cost = km * price + tolls;
-      setTransportCost(cost > 0 ? cost.toFixed(2) : "");
-    }
+    // Transport = km × price (tolls are tracked separately in pedágio field)
+    const km = manualOverride.kmRodada ? Number(kmRodada) || 0 : totalKm;
+    const price = Number(precoKm) || globalPrecoKm;
+    const cost = km * price;
+    setTransportCost(cost > 0 ? cost.toFixed(2) : "");
   }
 
   function recalcTransportFromKm(newKmRodada?: string, newPrecoKm?: string) {
-    if (manualOverride.transport) return;
     const km = Number(newKmRodada ?? kmRodada) || 0;
     const price = Number(newPrecoKm ?? precoKm) || globalPrecoKm;
-    const selectedStores = storeIds
-      .map((id) => refs.stores.find((s) => s.id === id))
-      .filter(Boolean) as RefStore[];
-    const tolls = selectedStores.reduce(
-      (acc, s) => acc + (s.tollRoundTrip ?? 0),
-      0,
-    );
-    const cost = km * price + tolls;
+    const cost = km * price;
     setTransportCost(cost > 0 ? cost.toFixed(2) : "");
     return cost;
   }
@@ -631,6 +1322,71 @@ export function OSFormDialog({
     });
   }
 
+  // Computed values for financial preview fields
+  function getEmployeeCount(tIds: string[]): number {
+    if (localTeams.length === 0) return 0;
+    return tIds.reduce((acc, tid) => {
+      const team = localTeams.find((t) => t.id === tid);
+      return acc + (team?.memberNames.length ?? 0);
+    }, 0);
+  }
+
+  function getDaysCount(): number {
+    if (date && endDate) {
+      const d1 = new Date(date + "T12:00:00");
+      const d2 = new Date(endDate + "T12:00:00");
+      const diff = Math.round((d2.getTime() - d1.getTime()) / 86400000) + 1;
+      return Math.max(1, diff);
+    }
+    return 1;
+  }
+
+  function computeManHours(tIds: string[], hpd: string): number {
+    const employees = getEmployeeCount(tIds);
+    const days = getDaysCount();
+    return employees * (Number(hpd) || 0) * days;
+  }
+
+  function computeLaborCost(mh: number): number {
+    return mh * globalPrecoHora;
+  }
+
+  // Auto-recalc labor + total whenever inputs change
+  function recalcLaborAndTotal() {
+    const mh = computeManHours(teamIds, horasDia);
+    const cost = computeLaborCost(mh);
+    setLaborCost(cost > 0 ? cost.toFixed(2) : "");
+    recalcTotal({ labor: cost > 0 ? cost.toFixed(2) : "" });
+  }
+
+  // Recalc labor whenever teams, horasDia, date, or endDate change
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    recalcLaborAndTotal();
+  }, [teamIds.join(","), horasDia, date, endDate]);
+
+  // Auto-fill toll from store DB when dialog opens or stores change
+  // If user hasn't manually overridden, always pull latest toll from store data
+  useEffect(() => {
+    if (manualOverride.toll) return;
+    const selectedStores = storeIds
+      .map((id) => refs.stores.find((s) => s.id === id))
+      .filter(Boolean) as RefStore[];
+    const tolls = selectedStores.reduce(
+      (acc, s) => acc + getStoreToll(s),
+      0,
+    );
+    setTollDiscount(tolls > 0 ? tolls.toFixed(2) : "");
+  }, [storeIds.join(","), manualOverride.toll]);
+
+  // Auto-recalc transport whenever km or price changes
+  useEffect(() => {
+    const km = Number(kmRodada) || 0;
+    const price = Number(precoKm) || globalPrecoKm;
+    const cost = km * price;
+    setTransportCost(cost > 0 ? cost.toFixed(2) : "");
+  }, [kmRodada, precoKm]);
+
   function toggleId(list: string[], id: string): string[] {
     return list.includes(id) ? list.filter((x) => x !== id) : [...list, id];
   }
@@ -658,6 +1414,7 @@ export function OSFormDialog({
   function buildPayload(): Record<string, unknown> {
     const payload: Record<string, unknown> = {
       name: name.trim(),
+      status: initialData?.status ?? "NOT_STARTED",
       type,
       priority: Number(priority),
       warranty,
@@ -666,9 +1423,14 @@ export function OSFormDialog({
       isObra,
       storeIds,
       serviceTypeIds,
-      materialIds,
       teamIds,
     };
+
+    // Only include materialIds if it was provided in initialData or user added materials.
+    // This prevents auto-save from wiping materials when opened from views that don't load material data.
+    if (materialIdsProvided || materialIds.length > 0) {
+      payload.materialIds = materialIds;
+    }
 
     if (numeroChamado) payload.numeroChamado = numeroChamado;
     if (solicitadoPor) payload.solicitadoPor = solicitadoPor;
@@ -691,8 +1453,15 @@ export function OSFormDialog({
       payload.overnightAllowance = Number(overnightAllowance);
     if (tollDiscount) payload.tollDiscount = Number(tollDiscount);
     if (parking) payload.parking = Number(parking);
+    const computedMH = computeManHours(teamIds, horasDia);
+    if (computedMH > 0) payload.manHours = computedMH;
+    if (extraHours) payload.extraHours = Number(extraHours);
+    if (horasDia) payload.horasDia = Number(horasDia);
 
-    if (materialDetailsList.length > 0) {
+    if (
+      (materialIdsProvided || materialIds.length > 0) &&
+      materialDetailsList.length > 0
+    ) {
       payload.materialDetails = materialDetailsList.map((md) => ({
         materialId: md.materialId,
         quantity: md.quantity,
@@ -789,24 +1558,31 @@ export function OSFormDialog({
       const created = await res.json();
       // Also update the schedule assignment's endDate if applicable
       if (isEdit && initialData?.scheduleAssignmentId) {
-        const endDateVal = endDate ? (() => { const d = new Date(endDate + "T12:00:00"); d.setUTCHours(0, 0, 0, 0); return d.toISOString(); })() : null;
-        const schedRes = await fetch(`/api/team-schedule/${initialData.scheduleAssignmentId}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ endDate: endDateVal }),
-        });
+        const endDateVal = endDate
+          ? (() => {
+              const d = new Date(endDate + "T12:00:00");
+              d.setUTCHours(0, 0, 0, 0);
+              return d.toISOString();
+            })()
+          : null;
+        const schedRes = await fetch(
+          `/api/team-schedule/${initialData.scheduleAssignmentId}`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ endDate: endDateVal }),
+          },
+        );
         if (!schedRes.ok) {
-          console.error("[OS Form] Failed to update schedule assignment endDate");
+          console.error(
+            "[OS Form] Failed to update schedule assignment endDate",
+          );
         }
       }
       toast.success(isEdit ? "OS atualizada" : "OS criada");
       setOpen(false);
       if (!isEdit) resetForm();
-      if (quickEntry && !isEdit && created?.id) {
-        router.push(`/ordens-de-servico/${created.id}`);
-      } else {
-        router.refresh();
-      }
+      router.refresh();
     } catch (error: any) {
       toast.error(error.message || "Erro ao salvar OS");
     } finally {
@@ -816,9 +1592,8 @@ export function OSFormDialog({
 
   // Prevent accidental close when form is dirty
   function handleInteractOutside(e: Event) {
-    if (isEdit && isDirty.current) {
-      e.preventDefault();
-    }
+    // Always prevent closing by clicking outside — only X button closes
+    e.preventDefault();
   }
 
   return (
@@ -834,7 +1609,7 @@ export function OSFormDialog({
         if (v) resetForm();
       }}
     >
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
+      {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <DialogContent
         className="max-w-[92vw] w-full max-h-[92vh] overflow-y-auto lg:max-w-6xl"
         onInteractOutside={handleInteractOutside}
@@ -860,151 +1635,15 @@ export function OSFormDialog({
                 <span className="text-xs text-emerald-500">Salvo</span>
               )}
             </div>
-            <div className="flex items-center gap-2">
-              {!isEdit && (
-                <button
-                  type="button"
-                  onClick={() => setQuickEntry(!quickEntry)}
-                  className={`text-sm px-4 py-2 rounded-full transition-colors ${
-                    quickEntry
-                      ? "bg-blue-600/20 text-blue-400 ring-1 ring-blue-600/50"
-                      : "bg-zinc-800 text-zinc-500 hover:text-zinc-300"
-                  }`}
-                >
-                  {quickEntry ? "Modo Completo" : "Entrada Rápida"}
-                </button>
-              )}
-            </div>
+            <div className="flex items-center gap-2" />
           </div>
         </DialogHeader>
 
-        <form
-          onSubmit={handleSubmit}
-          className={`space-y-4 ${quickEntry ? "[&_input]:h-12 [&_input]:text-base" : ""}`}
-        >
-          {/* ═══ TOP ROW: Name, Type, Priority, Date, Vehicle ═══ */}
-          {!quickEntry && (
-            <div className="grid grid-cols-12 gap-3">
-              <div className={`${initialData?.scheduleAssignmentId ? "col-span-3" : "col-span-4"} space-y-1.5`}>
-                <Label className="text-xs text-zinc-400">Nome da OS *</Label>
-                <Input
-                  value={name}
-                  onChange={(e) => {
-                    setName(e.target.value);
-                    scheduleAutoSave();
-                  }}
-                  placeholder="Auto-preenchido pela loja..."
-                  className="h-9 text-sm"
-                  required
-                />
-              </div>
-              <div className="col-span-2 space-y-1.5">
-                <Label className="text-xs text-zinc-400">Tipo</Label>
-                <Select
-                  value={type}
-                  onValueChange={(v) => {
-                    setType(v);
-                    scheduleAutoSave();
-                  }}
-                >
-                  <SelectTrigger className="h-9 text-sm">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="GENERAL">Geral</SelectItem>
-                    <SelectItem value="ALARM">Alarme</SelectItem>
-                    <SelectItem value="LED">LED</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className={`${initialData?.scheduleAssignmentId ? "col-span-1" : "col-span-2"} space-y-1.5`}>
-                <Label className="text-xs text-zinc-400">Prioridade</Label>
-                <Select
-                  value={priority}
-                  onValueChange={(v) => {
-                    setPriority(v);
-                    scheduleAutoSave();
-                  }}
-                >
-                  <SelectTrigger className="h-9 text-sm">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0">Normal</SelectItem>
-                    <SelectItem value="1">⭐</SelectItem>
-                    <SelectItem value="2">⭐⭐</SelectItem>
-                    <SelectItem value="3">⭐⭐⭐</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="col-span-2 space-y-1.5">
-                <Label className="text-xs text-zinc-400">{initialData?.scheduleAssignmentId ? "Data Início" : "Data"}</Label>
-                <Input
-                  type="date"
-                  value={date}
-                  onChange={(e) => {
-                    setDate(e.target.value);
-                    scheduleAutoSave();
-                  }}
-                  className="h-9 text-sm"
-                />
-              </div>
-              {initialData?.scheduleAssignmentId && (
-                <div className="col-span-2 space-y-1.5">
-                  <Label className="text-xs text-zinc-400">Data Fim</Label>
-                  <Input
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => {
-                      setEndDate(e.target.value);
-                      scheduleAutoSave();
-                    }}
-                    className="h-9 text-sm"
-                  />
-                </div>
-              )}
-              <div className="col-span-2 space-y-1.5">
-                <Label className="text-xs text-zinc-400 flex items-center gap-1">
-                  <HardHat className="h-3 w-3" /> Obra
-                </Label>
-                <div className="flex items-center gap-2 h-9">
-                  <Checkbox
-                    checked={isObra}
-                    onCheckedChange={(v) => {
-                      setIsObra(v === true);
-                      scheduleAutoSave();
-                    }}
-                    className="h-4 w-4"
-                  />
-                  <span
-                    className={`text-sm ${isObra ? "text-orange-400 font-medium" : "text-zinc-500"}`}
-                  >
-                    {isObra ? "Sim (sem medição)" : "Não"}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Quick-entry: Date only */}
-          {quickEntry && (
-            <div className="space-y-1.5">
-              <Label className="text-sm text-zinc-400">Data</Label>
-              <Input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="h-12 text-base"
-              />
-            </div>
-          )}
-
-          <div className="border-t border-zinc-800" />
-
-          {/* ═══ 3-COLUMN LAYOUT: Lojas+Func | Serviços+Materiais | Report+KM ═══ */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
-            {/* ── Column 1: Lojas + Funcionários ── */}
-            <div className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3">
+          {/* ═══ 3-COLUMN LAYOUT ═══ */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-5">
+            {/* ── Column 1: Loja + Nome + Equipes + Garantia ── */}
+            <div className="space-y-3">
               <MultiSelectSearch
                 label="Lojas"
                 icon={MapPin}
@@ -1025,12 +1664,17 @@ export function OSFormDialog({
                   );
                   const price = Number(precoKm) || globalPrecoKm;
                   const tolls = selectedStores.reduce(
-                    (acc, s) => acc + (s.tollRoundTrip ?? 0),
+                    (acc, s) => acc + getStoreToll(s),
                     0,
                   );
-                  const newTransport = totalKm * price + tolls;
+                  const newTransport = totalKm * price;
+                  // Auto-fill toll field from store data
+                  if (!manualOverride.toll) {
+                    setTollDiscount(tolls > 0 ? tolls.toFixed(2) : "");
+                  }
                   recalcTotal({
                     transport: newTransport > 0 ? newTransport.toFixed(2) : "",
+                    toll: !manualOverride.toll && tolls > 0 ? tolls.toFixed(2) : undefined,
                   });
                   scheduleAutoSave();
                 }}
@@ -1038,14 +1682,48 @@ export function OSFormDialog({
                   `${s.sigla} - ${s.city}${s.kmRoundTrip ? ` (${s.kmRoundTrip}km)` : ""}`
                 }
                 searchFn={(s, q) =>
-                  s.sigla.toLowerCase().includes(q) ||
-                  s.city.toLowerCase().includes(q) ||
-                  s.code.toLowerCase().includes(q)
+                  includesNormalized(s.sigla, q) ||
+                  includesNormalized(s.city, q) ||
+                  includesNormalized(s.code, q)
                 }
               />
 
+              {/* OS Name — greyed out, click pencil to edit */}
+              <div className="space-y-1">
+                <Label className="text-xs text-zinc-500 flex items-center gap-1">
+                  Nome da OS
+                  {!editingName && (
+                    <button
+                      type="button"
+                      onClick={() => setEditingName(true)}
+                      className="text-zinc-600 hover:text-zinc-300"
+                    >
+                      <Pencil className="h-3 w-3" />
+                    </button>
+                  )}
+                </Label>
+                {editingName ? (
+                  <Input
+                    value={name}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                      scheduleAutoSave();
+                    }}
+                    onBlur={() => { if (!name.trim()) { autoName(storeIds); } setEditingName(false); }}
+                    placeholder="Nome da OS..."
+                    className="h-8 text-sm"
+                    autoFocus
+                    required
+                  />
+                ) : (
+                  <p className="text-sm text-zinc-500 truncate h-8 flex items-center" title={name || "Auto-preenchido pela loja"}>
+                    {name || <span className="italic text-zinc-600">Auto-preenchido pela loja</span>}
+                  </p>
+                )}
+              </div>
+
               {/* Teams selector */}
-              {!quickEntry && refs.teams && refs.teams.length > 0 && (
+              {localTeams.length > 0 && (
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-1.5 text-xs text-zinc-500 font-medium">
                     <UsersRound className="h-3 w-3" />
@@ -1062,26 +1740,38 @@ export function OSFormDialog({
                   {teamIds.length > 0 && (
                     <div className="flex flex-wrap gap-1">
                       {teamIds.map((tid) => {
-                        const t = refs.teams!.find((x) => x.id === tid);
+                        const t = localTeams.find((x) => x.id === tid);
                         return t ? (
                           <Badge
                             key={tid}
                             variant="secondary"
-                            className="bg-violet-600/10 text-violet-400 text-xs cursor-pointer hover:bg-violet-600/20"
-                            onClick={() => {
-                              setTeamIds(teamIds.filter((x) => x !== tid));
-                              scheduleAutoSave();
-                            }}
+                            className="bg-violet-600/10 text-violet-400 text-xs hover:bg-violet-600/20"
                           >
-                            {t.name}
-                            <X className="h-3 w-3 ml-1" />
+                            <span
+                              className="cursor-pointer"
+                              onClick={() => setEditingTeamId(tid)}
+                              title="Editar equipe"
+                            >
+                              {t.name}
+                              <Pencil className="h-2.5 w-2.5 ml-1 inline" />
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setTeamIds(teamIds.filter((x) => x !== tid));
+                                scheduleAutoSave();
+                              }}
+                              className="ml-1"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
                           </Badge>
                         ) : null;
                       })}
                     </div>
                   )}
                   <div className="max-h-28 overflow-y-auto space-y-0.5 rounded-lg border border-zinc-800 bg-zinc-900/30 p-1.5">
-                    {refs.teams.map((t) => (
+                    {localTeams.map((t) => (
                       <label
                         key={t.id}
                         className="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-zinc-800/50 cursor-pointer text-xs"
@@ -1105,408 +1795,354 @@ export function OSFormDialog({
                       </label>
                     ))}
                   </div>
+                  {/* Team edit sub-dialog */}
+                  {editingTeamId && (() => {
+                    const editTeam = localTeams.find((t) => t.id === editingTeamId);
+                    return editTeam ? (
+                      <TeamEditDialog
+                        team={editTeam}
+                        allEmployees={refs.employees}
+                        open={!!editingTeamId}
+                        onOpenChange={(v) => { if (!v) setEditingTeamId(null); }}
+                        onSaved={(teamId, newMemberIds) => {
+                          const newMemberNames = newMemberIds
+                            .map((id) => refs.employees.find((e) => e.id === id)?.shortName)
+                            .filter(Boolean) as string[];
+                          setLocalTeams((prev) =>
+                            prev.map((t) => t.id === teamId ? { ...t, memberNames: newMemberNames } : t),
+                          );
+                          scheduleAutoSave();
+                        }}
+                      />
+                    ) : null;
+                  })()}
                 </div>
               )}
 
-              {/* Warranty checkbox */}
-              {!quickEntry && (
-                <label className="flex items-center gap-2 cursor-pointer">
+              {/* Toggles: Obra + Garantia */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs text-zinc-400">
+                    <HardHat className="h-3 w-3" />
+                    Obra
+                    <InfoTip text="Marque se é uma obra. Obras não entram na medição semanal de serviços." />
+                  </div>
+                  <Switch
+                    checked={isObra}
+                    onCheckedChange={(v) => {
+                      setIsObra(v);
+                      scheduleAutoSave();
+                    }}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs text-zinc-400">
+                    Garantia
+                    <InfoTip text="Serviço em garantia — não gera cobrança para o cliente." />
+                  </div>
                   <Checkbox
                     checked={warranty}
                     onCheckedChange={(v) => {
                       setWarranty(v === true);
                       scheduleAutoSave();
                     }}
-                  />
-                  <span className="text-sm text-zinc-300">Garantia</span>
-                </label>
-              )}
-            </div>
-
-            {/* ── Column 2: Serviços + Materiais ── */}
-            {!quickEntry && (
-              <div className="space-y-4">
-                <MultiSelectSearch
-                  label="Serviços"
-                  icon={Wrench}
-                  items={localServiceTypes}
-                  selected={serviceTypeIds}
-                  onToggle={(id) => {
-                    setServiceTypeIds(toggleId(serviceTypeIds, id));
-                    scheduleAutoSave();
-                  }}
-                  renderItem={(s) => s.name}
-                  searchFn={(s, q) => s.name.toLowerCase().includes(q)}
-                  onCreateNew={handleCreateServiceType}
-                  createLabel="Serviço"
-                />
-
-                <MultiSelectSearch
-                  label="Materiais"
-                  icon={Package}
-                  items={localMaterials}
-                  selected={materialIds}
-                  onToggle={(id) => {
-                    const newIds = toggleId(materialIds, id);
-                    setMaterialIds(newIds);
-                    const newDetails = syncMaterialDetails(
-                      newIds,
-                      materialDetailsList,
-                    );
-                    setMaterialDetailsList(newDetails);
-                    const cost = recalcMaterialCostFromDetails(newDetails);
-                    recalcTotal({
-                      material:
-                        cost && cost > 0 ? cost.toFixed(2) : materialCost,
-                    });
-                    scheduleAutoSave();
-                  }}
-                  renderItem={(m) => m.name}
-                  searchFn={(m, q) => m.name.toLowerCase().includes(q)}
-                  onCreateNew={handleCreateMaterial}
-                  createLabel="Material"
-                />
-
-                {/* Notes */}
-                <div className="space-y-1.5">
-                  <Label className="text-xs text-zinc-400">
-                    Serviços a realizar
-                  </Label>
-                  <Textarea
-                    value={servicesPerformed}
-                    onChange={(e) => {
-                      setServicesPerformed(e.target.value);
-                      scheduleAutoSave();
-                    }}
-                    rows={2}
-                    className="text-sm resize-none"
-                    placeholder="Descreva o que precisa ser feito..."
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs text-zinc-400">Observações</Label>
-                  <Textarea
-                    value={managerComment}
-                    onChange={(e) => {
-                      setManagerComment(e.target.value);
-                      scheduleAutoSave();
-                    }}
-                    rows={2}
-                    className="text-sm resize-none"
-                    placeholder="Observações adicionais..."
+                    className="h-3.5 w-3.5"
                   />
                 </div>
               </div>
-            )}
+            </div>
 
-            {/* ── Column 3: Report + KM + Financial ── */}
-            {!quickEntry && (
-              <div className="space-y-4">
-                {/* Report fields */}
+            {/* ── Columns 2-3 wrapper ── */}
+            <div className="lg:col-span-2 space-y-3">
+              {/* ── Header row: Type, Priority, Date, EndDate ── */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <div className="space-y-1">
+                  <Label className="text-xs text-zinc-400">Tipo</Label>
+                  <Select
+                    value={type}
+                    onValueChange={(v) => {
+                      setType(v);
+                      scheduleAutoSave();
+                    }}
+                  >
+                    <SelectTrigger className="h-8 text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="GENERAL">Geral</SelectItem>
+                      <SelectItem value="ALARM">Alarme</SelectItem>
+                      <SelectItem value="LED">LED</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs text-zinc-400">Prioridade</Label>
+                  <Select
+                    value={priority}
+                    onValueChange={(v) => {
+                      setPriority(v);
+                      scheduleAutoSave();
+                    }}
+                  >
+                    <SelectTrigger className="h-8 text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="0">Normal</SelectItem>
+                      <SelectItem value="1">⭐</SelectItem>
+                      <SelectItem value="2">⭐⭐</SelectItem>
+                      <SelectItem value="3">⭐⭐⭐</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs text-zinc-400">
+                    {initialData?.scheduleAssignmentId ? "Data Início" : "Data"}
+                  </Label>
+                  <Input
+                    type="date"
+                    value={date}
+                    onChange={(e) => {
+                      setDate(e.target.value);
+                      scheduleAutoSave();
+                    }}
+                    className="h-8 text-sm"
+                  />
+                </div>
+                {initialData?.scheduleAssignmentId ? (
+                  <div className="space-y-1">
+                    <Label className="text-xs text-zinc-400">Data Fim</Label>
+                    <Input
+                      type="date"
+                      value={endDate}
+                      onChange={(e) => {
+                        setEndDate(e.target.value);
+                        scheduleAutoSave();
+                      }}
+                      className="h-8 text-sm"
+                    />
+                  </div>
+                ) : (
+                  <div />
+                )}
+              </div>
+
+              <div className="border-t border-zinc-800" />
+
+              {/* ── Inner 2-column: Serviços+Materiais | Report+KM ── */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-5">
+                {/* ── Sub-column A: Serviços + Materiais ── */}
                 <div className="space-y-3">
-                  <div className="flex items-center gap-1.5 text-xs text-zinc-500 font-medium">
-                    <FileText className="h-3 w-3" />
-                    Dados do Relatório
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-1">
-                      <Label className="text-xs text-zinc-400">
-                        Nº Chamado
-                        {!isEdit && (
-                          <span className="text-emerald-500 text-[10px] ml-1">
-                            auto
-                          </span>
-                        )}
-                      </Label>
-                      <Input
-                        value={numeroChamado}
-                        onChange={(e) => {
-                          setNumeroChamado(e.target.value);
-                          scheduleAutoSave();
-                        }}
-                        className="h-8 text-sm"
-                        placeholder="Auto..."
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-xs text-zinc-400">
-                        Solicitado por
-                      </Label>
-                      <Input
-                        value={solicitadoPor}
-                        onChange={(e) => {
-                          setSolicitadoPor(e.target.value);
-                          scheduleAutoSave();
-                        }}
-                        className="h-8 text-sm"
-                        placeholder="ENGº JOEL..."
-                      />
-                    </div>
-                  </div>
+              {/* ── Services Table ── */}
+              <ServiceTableSelect
+                items={localServiceTypes}
+                selected={serviceTypeIds}
+                onAdd={(id) => {
+                  setServiceTypeIds([...serviceTypeIds, id]);
+                  scheduleAutoSave();
+                }}
+                onRemove={(id) => {
+                  setServiceTypeIds(serviceTypeIds.filter((x) => x !== id));
+                  scheduleAutoSave();
+                }}
+                onCreateNew={handleCreateServiceType}
+                onRenameService={async (id, newName) => {
+                  const res = await fetch(`/api/servicos/${id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name: newName }),
+                  });
+                  if (!res.ok) throw new Error("Erro ao renomear serviço");
+                }}
+                onServiceRenamed={(id, newName) => {
+                  setLocalServiceTypes((prev) => prev.map((s) => s.id === id ? { ...s, name: newName } : s));
+                  scheduleAutoSave();
+                }}
+              />
+
+              {/* ── Materials Table ── */}
+              <MaterialTableSelect
+                items={localMaterials}
+                selected={materialIds}
+                details={materialDetailsList}
+                onAdd={(id) => {
+                  const newIds = [...materialIds, id];
+                  setMaterialIds(newIds);
+                  const newDetails = syncMaterialDetails(newIds, materialDetailsList);
+                  setMaterialDetailsList(newDetails);
+                  const cost = recalcMaterialCostFromDetails(newDetails);
+                  recalcTotal({ material: cost && cost > 0 ? cost.toFixed(2) : materialCost });
+                  scheduleAutoSave();
+                }}
+                onRemove={(id) => {
+                  const newIds = materialIds.filter((x) => x !== id);
+                  setMaterialIds(newIds);
+                  const newDetails = syncMaterialDetails(newIds, materialDetailsList);
+                  setMaterialDetailsList(newDetails);
+                  const cost = recalcMaterialCostFromDetails(newDetails);
+                  recalcTotal({ material: cost && cost > 0 ? cost.toFixed(2) : materialCost });
+                  scheduleAutoSave();
+                }}
+                onCreateNew={handleCreateMaterial}
+                onDetailChange={(updated) => {
+                  setMaterialDetailsList(updated);
+                  const cost = recalcMaterialCostFromDetails(updated);
+                  recalcTotal({ material: cost && cost > 0 ? cost.toFixed(2) : "" });
+                  scheduleAutoSave();
+                }}
+                onRenameMaterial={async (id, newName) => {
+                  const res = await fetch(`/api/materiais/${id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name: newName }),
+                  });
+                  if (!res.ok) throw new Error("Erro ao atualizar material");
+                  toast.success("Nome do material atualizado");
+                }}
+                onMaterialRenamed={(id, newName) => {
+                  setLocalMaterials((prev) => prev.map((m) => m.id === id ? { ...m, name: newName } : m));
+                  scheduleAutoSave();
+                }}
+              />
+
+              {/* Notes */}
+              <div className="space-y-1.5">
+                <Label className="text-xs text-zinc-400">
+                  Serviços a realizar
+                </Label>
+                <Textarea
+                  value={servicesPerformed}
+                  onChange={(e) => {
+                    setServicesPerformed(e.target.value);
+                    scheduleAutoSave();
+                  }}
+                  rows={2}
+                  className="text-sm resize-none"
+                  placeholder="Descreva o que precisa ser feito..."
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs text-zinc-400">Observações</Label>
+                <Textarea
+                  value={managerComment}
+                  onChange={(e) => {
+                    setManagerComment(e.target.value);
+                    scheduleAutoSave();
+                  }}
+                  rows={2}
+                  className="text-sm resize-none"
+                  placeholder="Observações adicionais..."
+                />
+              </div>
+                </div>
+
+                {/* ── Sub-column B: Report + KM + Financial ── */}
+                <div className="space-y-3">
+              {/* Report fields */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-1.5 text-xs text-zinc-500 font-medium">
+                  <FileText className="h-3 w-3" />
+                  Dados do Relatório
+                </div>
+                <div className="grid grid-cols-2 gap-2">
                   <div className="space-y-1">
                     <Label className="text-xs text-zinc-400">
-                      Endereço
-                      {!manualOverride.address && enderecoAtendimento && (
+                      Nº Chamado
+                      <InfoTip text="Número do chamado/ticket aberto pelo cliente." />
+                      {!isEdit && (
                         <span className="text-emerald-500 text-[10px] ml-1">
                           auto
                         </span>
                       )}
                     </Label>
                     <Input
-                      value={enderecoAtendimento}
+                      value={numeroChamado}
                       onChange={(e) => {
-                        setEnderecoAtendimento(e.target.value);
-                        setManualOverride((p) => ({ ...p, address: true }));
+                        setNumeroChamado(e.target.value);
                         scheduleAutoSave();
                       }}
                       className="h-8 text-sm"
-                      placeholder="Auto-preenchido pela loja..."
+                      placeholder="Auto..."
                     />
                   </div>
                   <div className="space-y-1">
                     <Label className="text-xs text-zinc-400">
-                      Serviço solicitado
+                      Solicitado por
                     </Label>
-                    {/* Service tags from selected services */}
-                    {selectedServiceNames.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mb-1">
-                        {selectedServiceNames.map((n) => (
-                          <Badge
-                            key={n}
-                            variant="secondary"
-                            className="bg-blue-600/10 text-blue-400 text-[10px]"
-                          >
-                            {n}
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
-                    <Textarea
-                      value={servicoSolicitado}
+                    <Input
+                      value={solicitadoPor}
                       onChange={(e) => {
-                        setServicoSolicitado(e.target.value);
+                        setSolicitadoPor(e.target.value);
                         scheduleAutoSave();
                       }}
-                      rows={2}
-                      className="text-sm resize-none"
-                      placeholder="Info adicional além dos serviços selecionados..."
+                      className="h-8 text-sm"
+                      placeholder="ENGº JOEL..."
                     />
                   </div>
                 </div>
-
-                {/* KM & Transport */}
-                <div className="space-y-3">
-                  <div className="flex items-center gap-1.5 text-xs text-zinc-500 font-medium">
-                    <Car className="h-3 w-3" />
-                    Transporte
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-1">
-                      <Label className="text-xs text-zinc-400">
-                        KM Ida/Volta
-                        {!manualOverride.km && kmIdaVolta && (
-                          <span className="text-emerald-500 text-[10px] ml-1">
-                            auto
-                          </span>
-                        )}
-                      </Label>
-                      <Input
-                        type="number"
-                        step="1"
-                        value={kmIdaVolta}
-                        onChange={(e) => {
-                          setKmIdaVolta(e.target.value);
-                          setManualOverride((p) => ({ ...p, km: true }));
-                          if (!manualOverride.kmRodada) {
-                            setKmRodada(e.target.value);
-                            const cost = recalcTransportFromKm(e.target.value);
-                            recalcTotal({
-                              transport:
-                                cost && cost > 0 ? cost.toFixed(2) : "",
-                            });
-                          }
-                          scheduleAutoSave();
-                        }}
-                        className="h-8 text-sm"
-                        placeholder="0"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-xs text-zinc-400">KM Rodada</Label>
-                      <Input
-                        type="number"
-                        step="1"
-                        value={kmRodada}
-                        onChange={(e) => {
-                          setKmRodada(e.target.value);
-                          setManualOverride((p) => ({ ...p, kmRodada: true }));
-                          const cost = recalcTransportFromKm(e.target.value);
-                          recalcTotal({
-                            transport: cost && cost > 0 ? cost.toFixed(2) : "",
-                          });
-                          scheduleAutoSave();
-                        }}
-                        className="h-8 text-sm"
-                        placeholder="= Ida/Volta"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-xs text-zinc-400">Preço/KM</Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        value={precoKm}
-                        onChange={(e) => {
-                          setPrecoKm(e.target.value);
-                          const cost = recalcTransportFromKm(
-                            undefined,
-                            e.target.value,
-                          );
-                          recalcTotal({
-                            transport: cost && cost > 0 ? cost.toFixed(2) : "",
-                          });
-                          scheduleAutoSave();
-                        }}
-                        className="h-8 text-sm"
-                        placeholder={globalPrecoKm.toString()}
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-xs text-zinc-400">
-                        Custo Transp.
-                        {!manualOverride.transport && transportCost && (
-                          <span className="text-emerald-500 text-[10px] ml-1">
-                            auto
-                          </span>
-                        )}
-                      </Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        value={transportCost}
-                        onChange={(e) => {
-                          setTransportCost(e.target.value);
-                          setManualOverride((p) => ({ ...p, transport: true }));
-                          recalcTotal({ transport: e.target.value });
-                          scheduleAutoSave();
-                        }}
-                        className="h-8 text-sm"
-                        placeholder="0,00"
-                      />
-                    </div>
-                  </div>
+                <div className="space-y-1">
+                  <Label className="text-xs text-zinc-400">
+                    Endereço
+                    {!manualOverride.address && enderecoAtendimento && (
+                      <span className="text-emerald-500 text-[10px] ml-1">
+                        auto
+                      </span>
+                    )}
+                  </Label>
+                  <Input
+                    value={enderecoAtendimento}
+                    onChange={(e) => {
+                      setEnderecoAtendimento(e.target.value);
+                      setManualOverride((p) => ({ ...p, address: true }));
+                      scheduleAutoSave();
+                    }}
+                    className="h-8 text-sm"
+                    placeholder="Auto-preenchido pela loja..."
+                  />
                 </div>
+                <div className="space-y-1">
+                  <Label className="text-xs text-zinc-400">
+                    Serviços realizados
+                  </Label>
+                  {/* Service tags from selected services */}
+                  {selectedServiceNames.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mb-1">
+                      {selectedServiceNames.map((n) => (
+                        <Badge
+                          key={n}
+                          variant="secondary"
+                          className="bg-blue-600/10 text-blue-400 text-[10px]"
+                        >
+                          {n}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                  <Textarea
+                    value={servicoSolicitado}
+                    onChange={(e) => {
+                      setServicoSolicitado(e.target.value);
+                      scheduleAutoSave();
+                    }}
+                    rows={2}
+                    className="text-sm resize-none"
+                    placeholder="Info adicional além dos serviços selecionados..."
+                  />
+                </div>
+              </div>
 
-                {/* Financial summary */}
-                <div className="space-y-3">
-                  <div className="flex items-center gap-1.5 text-xs text-zinc-500 font-medium">
-                    <Calculator className="h-3 w-3" />
-                    Financeiro
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-1">
-                      <Label className="text-xs text-zinc-400">
-                        M.Obra
-                        {!manualOverride.labor && laborCost && !isEdit && (
-                          <span className="text-emerald-500 text-[10px] ml-1">
-                            auto
-                          </span>
-                        )}
-                      </Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        value={laborCost}
-                        onChange={(e) => {
-                          setLaborCost(e.target.value);
-                          setManualOverride((p) => ({ ...p, labor: true }));
-                          recalcTotal({ labor: e.target.value });
-                          scheduleAutoSave();
-                        }}
-                        className="h-8 text-sm"
-                        placeholder="0,00"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-xs text-zinc-400">Material</Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        value={materialCost}
-                        onChange={(e) => {
-                          setMaterialCost(e.target.value);
-                          recalcTotal({ material: e.target.value });
-                          scheduleAutoSave();
-                        }}
-                        className="h-8 text-sm"
-                        placeholder="0,00"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-xs text-zinc-400">Refeição</Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        value={mealAllowance}
-                        onChange={(e) => {
-                          setMealAllowance(e.target.value);
-                          recalcTotal({ meal: e.target.value });
-                          scheduleAutoSave();
-                        }}
-                        className="h-8 text-sm"
-                        placeholder="0,00"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-xs text-zinc-400">Pernoite</Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        value={overnightAllowance}
-                        onChange={(e) => {
-                          setOvernightAllowance(e.target.value);
-                          recalcTotal({ overnight: e.target.value });
-                          scheduleAutoSave();
-                        }}
-                        className="h-8 text-sm"
-                        placeholder="0,00"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-xs text-zinc-400">Pedágio</Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        value={tollDiscount}
-                        onChange={(e) => {
-                          setTollDiscount(e.target.value);
-                          recalcTotal({ toll: e.target.value });
-                          scheduleAutoSave();
-                        }}
-                        className="h-8 text-sm"
-                        placeholder="0,00"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-xs text-zinc-400">Estacion.</Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        value={parking}
-                        onChange={(e) => {
-                          setParking(e.target.value);
-                          recalcTotal({ park: e.target.value });
-                          scheduleAutoSave();
-                        }}
-                        className="h-8 text-sm"
-                        placeholder="0,00"
-                      />
-                    </div>
-                  </div>
+              {/* KM & Transport */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-1.5 text-xs text-zinc-500 font-medium">
+                  <Car className="h-3 w-3" />
+                  Transporte
+                </div>
+                <div className="grid grid-cols-2 gap-2">
                   <div className="space-y-1">
-                    <Label className="text-xs text-zinc-400 font-semibold">
-                      Total (R$)
-                      {!manualOverride.total && totalCost && (
+                    <Label className="text-xs text-zinc-400">
+                      KM Ida/Volta
+                      <InfoTip text="Quilometragem total de ida e volta até a(s) loja(s). Auto-preenchido com base no cadastro da loja." />
+                      {!manualOverride.km && kmIdaVolta && (
                         <span className="text-emerald-500 text-[10px] ml-1">
                           auto
                         </span>
@@ -1514,174 +2150,294 @@ export function OSFormDialog({
                     </Label>
                     <Input
                       type="number"
-                      step="0.01"
-                      value={totalCost}
+                      step="1"
+                      value={kmIdaVolta}
                       onChange={(e) => {
-                        setTotalCost(e.target.value);
-                        setManualOverride((p) => ({ ...p, total: true }));
+                        setKmIdaVolta(e.target.value);
+                        setManualOverride((p) => ({ ...p, km: true }));
+                        if (!manualOverride.kmRodada) {
+                          setKmRodada(e.target.value);
+                          const cost = recalcTransportFromKm(e.target.value);
+                          recalcTotal({
+                            transport: cost && cost > 0 ? cost.toFixed(2) : "",
+                          });
+                        }
                         scheduleAutoSave();
                       }}
-                      className="h-8 text-sm font-semibold border-emerald-800/50"
+                      className="h-8 text-sm"
+                      placeholder="0"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-zinc-400">
+                      KM Rodada
+                      <InfoTip text="Quilometragem cobrada do cliente. Normalmente igual ao KM Ida/Volta." />
+                    </Label>
+                    <Input
+                      type="number"
+                      step="1"
+                      value={kmRodada}
+                      onChange={(e) => {
+                        setKmRodada(e.target.value);
+                        setManualOverride((p) => ({ ...p, kmRodada: true }));
+                        const cost = recalcTransportFromKm(e.target.value);
+                        recalcTotal({
+                          transport: cost && cost > 0 ? cost.toFixed(2) : "",
+                        });
+                        scheduleAutoSave();
+                      }}
+                      className="h-8 text-sm"
+                      placeholder="= Ida/Volta"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-zinc-400">
+                      Preço/KM
+                      <InfoTip text={`Valor definido globalmente em Ajustes: R$ ${globalPrecoKm.toFixed(2)}/km. Para alterar, vá em Ajustes.`} />
+                    </Label>
+                    <Input
+                      type="number"
+                      value={precoKm}
+                      disabled
+                      className="h-8 text-sm bg-zinc-800/50 text-zinc-500"
+                      placeholder={globalPrecoKm.toString()}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-zinc-400">
+                      Custo Transp.
+                      <InfoTip text="Calculado automaticamente: KM Rodada × Preço/KM. Não editável." />
+                      <span className="text-emerald-500 text-[10px] ml-1">auto</span>
+                    </Label>
+                    <Input
+                      type="number"
+                      value={transportCost}
+                      disabled
+                      className="h-8 text-sm bg-zinc-800/50 text-zinc-500"
                       placeholder="0,00"
                     />
                   </div>
                 </div>
               </div>
-            )}
-          </div>
 
-          {/* ═══ FULL WIDTH SECTIONS: Material Details ═══ */}
-          {!quickEntry && (
-            <>
-              {/* Per-Material Details */}
-              {materialIds.length > 0 && (
-                <Collapsible
-                  open={materialsDetailOpen}
-                  onOpenChange={setMaterialsDetailOpen}
-                >
-                  <CollapsibleTrigger asChild>
-                    <button
-                      type="button"
-                      className="flex items-center gap-1.5 text-xs text-zinc-500 font-medium hover:text-zinc-300 w-full border-t border-zinc-800 pt-3"
-                    >
-                      <Package className="h-3 w-3" />
-                      Detalhes de Materiais
-                      <Badge
-                        variant="secondary"
-                        className="bg-zinc-800 text-zinc-400 text-[10px] h-4 px-1.5 ml-1"
-                      >
-                        {materialIds.length}
-                      </Badge>
-                      <ChevronDown
-                        className={`h-3 w-3 ml-auto transition-transform ${materialsDetailOpen ? "rotate-180" : ""}`}
-                      />
-                    </button>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent className="space-y-2 pt-3">
-                    <div className="rounded-lg border border-zinc-800 overflow-hidden">
-                      <table className="w-full text-xs">
-                        <thead>
-                          <tr className="bg-zinc-900/50 border-b border-zinc-800">
-                            <th className="text-left px-2 py-1.5 text-zinc-500 font-medium">
-                              Material
-                            </th>
-                            <th className="text-center px-2 py-1.5 text-zinc-500 font-medium w-20">
-                              Qtd
-                            </th>
-                            <th className="text-center px-2 py-1.5 text-zinc-500 font-medium w-24">
-                              Unit R$
-                            </th>
-                            <th className="text-right px-2 py-1.5 text-zinc-500 font-medium w-24">
-                              Total R$
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {materialDetailsList.map((md, idx) => {
-                            const mat = localMaterials.find(
-                              (m) => m.id === md.materialId,
-                            );
-                            const lineTotal =
-                              (md.quantity ?? 0) * (md.unitPrice ?? 0);
-                            return (
-                              <tr
-                                key={md.materialId}
-                                className="border-b border-zinc-800/50 last:border-0"
-                              >
-                                <td className="px-2 py-1.5 text-zinc-300">
-                                  {mat?.name ?? "?"}
-                                </td>
-                                <td className="px-1 py-1">
-                                  <Input
-                                    type="number"
-                                    step="1"
-                                    min="0"
-                                    value={md.quantity ?? ""}
-                                    onChange={(e) => {
-                                      const updated = [...materialDetailsList];
-                                      updated[idx] = {
-                                        ...md,
-                                        quantity: e.target.value
-                                          ? Number(e.target.value)
-                                          : null,
-                                      };
-                                      setMaterialDetailsList(updated);
-                                      const cost =
-                                        recalcMaterialCostFromDetails(updated);
-                                      recalcTotal({
-                                        material:
-                                          cost && cost > 0
-                                            ? cost.toFixed(2)
-                                            : "",
-                                      });
-                                      scheduleAutoSave();
-                                    }}
-                                    className="h-7 text-xs text-center w-full"
-                                    placeholder="0"
-                                  />
-                                </td>
-                                <td className="px-1 py-1">
-                                  <Input
-                                    type="number"
-                                    step="0.01"
-                                    min="0"
-                                    value={md.unitPrice ?? ""}
-                                    onChange={(e) => {
-                                      const updated = [...materialDetailsList];
-                                      updated[idx] = {
-                                        ...md,
-                                        unitPrice: e.target.value
-                                          ? Number(e.target.value)
-                                          : null,
-                                      };
-                                      setMaterialDetailsList(updated);
-                                      const cost =
-                                        recalcMaterialCostFromDetails(updated);
-                                      recalcTotal({
-                                        material:
-                                          cost && cost > 0
-                                            ? cost.toFixed(2)
-                                            : "",
-                                      });
-                                      scheduleAutoSave();
-                                    }}
-                                    className="h-7 text-xs text-center w-full"
-                                    placeholder="0,00"
-                                  />
-                                </td>
-                                <td className="px-2 py-1.5 text-right text-zinc-400">
-                                  {lineTotal > 0 ? formatBRL(lineTotal) : "—"}
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
-                  </CollapsibleContent>
-                </Collapsible>
-              )}
-            </>
-          )}
-
-          {/* Quick-entry notes */}
-          {quickEntry && (
-            <>
-              <div className="border-t border-zinc-800" />
-              <div className="space-y-1.5">
-                <Label className="text-sm text-zinc-400">
-                  Serviço a realizar
-                </Label>
-                <Textarea
-                  value={servicesPerformed}
-                  onChange={(e) => setServicesPerformed(e.target.value)}
-                  rows={3}
-                  className="text-base resize-none"
-                  placeholder="Descreva o que precisa ser feito..."
-                />
+              {/* Financial summary */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-1.5 text-xs text-zinc-500 font-medium">
+                  <Calculator className="h-3 w-3" />
+                  Financeiro
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  {/* Horas/Dia — the ONLY editable labor field */}
+                  <div className="space-y-1">
+                    <Label className="text-xs text-zinc-400">
+                      Horas/Dia
+                      <InfoTip text={`Horas trabalhadas por dia pela equipe. Padrão: ${globalHorasDia}h (configurável em Ajustes).`} />
+                    </Label>
+                    <Input
+                      type="number"
+                      step="1"
+                      value={horasDia}
+                      onChange={(e) => {
+                        setHorasDia(e.target.value);
+                        scheduleAutoSave();
+                      }}
+                      className="h-8 text-sm"
+                      placeholder={globalHorasDia.toString()}
+                    />
+                  </div>
+                  {/* Nº Func. — greyed-out preview */}
+                  <div className="space-y-1">
+                    <Label className="text-xs text-zinc-400">
+                      Nº Func.
+                      <InfoTip text="Quantidade de funcionários nas equipes selecionadas. Calculado automaticamente." />
+                    </Label>
+                    <Input
+                      type="number"
+                      value={getEmployeeCount(teamIds)}
+                      disabled
+                      className="h-8 text-sm bg-zinc-800/50 text-zinc-500"
+                    />
+                  </div>
+                  {/* Homem-Hora — greyed-out preview */}
+                  <div className="space-y-1">
+                    <Label className="text-xs text-zinc-400">
+                      Homem-Hora
+                      <InfoTip text={`Total de horas: Nº Func. × Horas/Dia × Dias. Ex: 2 técnicos × ${globalHorasDia}h × 1 dia = ${2 * globalHorasDia}h.`} />
+                    </Label>
+                    <Input
+                      type="number"
+                      value={computeManHours(teamIds, horasDia) || ""}
+                      disabled
+                      className="h-8 text-sm bg-zinc-800/50 text-zinc-500"
+                    />
+                  </div>
+                  {/* Horas Extras */}
+                  <div className="space-y-1">
+                    <Label className="text-xs text-zinc-400">
+                      H. Extras
+                      <InfoTip text="Horas extras trabalhadas pela equipe. Somadas ao cálculo de mão de obra." />
+                    </Label>
+                    <Input
+                      type="number"
+                      step="0.5"
+                      min="0"
+                      value={extraHours}
+                      onChange={(e) => {
+                        setExtraHours(e.target.value);
+                        scheduleAutoSave();
+                      }}
+                      className="h-8 text-sm"
+                      placeholder="0"
+                    />
+                  </div>
+                  {/* M.Obra — greyed-out preview */}
+                  <div className="space-y-1">
+                    <Label className="text-xs text-zinc-400">
+                      M.Obra
+                      <InfoTip text={`Custo de mão de obra: Homem-Hora × R$ ${globalPrecoHora.toFixed(2)}/h (configurável em Ajustes).`} />
+                    </Label>
+                    <Input
+                      type="number"
+                      value={laborCost}
+                      disabled
+                      className="h-8 text-sm bg-zinc-800/50 text-zinc-500"
+                      placeholder="0,00"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-zinc-400">
+                      Material
+                      <InfoTip text="Custo total de materiais. Pré-calculado pela soma dos materiais acima. Editável para ajuste manual." />
+                      {!manualOverride.material && materialCost && (
+                        <span className="text-emerald-500 text-[10px] ml-1">auto</span>
+                      )}
+                    </Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={materialCost}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setMaterialCost(val);
+                        if (val) {
+                          setManualOverride((p) => ({ ...p, material: true }));
+                        } else {
+                          // Empty → revert to auto-fill from details
+                          setManualOverride((p) => ({ ...p, material: false }));
+                          recalcMaterialCostFromDetails(materialDetailsList);
+                        }
+                        recalcTotal({ material: val });
+                        scheduleAutoSave();
+                      }}
+                      className="h-8 text-sm"
+                      placeholder="0,00"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-zinc-400">Refeição</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={mealAllowance}
+                      onChange={(e) => {
+                        setMealAllowance(e.target.value);
+                        recalcTotal({ meal: e.target.value });
+                        scheduleAutoSave();
+                      }}
+                      className="h-8 text-sm"
+                      placeholder="0,00"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-zinc-400">Pernoite</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={overnightAllowance}
+                      onChange={(e) => {
+                        setOvernightAllowance(e.target.value);
+                        recalcTotal({ overnight: e.target.value });
+                        scheduleAutoSave();
+                      }}
+                      className="h-8 text-sm"
+                      placeholder="0,00"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-zinc-400">
+                      Pedágio
+                      {!manualOverride.toll && tollDiscount && (
+                        <span className="text-emerald-500 text-[10px] ml-1">auto</span>
+                      )}
+                    </Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={tollDiscount}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setTollDiscount(val);
+                        if (val) {
+                          setManualOverride((p) => ({ ...p, toll: true }));
+                        } else {
+                          // Empty → revert to auto-fill from store DB
+                          setManualOverride((p) => ({ ...p, toll: false }));
+                        }
+                        recalcTotal({ toll: val });
+                        scheduleAutoSave();
+                      }}
+                      className="h-8 text-sm"
+                      placeholder="0,00"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-zinc-400">Estacion.</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={parking}
+                      onChange={(e) => {
+                        setParking(e.target.value);
+                        recalcTotal({ park: e.target.value });
+                        scheduleAutoSave();
+                      }}
+                      className="h-8 text-sm"
+                      placeholder="0,00"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs text-zinc-400 font-semibold">
+                    Total (R$)
+                    <InfoTip text="Soma de todos os custos: Mão de Obra + Material + Transporte + Refeição + Pernoite + Pedágio + Estacionamento." />
+                    {!manualOverride.total && totalCost && (
+                      <span className="text-emerald-500 text-[10px] ml-1">
+                        auto
+                      </span>
+                    )}
+                  </Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={totalCost}
+                    onChange={(e) => {
+                      setTotalCost(e.target.value);
+                      setManualOverride((p) => ({ ...p, total: true }));
+                      scheduleAutoSave();
+                    }}
+                    className="h-8 text-sm font-semibold border-emerald-800/50"
+                    placeholder="0,00"
+                  />
+                </div>
               </div>
-            </>
-          )}
+              {/* close sub-column B */}
+              </div>
+            {/* close inner 2-col grid */}
+            </div>
+          {/* close cols 2-3 wrapper */}
+          </div>
+        {/* close outer 3-col grid */}
+        </div>
 
           {/* ═══ ACTIONS ═══ */}
           <div className="border-t border-zinc-800 pt-3" />
@@ -1737,15 +2493,13 @@ export function OSFormDialog({
               <Button
                 type="submit"
                 disabled={loading}
-                className={`bg-blue-600 hover:bg-blue-700 ${quickEntry ? "h-12 text-base px-8" : ""}`}
+                className="bg-blue-600 hover:bg-blue-700"
               >
                 {loading
                   ? "Salvando..."
                   : isEdit
                     ? "Salvar alterações"
-                    : quickEntry
-                      ? "Criar e Revisar"
-                      : "Criar OS"}
+                    : "Criar OS"}
               </Button>
             </div>
           </div>

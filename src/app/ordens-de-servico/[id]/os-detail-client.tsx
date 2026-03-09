@@ -84,6 +84,8 @@ export interface OSDetailData {
       address: string;
       kmRoundTrip: number | null;
       tollRoundTrip: number | null;
+      tollCostGoing?: number | null;
+      tollCostReturn?: number | null;
     };
   }[];
   employees: {
@@ -568,9 +570,11 @@ export default function OSDetailClient({ os }: { os: OSDetailData }) {
                       Pedágio Ida/Volta
                     </span>
                     <p className="text-sm text-zinc-200">
-                      {store.tollRoundTrip != null
-                        ? formatBRL(store.tollRoundTrip)
-                        : "—"}
+                      {(store.tollCostGoing != null || store.tollCostReturn != null)
+                        ? formatBRL((store.tollCostGoing ?? 0) + (store.tollCostReturn ?? 0))
+                        : store.tollRoundTrip != null
+                          ? formatBRL(store.tollRoundTrip)
+                          : "—"}
                     </p>
                   </div>
                 </div>

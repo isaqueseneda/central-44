@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { normalizeSearch } from "@/lib/utils";
 import { vehicleSchema } from "@/lib/validations";
+import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
@@ -8,19 +9,33 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
-    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "50")));
+    const limit = Math.min(
+      100,
+      Math.max(1, parseInt(searchParams.get("limit") || "50")),
+    );
     const q = searchParams.get("q")?.trim();
     const isActiveParam = searchParams.get("isActive")?.trim();
     const allowedSorts = ["name", "licensePlate", "createdAt"] as const;
     const sortParam = searchParams.get("sort") || "name";
     const sort = allowedSorts.includes(sortParam as any) ? sortParam : "name";
-    const order = searchParams.get("order") === "desc" ? "desc" as const : "asc" as const;
+    const order =
+      searchParams.get("order") === "desc"
+        ? ("desc" as const)
+        : ("asc" as const);
 
     const where: any = {};
     if (q) {
+      const nq = normalizeSearch(q);
+      const useNormalized = nq !== q.toLowerCase();
       where.OR = [
         { name: { contains: q, mode: "insensitive" } },
         { licensePlate: { contains: q, mode: "insensitive" } },
+        ...(useNormalized
+          ? [
+              { name: { contains: nq, mode: "insensitive" } },
+              { licensePlate: { contains: nq, mode: "insensitive" } },
+            ]
+          : []),
       ];
     }
     if (isActiveParam !== null && isActiveParam !== undefined) {
@@ -43,7 +58,10 @@ export async function GET(req: Request) {
     });
   } catch (error) {
     console.error("[GET /api/frota]", error);
-    return NextResponse.json({ error: "Failed to fetch vehicles" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch vehicles" },
+      { status: 500 },
+    );
   }
 }
 
@@ -54,6 +72,9 @@ export async function POST(req: Request) {
     const vehicle = await prisma.vehicle.create({ data: parsed });
     return NextResponse.json(vehicle, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed to create vehicle" }, { status: 400 });
+    return NextResponse.json(
+      { error: error.message || "Failed to create vehicle" },
+      { status: 400 },
+    );
   }
 }

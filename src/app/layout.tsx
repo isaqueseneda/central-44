@@ -4,6 +4,7 @@ import "./globals.css";
 import { Sidebar, MobileHeader } from "@/components/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { AIChatSidebar } from "@/components/ai-chat";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,17 +28,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className="dark">
+    <html lang="pt-BR" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Sidebar />
-        <MobileHeader />
-        <div className="min-h-screen bg-zinc-950 md:ml-64">
-          <main className="p-6">{children}</main>
-        </div>
-        <AIChatSidebar />
-        <Toaster richColors position="top-right" />
+        <ThemeProvider>
+          <Sidebar />
+          <MobileHeader />
+          <div className="min-h-screen bg-background md:ml-64">
+            <main className="p-6">{children}</main>
+          </div>
+          <AIChatSidebar />
+          <Toaster richColors position="top-right" />
+        </ThemeProvider>
       </body>
     </html>
   );

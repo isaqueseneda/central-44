@@ -28,7 +28,10 @@ export async function GET(
     return NextResponse.json(order);
   } catch (error) {
     console.error("[GET /api/ordens/[id]]", error);
-    return NextResponse.json({ error: "Failed to fetch service order" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch service order" },
+      { status: 500 },
+    );
   }
 }
 
@@ -55,32 +58,34 @@ export async function PUT(
       // Update main record
       const updated = await tx.serviceOrder.update({ where: { id }, data });
 
-      // Update junction tables if provided
-      if (storeIds !== undefined) {
+      // Update junction tables only if the key was actually sent in the request body.
+      // This prevents auto-save from wiping relations when the caller doesn't have the data.
+      if ("storeIds" in body) {
         await tx.serviceOrderStore.deleteMany({
           where: { serviceOrderId: id },
         });
-        for (const storeId of storeIds) {
+        for (const storeId of storeIds ?? []) {
           await tx.serviceOrderStore.create({
             data: { serviceOrderId: id, storeId },
           });
         }
       }
-      if (serviceTypeIds !== undefined) {
+      if ("serviceTypeIds" in body) {
         await tx.serviceOrderServiceType.deleteMany({
           where: { serviceOrderId: id },
         });
-        for (const serviceTypeId of serviceTypeIds) {
+        for (const serviceTypeId of serviceTypeIds ?? []) {
           await tx.serviceOrderServiceType.create({
             data: { serviceOrderId: id, serviceTypeId },
           });
         }
       }
-      if (materialIds !== undefined) {
+      if ("materialIds" in body) {
+        const ids = materialIds ?? [];
         await tx.serviceOrderMaterial.deleteMany({
           where: { serviceOrderId: id },
         });
-        for (const materialId of materialIds) {
+        for (const materialId of ids) {
           const mdData = materialDetails?.find(
             (md) => md.materialId === materialId,
           );
@@ -94,9 +99,9 @@ export async function PUT(
           });
         }
       }
-      if (teamIds !== undefined) {
+      if ("teamIds" in body) {
         await tx.serviceOrderTeam.deleteMany({ where: { serviceOrderId: id } });
-        for (const teamId of teamIds) {
+        for (const teamId of teamIds ?? []) {
           await tx.serviceOrderTeam.create({
             data: { serviceOrderId: id, teamId },
           });
@@ -152,6 +157,7 @@ export async function PATCH(
       "kmRodada",
       "precoKm",
       "manHours",
+      "horasDia",
       "laborCost",
       "materialCost",
       "transportCost",

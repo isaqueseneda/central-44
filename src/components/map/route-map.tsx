@@ -21,6 +21,7 @@ export interface MapTeam {
   driverName: string | null;
   vehicleName: string | null;
   stores: MapStore[];
+  color?: string;
 }
 
 interface RouteMapProps {
@@ -28,6 +29,7 @@ interface RouteMapProps {
   teams?: MapTeam[];
   depot?: { lat: number; lng: number };
   optimizedRoute?: { id: string; lat: number; lng: number; order: number; name: string }[];
+  routeColor?: string;
   height?: string;
 }
 
@@ -46,6 +48,7 @@ export function RouteMap({
   teams = [],
   depot,
   optimizedRoute,
+  routeColor,
   height = "400px",
 }: RouteMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
@@ -54,7 +57,12 @@ export function RouteMap({
 
   useEffect(() => {
     if (!mapRef.current) return;
-    if (mapInstance.current) return; // Already initialized
+
+    // Clean up any existing map instance before creating a new one
+    if (mapInstance.current) {
+      mapInstance.current.remove();
+      mapInstance.current = null;
+    }
 
     let cancelled = false;
 
@@ -118,7 +126,7 @@ export function RouteMap({
 
       // Add team route polylines
       for (const team of teams) {
-        const color = JOB_COLORS[team.jobType] || "#6b7280";
+        const color = team.color || JOB_COLORS[team.jobType] || "#6b7280";
         const teamPoints: [number, number][] = [];
 
         if (depot) teamPoints.push([depot.lat, depot.lng]);
@@ -156,6 +164,7 @@ export function RouteMap({
 
       // Draw optimized route
       if (optimizedRoute && optimizedRoute.length >= 2) {
+        const rc = routeColor || "#3b82f6";
         const routePoints: [number, number][] = [];
         if (depot) routePoints.push([depot.lat, depot.lng]);
 
@@ -165,7 +174,7 @@ export function RouteMap({
 
           const icon = L.divIcon({
             className: "custom-route-icon",
-            html: `<div style="width:22px;height:22px;background:#3b82f6;border:2px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,0.4)">${stop.order}</div>`,
+            html: `<div style="width:22px;height:22px;background:${rc};border:2px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,0.4)">${stop.order}</div>`,
             iconSize: [22, 22],
             iconAnchor: [11, 11],
           });
@@ -177,7 +186,7 @@ export function RouteMap({
         if (depot) routePoints.push([depot.lat, depot.lng]); // Return
 
         L.polyline(routePoints, {
-          color: "#3b82f6",
+          color: rc,
           weight: 3,
           opacity: 0.8,
         }).addTo(map);
@@ -201,7 +210,7 @@ export function RouteMap({
         mapInstance.current = null;
       }
     };
-  }, [stores, teams, depot, optimizedRoute]);
+  }, [stores, teams, depot, optimizedRoute, routeColor]);
 
   return (
     <div className="relative rounded-lg overflow-hidden border border-zinc-800" style={{ height }}>
