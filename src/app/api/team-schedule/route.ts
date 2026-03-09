@@ -104,6 +104,30 @@ export async function POST(request: NextRequest) {
       include: includeClause,
     });
 
+    // Also update the service order: set its date and ensure team is linked
+    if (validated.serviceOrderId) {
+      await prisma.serviceOrder.update({
+        where: { id: validated.serviceOrderId },
+        data: { date: normalizedDate },
+      });
+
+      // Link team to OS if not already linked
+      const existingLink = await prisma.serviceOrderTeam.findFirst({
+        where: {
+          serviceOrderId: validated.serviceOrderId,
+          teamId: validated.teamId,
+        },
+      });
+      if (!existingLink) {
+        await prisma.serviceOrderTeam.create({
+          data: {
+            serviceOrderId: validated.serviceOrderId,
+            teamId: validated.teamId,
+          },
+        });
+      }
+    }
+
     return NextResponse.json(assignment);
   } catch (error) {
     console.error("POST /api/team-schedule error:", error);

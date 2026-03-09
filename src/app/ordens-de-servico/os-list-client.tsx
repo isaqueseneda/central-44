@@ -925,14 +925,6 @@ function HorasDiaCell({
     const employees = getEmployeeCount();
     const mh = employees * parsed;
     const labor = mh * globalPrecoHora;
-    const totalCost =
-      labor +
-      (order.materialCost ?? 0) +
-      (order.transportCost ?? 0) +
-      (order.mealAllowance ?? 0) +
-      (order.overnightAllowance ?? 0) +
-      (order.tollDiscount ?? 0) +
-      (order.parking ?? 0);
 
     try {
       const res = await fetch(`/api/ordens/${order.id}`, {
@@ -942,7 +934,6 @@ function HorasDiaCell({
           horasDia: parsed,
           manHours: mh,
           laborCost: labor,
-          totalCost,
         }),
       });
       if (!res.ok) {
@@ -1121,18 +1112,14 @@ function SpreadsheetTable({
                   <ReadOnlyCell value={order.laborCost} />
                 </td>
                 <td className="px-2 py-1">
-                  <SpreadsheetCell
-                    value={order.materialCost ?? null}
-                    orderId={order.id}
-                    field="materialCost"
-                    onSaved={onRefresh}
-                  />
+                  <ReadOnlyCell value={order.materialCost} />
                 </td>
                 <td className="px-2 py-1">
                   <SpreadsheetCell
                     value={order.mealAllowance ?? null}
                     orderId={order.id}
                     field="mealAllowance"
+
                     onSaved={onRefresh}
                   />
                 </td>
@@ -1141,6 +1128,7 @@ function SpreadsheetTable({
                     value={order.overnightAllowance ?? null}
                     orderId={order.id}
                     field="overnightAllowance"
+
                     onSaved={onRefresh}
                   />
                 </td>
@@ -1149,6 +1137,7 @@ function SpreadsheetTable({
                     value={order.tollDiscount ?? null}
                     orderId={order.id}
                     field="tollDiscount"
+
                     onSaved={onRefresh}
                   />
                 </td>
@@ -1157,6 +1146,7 @@ function SpreadsheetTable({
                     value={order.parking ?? null}
                     orderId={order.id}
                     field="parking"
+
                     onSaved={onRefresh}
                   />
                 </td>

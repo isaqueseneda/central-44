@@ -1070,17 +1070,10 @@ export function OSFormDialog({
   const [overnightAllowance, setOvernightAllowance] = useState(
     initialData?.overnightAllowance?.toString() ?? "",
   );
-  // Toll: always compute from store data on open, user can override by typing
-  const [tollDiscount, setTollDiscount] = useState(() => {
-    const selectedStores = (initialData?.storeIds ?? [])
-      .map((id) => refs.stores.find((s) => s.id === id))
-      .filter(Boolean) as RefStore[];
-    const tolls = selectedStores.reduce(
-      (acc, s) => acc + getStoreToll(s),
-      0,
-    );
-    return tolls > 0 ? tolls.toFixed(2) : "";
-  });
+  // Toll: use saved value if available, otherwise compute from store data
+  const [tollDiscount, setTollDiscount] = useState(
+    initialData?.tollDiscount?.toString() ?? "",
+  );
   const [parking, setParking] = useState(
     initialData?.parking?.toString() ?? "",
   );
@@ -1095,9 +1088,15 @@ export function OSFormDialog({
     initialData?.horasDia?.toString() ?? globalHorasDia.toString(),
   );
 
-  // Auto-calc control
+  // Auto-calc control — preserve existing saved values (don't overwrite what's in the DB)
   const [manualOverride, setManualOverride] = useState<Record<string, boolean>>(
-    {},
+    () => {
+      if (!initialData) return {};
+      return {
+        km: (initialData.kmIdaVolta ?? 0) > 0,
+        kmRodada: (initialData.kmRodada ?? 0) > 0,
+      };
+    },
   );
 
   // Auto-save debounce ref
@@ -1138,19 +1137,20 @@ export function OSFormDialog({
     setTotalCost(initialData?.totalCost?.toString() ?? "");
     setMealAllowance(initialData?.mealAllowance?.toString() ?? "");
     setOvernightAllowance(initialData?.overnightAllowance?.toString() ?? "");
-    // Recompute toll from store data
-    const resetStores = (initialData?.storeIds ?? [])
-      .map((id) => refs.stores.find((s) => s.id === id))
-      .filter(Boolean) as RefStore[];
-    const resetTolls = resetStores.reduce(
-      (acc, s) => acc + getStoreToll(s),
-      0,
-    );
-    setTollDiscount(resetTolls > 0 ? resetTolls.toFixed(2) : "");
+    // Use saved toll value, don't recompute from store data
+    setTollDiscount(initialData?.tollDiscount?.toString() ?? "");
     setParking(initialData?.parking?.toString() ?? "");
     setMaterialDetailsList(initialData?.materialDetails ?? []);
-    setHorasDia(globalHorasDia.toString());
-    setManualOverride({});
+    setHorasDia(initialData?.horasDia?.toString() ?? globalHorasDia.toString());
+    setManualOverride(() => {
+      if (!initialData) return {};
+      return {
+        km: (initialData.kmIdaVolta ?? 0) > 0,
+        kmRodada: (initialData.kmRodada ?? 0) > 0,
+      };
+    });
+    laborMountRef.current = true;
+    tollMountRef.current = true;
     setShowDeleteConfirm(false);
     isDirty.current = false;
     setLocalServiceTypes(refs.serviceTypes);
@@ -1184,7 +1184,8 @@ export function OSFormDialog({
         throw new Error(err.error || "Erro ao salvar");
       }
       // Also update the schedule assignment's endDate if applicable
-      if (initialData.scheduleAssignmentId) {
+      // Skip virtual assignments (from programação injection)
+      if (initialData.scheduleAssignmentId && !initialData.scheduleAssignmentId.startsWith("virtual-")) {
         const endDateVal = endDate
           ? (() => {
               const d = new Date(endDate + "T12:00:00");
@@ -1201,8 +1202,8 @@ export function OSFormDialog({
           },
         );
         if (!schedRes.ok) {
-          console.error(
-            "[Auto-save] Failed to update schedule assignment endDate",
+          console.warn(
+            "[Auto-save] Schedule assignment endDate update skipped (may not exist)",
           );
         }
       }
@@ -1253,7 +1254,7 @@ export function OSFormDialog({
   }
 
   function recalcMaterialCostFromDetails(details: MaterialDetailEntry[]) {
-    if (manualOverride.material) return;
+    // Material cost is always computed from material details (read-only field)
     const cost = details.reduce(
       (acc, md) => acc + (md.quantity ?? 0) * (md.unitPrice ?? 0),
       0,
@@ -1271,7 +1272,7 @@ export function OSFormDialog({
     toll?: string;
     park?: string;
   }) {
-    if (manualOverride.total) return;
+    // Total is ALWAYS computed from components — never manually overridden
     const total = calcTotalCost({
       laborCost: Number(overrides?.labor ?? laborCost) || 0,
       materialCost: Number(overrides?.material ?? materialCost) || 0,
@@ -1360,15 +1361,25 @@ export function OSFormDialog({
   }
 
   // Recalc labor whenever teams, horasDia, date, or endDate change
+  // Skip the initial mount to preserve saved values; recalc on user changes
+  const laborMountRef = useRef(true);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
+    if (laborMountRef.current) {
+      laborMountRef.current = false;
+      return;
+    }
     recalcLaborAndTotal();
   }, [teamIds.join(","), horasDia, date, endDate]);
 
-  // Auto-fill toll from store DB when dialog opens or stores change
-  // If user hasn't manually overridden, always pull latest toll from store data
+  // Auto-fill toll from store DB when stores change (skip initial mount to preserve saved value)
+  const tollMountRef = useRef(true);
   useEffect(() => {
-    if (manualOverride.toll) return;
+    if (tollMountRef.current) {
+      tollMountRef.current = false;
+      return;
+    }
+    // When user changes stores, recalculate toll from store data
     const selectedStores = storeIds
       .map((id) => refs.stores.find((s) => s.id === id))
       .filter(Boolean) as RefStore[];
@@ -1377,7 +1388,9 @@ export function OSFormDialog({
       0,
     );
     setTollDiscount(tolls > 0 ? tolls.toFixed(2) : "");
-  }, [storeIds.join(","), manualOverride.toll]);
+    recalcTotal({ toll: tolls > 0 ? tolls.toFixed(2) : "" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storeIds.join(",")]);
 
   // Auto-recalc transport whenever km or price changes
   useEffect(() => {
@@ -1668,13 +1681,11 @@ export function OSFormDialog({
                     0,
                   );
                   const newTransport = totalKm * price;
-                  // Auto-fill toll field from store data
-                  if (!manualOverride.toll) {
-                    setTollDiscount(tolls > 0 ? tolls.toFixed(2) : "");
-                  }
+                  // Always recalculate toll when user changes stores
+                  setTollDiscount(tolls > 0 ? tolls.toFixed(2) : "");
                   recalcTotal({
                     transport: newTransport > 0 ? newTransport.toFixed(2) : "",
-                    toll: !manualOverride.toll && tolls > 0 ? tolls.toFixed(2) : undefined,
+                    toll: tolls > 0 ? tolls.toFixed(2) : "",
                   });
                   scheduleAutoSave();
                 }}
@@ -2290,7 +2301,7 @@ export function OSFormDialog({
                       placeholder="0"
                     />
                   </div>
-                  {/* M.Obra — greyed-out preview */}
+                  {/* M.Obra — read-only, computed from teams × hours × price */}
                   <div className="space-y-1">
                     <Label className="text-xs text-zinc-400">
                       M.Obra
@@ -2307,29 +2318,16 @@ export function OSFormDialog({
                   <div className="space-y-1">
                     <Label className="text-xs text-zinc-400">
                       Material
-                      <InfoTip text="Custo total de materiais. Pré-calculado pela soma dos materiais acima. Editável para ajuste manual." />
-                      {!manualOverride.material && materialCost && (
+                      <InfoTip text="Custo total de materiais. Calculado pela soma dos materiais adicionados acima." />
+                      {materialCost && (
                         <span className="text-emerald-500 text-[10px] ml-1">auto</span>
                       )}
                     </Label>
                     <Input
                       type="number"
-                      step="0.01"
                       value={materialCost}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setMaterialCost(val);
-                        if (val) {
-                          setManualOverride((p) => ({ ...p, material: true }));
-                        } else {
-                          // Empty → revert to auto-fill from details
-                          setManualOverride((p) => ({ ...p, material: false }));
-                          recalcMaterialCostFromDetails(materialDetailsList);
-                        }
-                        recalcTotal({ material: val });
-                        scheduleAutoSave();
-                      }}
-                      className="h-8 text-sm"
+                      disabled
+                      className="h-8 text-sm bg-zinc-800/50 text-zinc-500"
                       placeholder="0,00"
                     />
                   </div>
@@ -2364,26 +2362,14 @@ export function OSFormDialog({
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-xs text-zinc-400">
-                      Pedágio
-                      {!manualOverride.toll && tollDiscount && (
-                        <span className="text-emerald-500 text-[10px] ml-1">auto</span>
-                      )}
-                    </Label>
+                    <Label className="text-xs text-zinc-400">Pedágio</Label>
                     <Input
                       type="number"
                       step="0.01"
                       value={tollDiscount}
                       onChange={(e) => {
-                        const val = e.target.value;
-                        setTollDiscount(val);
-                        if (val) {
-                          setManualOverride((p) => ({ ...p, toll: true }));
-                        } else {
-                          // Empty → revert to auto-fill from store DB
-                          setManualOverride((p) => ({ ...p, toll: false }));
-                        }
-                        recalcTotal({ toll: val });
+                        setTollDiscount(e.target.value);
+                        recalcTotal({ toll: e.target.value });
                         scheduleAutoSave();
                       }}
                       className="h-8 text-sm"
@@ -2410,22 +2396,13 @@ export function OSFormDialog({
                   <Label className="text-xs text-zinc-400 font-semibold">
                     Total (R$)
                     <InfoTip text="Soma de todos os custos: Mão de Obra + Material + Transporte + Refeição + Pernoite + Pedágio + Estacionamento." />
-                    {!manualOverride.total && totalCost && (
-                      <span className="text-emerald-500 text-[10px] ml-1">
-                        auto
-                      </span>
-                    )}
+                    <span className="text-emerald-500 text-[10px] ml-1">auto</span>
                   </Label>
                   <Input
                     type="number"
-                    step="0.01"
                     value={totalCost}
-                    onChange={(e) => {
-                      setTotalCost(e.target.value);
-                      setManualOverride((p) => ({ ...p, total: true }));
-                      scheduleAutoSave();
-                    }}
-                    className="h-8 text-sm font-semibold border-emerald-800/50"
+                    disabled
+                    className="h-8 text-sm font-semibold border-emerald-800/50 bg-zinc-800/50 text-zinc-400"
                     placeholder="0,00"
                   />
                 </div>

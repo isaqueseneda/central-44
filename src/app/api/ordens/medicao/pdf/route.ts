@@ -284,8 +284,8 @@ export async function GET(req: Request) {
     body: tableBody,
     foot: [totalsRow],
     styles: {
-      fontSize: 6.5,
-      cellPadding: 1.2,
+      fontSize: 8,
+      cellPadding: 1.5,
       lineColor: [0, 0, 0],
       lineWidth: 0.2,
       overflow: "linebreak",

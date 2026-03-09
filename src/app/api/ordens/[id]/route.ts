@@ -187,7 +187,46 @@ export async function PATCH(
       );
     }
 
+    // Cost component fields — when any of these change, recalculate totalCost
+    const costFields = [
+      "laborCost",
+      "materialCost",
+      "transportCost",
+      "mealAllowance",
+      "overnightAllowance",
+      "tollDiscount",
+      "parking",
+    ];
+    const hasCostChange = costFields.some((f) => f in data);
+
     const order = await prisma.$transaction(async (tx) => {
+      // If a cost component changed, always recompute total from scratch
+      if (hasCostChange) {
+        const current = await tx.serviceOrder.findUnique({
+          where: { id },
+          select: {
+            laborCost: true,
+            materialCost: true,
+            transportCost: true,
+            mealAllowance: true,
+            overnightAllowance: true,
+            tollDiscount: true,
+            parking: true,
+          },
+        });
+        if (current) {
+          const merged = { ...current, ...data } as Record<string, number | null>;
+          data.totalCost =
+            (Number(merged.laborCost) || 0) +
+            (Number(merged.materialCost) || 0) +
+            (Number(merged.transportCost) || 0) +
+            (Number(merged.mealAllowance) || 0) +
+            (Number(merged.overnightAllowance) || 0) +
+            (Number(merged.tollDiscount) || 0) +
+            (Number(merged.parking) || 0);
+        }
+      }
+
       if (Object.keys(data).length > 0) {
         await tx.serviceOrder.update({ where: { id }, data });
       }

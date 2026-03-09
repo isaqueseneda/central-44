@@ -621,9 +621,11 @@ export function ScheduleViewNew({
 }: Props) {
   const router = useRouter();
   const [currentWeek, setCurrentWeek] = useState(new Date());
-  const [compactView, setCompactView] = useState(false);
+  const [compactView, setCompactView] = useState(true);
   const [undoStack, setUndoStack] = useState<UndoAction[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const allStatuses: OrderStatus[] = ["NOT_STARTED", "IN_PROGRESS", "RETURN_VISIT", "MEASUREMENT", "PAID", "REWORK"];
+  const [availableStatusFilter, setAvailableStatusFilter] = useState<Set<OrderStatus>>(new Set(allStatuses));
 
   const weekDates = getWeekDates(currentWeek);
   const monday = weekDates[0];
@@ -658,6 +660,8 @@ export function ScheduleViewNew({
 
   // Build a map: teamId -> date -> assignment[]
   const assignmentMap = new Map<string, Map<string, ScheduleAssignment[]>>();
+  const assignedOsIds = new Set(assignments.filter((a) => a.serviceOrderId).map((a) => a.serviceOrderId!));
+
   for (const assignment of assignments) {
     const dateKey = assignment.date.slice(0, 10);
     if (!assignmentMap.has(assignment.teamId)) {
@@ -668,6 +672,34 @@ export function ScheduleViewNew({
       teamMap.set(dateKey, []);
     }
     teamMap.get(dateKey)!.push(assignment);
+  }
+
+  // Inject virtual assignments for OS that have a date + teamIds but no schedule assignment
+  // This ensures they show under their team's row instead of "Sem Equipe"
+  for (const os of serviceOrders) {
+    if (!os.date || !os.teamIds || os.teamIds.length === 0) continue;
+    if (assignedOsIds.has(os.id)) continue;
+    const osDateKey = new Date(os.date).toISOString().slice(0, 10);
+    for (const teamId of os.teamIds) {
+      if (!assignmentMap.has(teamId)) {
+        assignmentMap.set(teamId, new Map());
+      }
+      const teamMap = assignmentMap.get(teamId)!;
+      if (!teamMap.has(osDateKey)) {
+        teamMap.set(osDateKey, []);
+      }
+      // Create a virtual assignment so it renders in the team row
+      teamMap.get(osDateKey)!.push({
+        id: `virtual-${os.id}-${teamId}`,
+        teamId,
+        date: os.date,
+        endDate: null,
+        serviceOrderId: os.id,
+        serviceOrder: os,
+        notes: null,
+      });
+      assignedOsIds.add(os.id);
+    }
   }
 
   // Ctrl+Z handler
@@ -1190,14 +1222,15 @@ export function ScheduleViewNew({
 
           {/* Unassigned Row - Service Orders with dates but no team */}
           {(() => {
-            // Check if there are any unassigned service orders in this week
+            // Check if there are any truly unassigned service orders (no team, no assignment)
             const hasAnyUnassigned = weekDates.some((date) => {
               const dateKey = date.toISOString().slice(0, 10);
               return serviceOrders.some((os) => {
                 if (!os.date) return false;
+                if (os.teamIds && os.teamIds.length > 0) return false;
                 const osDate = new Date(os.date).toISOString().slice(0, 10);
                 if (osDate !== dateKey) return false;
-                return !assignments.some((a) => a.serviceOrderId === os.id);
+                return !assignedOsIds.has(os.id);
               });
             });
 
@@ -1220,9 +1253,10 @@ export function ScheduleViewNew({
                   const dateKey = date.toISOString().slice(0, 10);
                   const unassignedForDate = serviceOrders.filter((os) => {
                     if (!os.date) return false;
+                    if (os.teamIds && os.teamIds.length > 0) return false;
                     const osDate = new Date(os.date).toISOString().slice(0, 10);
                     if (osDate !== dateKey) return false;
-                    return !assignments.some((a) => a.serviceOrderId === os.id);
+                    return !assignedOsIds.has(os.id);
                   });
 
                   return (
@@ -1267,7 +1301,7 @@ export function ScheduleViewNew({
             <Calendar className="h-4 w-4" />
             Ordens de Serviço Disponíveis
           </h3>
-          <div className="flex items-center gap-2 flex-1 max-w-md">
+          <div className="flex items-center gap-2 flex-1 max-w-lg">
             <div className="relative flex-1">
               <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
               <Input
@@ -1277,19 +1311,42 @@ export function ScheduleViewNew({
                 className="pl-8 h-8 text-sm bg-background border-border"
               />
             </div>
+            <div className="flex items-center gap-1 flex-wrap">
+              {allStatuses.map((s) => {
+                const cfg = statusConfig[s];
+                const active = availableStatusFilter.has(s);
+                return (
+                  <button
+                    key={s}
+                    onClick={() => {
+                      setAvailableStatusFilter((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(s)) next.delete(s);
+                        else next.add(s);
+                        return next;
+                      });
+                    }}
+                    className={`rounded-full px-2 py-0.5 text-[10px] font-medium transition-all ${
+                      active
+                        ? cfg.className
+                        : "bg-zinc-800/50 text-zinc-600 line-through"
+                    }`}
+                  >
+                    {cfg.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
           {serviceOrders
             .filter((os) => {
-              // Filter out if assigned to ANY date in current assignments
-              const isAssigned = assignments.some(
-                (a) => a.serviceOrderId === os.id,
-              );
-              if (isAssigned) return false;
+              // Filter out if assigned (real or virtual) to ANY date
+              if (assignedOsIds.has(os.id)) return false;
 
-              // Filter by status
-              if (os.status !== "NOT_STARTED" && os.status !== "IN_PROGRESS")
+              // Filter by selected statuses
+              if (!availableStatusFilter.has(os.status as OrderStatus))
                 return false;
 
               // Filter by search query
