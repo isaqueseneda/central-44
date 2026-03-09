@@ -333,21 +333,44 @@ export async function GET(req: Request) {
     renderRelatorioPage(doc, order as any, logoBase64);
   }
 
-  // Generate PDF buffer
-  const pdfBuffer = Buffer.from(doc.output("arraybuffer"));
-
-  // Build filename
-  let filename: string;
+  // Build title — "MEDIÇÃO - DE 02 A 07 MARÇO 2026"
+  let pdfTitle: string;
   if (from && to) {
     const fromDate = new Date(from + "T00:00:00-03:00");
     const toDate = new Date(to + "T23:59:59-03:00");
     const monthName = MONTHS[fromDate.getMonth()];
-    const monthSafe = monthName.charAt(0) + monthName.slice(1).toLowerCase();
-    const monthNoAccent = monthSafe.replace(/ç/g, "c").replace(/[àáâãä]/g, "a").replace(/[èéêë]/g, "e").replace(/[ìíîï]/g, "i").replace(/[òóôõö]/g, "o").replace(/[ùúûü]/g, "u");
-    filename = `Medicao ${fromDate.getDate()} a ${toDate.getDate()} de ${monthNoAccent}.pdf`;
+    const dayFrom = String(fromDate.getDate()).padStart(2, "0");
+    const dayTo = String(toDate.getDate()).padStart(2, "0");
+    pdfTitle = `MEDIÇÃO - DE ${dayFrom} A ${dayTo} ${monthName} ${fromDate.getFullYear()}`;
   } else {
-    filename = `Medicao.pdf`;
+    const dates = orders.map((o) => o.date).filter(Boolean).map((d) => new Date(d!).getTime());
+    if (dates.length > 0) {
+      const earliest = new Date(Math.min(...dates));
+      const latest = new Date(Math.max(...dates));
+      const monthName = MONTHS[earliest.getMonth()];
+      const dayFrom = String(earliest.getDate()).padStart(2, "0");
+      const dayTo = String(latest.getDate()).padStart(2, "0");
+      pdfTitle = `MEDIÇÃO - DE ${dayFrom} A ${dayTo} ${monthName} ${earliest.getFullYear()}`;
+    } else {
+      const now = new Date();
+      pdfTitle = `MEDIÇÃO - ${MONTHS[now.getMonth()]} ${now.getFullYear()}`;
+    }
   }
+
+  // Encode title as UTF-16BE hex string for proper Unicode support in PDF metadata
+  const utf16Hex = Array.from(pdfTitle)
+    .map((ch) => ch.charCodeAt(0).toString(16).padStart(4, "0"))
+    .join("");
+  const pdfTitleHex = `<FEFF${utf16Hex.toUpperCase()}>`;
+  doc.setProperties({ title: pdfTitle });
+
+  // Generate PDF and patch the /Title with UTF-16BE hex to handle ç, ã, etc.
+  let pdfRaw = doc.output();
+  const titleRegex = /\/Title \([^)]*\)/;
+  pdfRaw = pdfRaw.replace(titleRegex, `/Title ${pdfTitleHex}`);
+  const pdfBuffer = Buffer.from(pdfRaw, "binary");
+
+  const filename = `${pdfTitle}.pdf`;
 
   return new NextResponse(pdfBuffer, {
     status: 200,
