@@ -10,7 +10,7 @@ echo.
 :: Kill process on port 3000
 set "found=0"
 for /f "tokens=5" %%a in ('netstat -aon ^| findstr ":3000 " ^| findstr "LISTENING"') do (
-    echo Parando processo (PID: %%a)...
+    echo Parando processo [PID: %%a]...
     taskkill /PID %%a /F >nul 2>&1
     set "found=1"
 )
