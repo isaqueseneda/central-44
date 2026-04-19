@@ -91,6 +91,9 @@ export async function POST(req: Request) {
 
     const data: any = { ...rest };
     if (rest.date) data.date = new Date(rest.date);
+    if (rest.executionDate) data.executionDate = new Date(rest.executionDate);
+    // Normalize empty vehicleId to null (prevents FK constraint failures)
+    if (!data.vehicleId) data.vehicleId = null;
 
     // ── Auto-generate numeroChamado if not provided ──
     if (!data.numeroChamado) {
@@ -212,8 +215,13 @@ export async function POST(req: Request) {
 
     return NextResponse.json(order, { status: 201 });
   } catch (error: any) {
+    console.error("[POST /api/ordens]", error);
+    const message =
+      error.issues
+        ? `Validation: ${error.issues.map((i: any) => `${i.path?.join(".")}: ${i.message}`).join(", ")}`
+        : error.message || "Failed to create service order";
     return NextResponse.json(
-      { error: error.message || "Failed to create service order" },
+      { error: message },
       { status: 400 },
     );
   }

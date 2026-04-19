@@ -53,6 +53,9 @@ export async function PUT(
 
     const data: any = { ...rest };
     if (rest.date) data.date = new Date(rest.date);
+    if (rest.executionDate) data.executionDate = new Date(rest.executionDate);
+    // Normalize empty vehicleId to null (prevents FK constraint failures)
+    if ("vehicleId" in data && !data.vehicleId) data.vehicleId = null;
 
     const order = await prisma.$transaction(async (tx) => {
       // Update main record

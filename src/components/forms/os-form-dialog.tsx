@@ -1090,7 +1090,7 @@ export function OSFormDialog({
 
   // Auto-calc control — preserve existing saved values (don't overwrite what's in the DB)
   const [manualOverride, setManualOverride] = useState<Record<string, boolean>>(
-    () => {
+    (): Record<string, boolean> => {
       if (!initialData) return {};
       return {
         km: (initialData.kmIdaVolta ?? 0) > 0,
@@ -1142,7 +1142,7 @@ export function OSFormDialog({
     setParking(initialData?.parking?.toString() ?? "");
     setMaterialDetailsList(initialData?.materialDetails ?? []);
     setHorasDia(initialData?.horasDia?.toString() ?? globalHorasDia.toString());
-    setManualOverride(() => {
+    setManualOverride((): Record<string, boolean> => {
       if (!initialData) return {};
       return {
         km: (initialData.kmIdaVolta ?? 0) > 0,

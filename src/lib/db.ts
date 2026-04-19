@@ -4,9 +4,12 @@ import { PrismaClient } from "@prisma/client";
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
 function createPrismaClient() {
-  const adapter = new PrismaPg({
-    connectionString: `${process.env.DATABASE_URL}${process.env.DATABASE_URL?.includes("?") ? "&" : "?"}sslmode=verify-full`,
-  });
+  let connectionString = process.env.DATABASE_URL!;
+  // Ensure SSL is enabled but don't force verify-full (requires CA certs, fails on Windows)
+  if (!connectionString.includes("sslmode=")) {
+    connectionString += `${connectionString.includes("?") ? "&" : "?"}sslmode=require`;
+  }
+  const adapter = new PrismaPg({ connectionString });
   return new PrismaClient({ adapter });
 }
 

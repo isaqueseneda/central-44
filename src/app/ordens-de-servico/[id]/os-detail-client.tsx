@@ -60,6 +60,7 @@ export interface OSDetailData {
   kmRodada: number | null;
   precoKm: number | null;
   manHours: number | null;
+  extraHours: number | null;
   // Financial
   mealAllowance: number | null;
   overnightAllowance: number | null;
