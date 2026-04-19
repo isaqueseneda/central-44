@@ -11,6 +11,8 @@ import {
 } from "@/lib/queries";
 import OSListClient, { type SerializedServiceOrder } from "./os-list-client";
 
+export const dynamic = "force-dynamic";
+
 export default async function OrdensDeServicoPage() {
   const [
     orders,

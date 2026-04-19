@@ -2,6 +2,8 @@ import { Receipt } from "lucide-react";
 import { getEmployees } from "@/lib/queries";
 import { ExpensesView } from "./expenses-view";
 
+export const dynamic = "force-dynamic";
+
 export default async function DespesasPage() {
   const employees = await getEmployees();
 

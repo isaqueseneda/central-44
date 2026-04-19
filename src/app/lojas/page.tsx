@@ -3,6 +3,8 @@ import { getStores } from "@/lib/queries";
 import { StoresTable } from "./stores-table";
 import { StoresHeader } from "./stores-header";
 
+export const dynamic = "force-dynamic";
+
 export default async function StoresPage() {
   const stores = await getStores();
 

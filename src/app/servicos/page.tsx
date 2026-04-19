@@ -2,6 +2,8 @@ import { getServiceTypes } from "@/lib/queries";
 import { ServicesTable } from "./services-table";
 import { ServicesHeader } from "./services-header";
 
+export const dynamic = "force-dynamic";
+
 export default async function ServicesPage() {
   const serviceTypes = await getServiceTypes();
 

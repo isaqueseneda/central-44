@@ -3,6 +3,8 @@ import { getEmployees, getTeams, getVehicles } from "@/lib/queries";
 import { TeamsHeader } from "./teams-header";
 import { TeamsTable } from "./teams-table";
 
+export const dynamic = "force-dynamic";
+
 export default async function EquipesPage() {
   const [teams, employees, vehicles] = await Promise.all([
     getTeams(),

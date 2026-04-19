@@ -2,6 +2,8 @@ import { getServiceOrderById } from "@/lib/queries";
 import { notFound } from "next/navigation";
 import OSDetailClient, { type OSDetailData } from "./os-detail-client";
 
+export const dynamic = "force-dynamic";
+
 // ---------------------------------------------------------------------------
 // Server page: fetch data, serialize, pass to client
 // ---------------------------------------------------------------------------

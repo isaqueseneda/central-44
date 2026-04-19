@@ -12,6 +12,8 @@ import {
 import { Calendar } from "lucide-react";
 import { ScheduleViewNew } from "./schedule-view-new";
 
+export const dynamic = "force-dynamic";
+
 function getMondayOfWeek(date: Date): Date {
   const d = new Date(date);
   const dayOfWeek = d.getUTCDay();

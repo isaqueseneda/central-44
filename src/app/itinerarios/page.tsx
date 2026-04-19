@@ -7,6 +7,8 @@ import {
 import { Route } from "lucide-react";
 import { ItinerariosView } from "./itinerarios-view";
 
+export const dynamic = "force-dynamic";
+
 function getMondayOfWeek(date: Date): Date {
   const d = new Date(date);
   const dayOfWeek = d.getUTCDay();

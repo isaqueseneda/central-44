@@ -2,6 +2,8 @@ import { getVehicles } from "@/lib/queries";
 import { FleetTable } from "./fleet-table";
 import { FleetHeader } from "./fleet-header";
 
+export const dynamic = "force-dynamic";
+
 export default async function FleetPage() {
   const vehicles = await getVehicles();
 

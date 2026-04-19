@@ -2,6 +2,8 @@ import { getMaterials } from "@/lib/queries";
 import { MaterialsTable } from "./materials-table";
 import { MaterialsHeader } from "./materials-header";
 
+export const dynamic = "force-dynamic";
+
 export default async function MaterialsPage() {
   const materials = await getMaterials();
 
