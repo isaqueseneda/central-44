@@ -8,12 +8,16 @@ echo [BACKUP] Iniciando backup do banco de dados...
 :: Create backups directory if it doesn't exist
 if not exist "backups" mkdir backups
 
-:: Generate timestamp for filename
-for /f "tokens=2 delims==" %%I in ('wmic os get localdatetime /format:list') do set datetime=%%I
-set "timestamp=%datetime:~0,4%-%datetime:~4,2%-%datetime:~6,2%_%datetime:~8,2%-%datetime:~10,2%"
+:: Generate timestamp using PowerShell (reliable across all Windows versions)
+for /f "usebackq delims=" %%I in (`powershell -NoProfile -Command "Get-Date -Format 'yyyy-MM-dd_HH-mm'"`) do set "timestamp=%%I"
 
-:: Run the Node.js backup script
-call npx tsx scripts/backup-db.ts %timestamp%
+:: Fallback: if PowerShell failed, let the Node script generate its own timestamp
+if "%timestamp%"=="" (
+    echo [BACKUP] Aviso: nao foi possivel gerar timestamp, usando fallback...
+    call npx tsx scripts/backup-db.ts
+) else (
+    call npx tsx scripts/backup-db.ts %timestamp%
+)
 
 if %errorlevel% neq 0 (
     echo [BACKUP] ERRO - Backup falhou! Verifique a conexao.

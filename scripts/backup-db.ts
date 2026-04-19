@@ -21,11 +21,13 @@ const TOKEN_PATH = path.join(process.cwd(), "google-tokens.json");
 const DRIVE_FOLDER_NAME = "Central44-Backups";
 
 async function createPrisma() {
-  const connectionString = process.env.DATABASE_URL;
+  let connectionString = process.env.DATABASE_URL;
   if (!connectionString) throw new Error("DATABASE_URL not set");
-  const adapter = new PrismaPg({
-    connectionString: `${connectionString}${connectionString.includes("?") ? "&" : "?"}sslmode=verify-full`,
-  });
+  // Ensure SSL is enabled but don't force verify-full (requires CA certs, fails on Windows)
+  if (!connectionString.includes("sslmode=")) {
+    connectionString += `${connectionString.includes("?") ? "&" : "?"}sslmode=require`;
+  }
+  const adapter = new PrismaPg({ connectionString });
   return new PrismaClient({ adapter });
 }
 

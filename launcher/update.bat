@@ -29,8 +29,11 @@ echo [2/6] Fazendo backup antes de atualizar...
 call launcher\backup.bat
 echo.
 
-:: Pull latest code
+:: Discard local changes that would conflict with the update
+:: (local edits to tracked files are overwritten by the latest version from GitHub)
 echo [3/6] Baixando atualizacoes do GitHub...
+git checkout -- . >nul 2>&1
+git clean -fd >nul 2>&1
 git pull origin main
 if %errorlevel% neq 0 (
     echo [ERRO] Falha ao baixar atualizacoes!
